@@ -1,0 +1,119 @@
+
+<ESCRITURA>  //NO TENEMOS LA COMA
+S -> ( print S' )
+S' -> cte_string | TERMINO
+
+<DEFINIR> 
+S -> ( declare id S' ) //usemos el declare para variables y define para functions
+S' -> cte_int | cte_float | cte_string 
+
+<VARCTE>
+S -> id // id2
+S -> cte_int // 1
+S -> cte_float // 1.1
+
+
+
+<EXP>  //para sumas y restas mult y div
+S -> ( + EXP EXP ) 
+S -> ( - EXP EXP ) 
+S -> ( * EXP EXP ) 
+S -> ( / EXP EXP )
+S -> ( + VARCTE ) 
+S -> ( - VARCTE ) 
+S ->  VARCTE
+
+
+<EXPRESION>  // para comparativas o lo demas
+S -> EXP 
+S -> ( S' EXP EXP )
+S' -> > | < | != (este ultimo es diferente a racket)
+
+<CONDICION>
+S -> ( if EXPRESION BLOQUE BLOQUE )
+
+<BLOQUE> // se puede eliminar pero la tenemos por mientras para estar igual que little duck
+S -> CONDICION | ESCRITURA | EXPRESION | LLAMADA | LAMBDA
+
+/* ejemplo factorial
+(define (factorial n)
+  (if (= n 1)
+      1
+      (* n (factorial (- n 1)))))
+*/
+
+<TIPO> //duda maestra, nos recomienda poner el tipo de variable en los parametros de una function o define o etc
+S -> int 
+S -> float 
+S -> char
+
+<PARAM>
+S -> id S | epsilon
+
+<FUNCION>
+S -> ( define ( id PARAM ) BLOQUE  )
+
+//falta read 
+
+<VARIBLE>
+S -> id 
+
+<LLAMADA> //llamada de funcion
+S -> ( id S' )
+S' -> EXP S' | epsilon
+
+
+ '( )
+ #( )
+ !( )
+ *( )
+ :( )
+ ;( )
+  [ ]
+
+
+(List 1 2 3 4) -> '( 1 2 3 4 )
+(Cons 1 '() ) -> '( 1 )
+ 
+Car -> el primer elemento
+Cdr -> remaining list 
+Append -> list + lista a
+
+
+LIST
+Length -> el tam de la lista
+Reverse -> reverso de la lista
+list_ref -> devuelve el kth Element 
+
+
+Filter
+Map
+Lambda
+
+
+
+
+ 
+((lambda (x) x)
+   1)
+
+<LAMBDA>
+ ( ( lambda (PARAM) BLOQUE ) EXP )
+
+//se pueden hacer cond (switch)
+//(list? , null?, int?, float? )
+
+
+(define (fibonacci n)	
+  (cond          
+    ((= n 0) 0)          
+    ((= n 1) 1 )          
+    (else (+ (fibonacci (- n 1)) (fibonacci (- n 2))))          
+  )
+)
+
+FUNCION
+(Define (id PARAM ) BLOQUE)
+(Define (fibonacci id S ) BLOQUE)
+(Define (fibonacci id ) BLOQUE)
+(define(fibonacci id) 
