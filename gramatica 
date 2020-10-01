@@ -1,46 +1,97 @@
+<PROGRAMA>
+S -> ( program id S' S'' MAIN )
+S' -> DECLARACIONVARIABLLES | epsilon
+S'' -> DECLARACIONFUNCIONES | epsilon
 
-<ESCRITURA>  //NO TENEMOS LA COMA
+<DECLARACIONVARIABLLES>
+S -> ( vars S' )
+S' -> DEFINIRLISTA S' | DEFINIR S' | epsilon
+
+<DECLARACIONFUNCIONES>
+S -> ( functions S' )
+S' -> FUNCION S' | epsilon
+
+<MAIN>
+S -> ( main S' )
+S' -> BLOQUE S' | epsilon
+
+
+<IMPRIMIR>  //NO TENEMOS LA COMA
 S -> ( print S' )
-S' -> cte_string | TERMINO
+S' -> cte_ctar | EXPRESION | LISTFUNCITONS | LAMBDA 
+
+<DEFINIRLISTA>
+S -> ( declare id '( S' ) )
+S' -> cte_int S' | cte_float S' | cte_char | epsilon
 
 <DEFINIR> 
 S -> ( declare id S' ) //usemos el declare para variables y define para functions
-S' -> cte_int | cte_float | cte_string 
+S' -> cte_int | cte_float | cte_char 
+
+<LISTA> 
+S -> id | '( S' )  //aqui se deberia de agregar el poder poner una lista sin declarar 
+S' -> cte_int S' | cte_float S' | cte_char | epsilon
 
 <VARCTE>
 S -> id // id2
 S -> cte_int // 1
 S -> cte_float // 1.1
 
+<LISTFUNCITONS>
+S -> RETURNELEMENT | RETURNLIST
+
+<RETURNLIST>
+S -> ( S' LISTA ) | APPEND | LISTA | CREATELIST | MAP | LLAMADA | FILTER
+S' -> cdr
+
+<RETURNELEMENT>
+S -> ( S' RETURNLIST ) | #t | #f
+S' -> car | length | null? | list? | empty?
+
+<APPEND>
+S -> ( append RETURNLIST RETURNLIST S' )
+S' -> RETURNLIST S' | epsilon
+
+<CREATELIST> //funcion list
+S -> ( list s' )
+S' -> EXPRESION S' | epsilon
+
+<MAP>
+S -> ( map S'' RETURNLIST S' )
+S' -> RETURNLIST S' | epsilon
+S'' -> ( lambda (PARAM) BLOQUE )
+
+<FILTER>
+S -> ( filter S' RETURNLIST )
+S' -> ( lambda (PARAM) BLOQUE ) | even? | int? | float?
 
 
-<EXP>  //para sumas y restas mult y div
+<EXP>  //para sumas y restas
 S -> ( + EXP EXP ) 
-S -> ( - EXP EXP ) 
+S -> ( - EXP EXP )
 S -> ( * EXP EXP ) 
-S -> ( / EXP EXP )
+S -> ( / EXP EXP ) 
 S -> ( + VARCTE ) 
 S -> ( - VARCTE ) 
-S ->  VARCTE
-
+S -> VARCTE
+S -> LLAMADA // se tiene que agregar para este caso (* n (factorial (- n 1)))
+S -> RETURNELEMENT
 
 <EXPRESION>  // para comparativas o lo demas
 S -> EXP 
 S -> ( S' EXP EXP )
-S' -> > | < | != (este ultimo es diferente a racket)
+S' -> > | < | != | =
+S -> EXPRESIONESUNARIAS
+
+<EXPRESIONESUNARIAS>
+S -> ( S' EXP) | #t | #f
+S' -> even? | int? | float? | list? | null? | empty?
 
 <CONDICION>
 S -> ( if EXPRESION BLOQUE BLOQUE )
 
-<BLOQUE> // se puede eliminar pero la tenemos por mientras para estar igual que little duck
-S -> CONDICION | ESCRITURA | EXPRESION | LLAMADA | LAMBDA
-
-/* ejemplo factorial
-(define (factorial n)
-  (if (= n 1)
-      1
-      (* n (factorial (- n 1)))))
-*/
+<BLOQUE> 
+S -> CONDICION | IMPRIMIR | EXPRESION | LLAMADA | LAMBDA | LISTFUNCITONS
 
 <TIPO> //duda maestra, nos recomienda poner el tipo de variable en los parametros de una function o define o etc
 S -> int 
@@ -53,67 +104,17 @@ S -> id S | epsilon
 <FUNCION>
 S -> ( define ( id PARAM ) BLOQUE  )
 
-//falta read 
+//falta read (NO OLVIDEN PERROS)
 
-<VARIBLE>
-S -> id 
 
 <LLAMADA> //llamada de funcion
 S -> ( id S' )
-S' -> EXP S' | epsilon
+S' -> EXPRESION S' | LISTFUNCITONS S' | epsilon
 
-
- '( )
- #( )
- !( )
- *( )
- :( )
- ;( )
-  [ ]
-
-
-(List 1 2 3 4) -> '( 1 2 3 4 )
-(Cons 1 '() ) -> '( 1 )
- 
-Car -> el primer elemento
-Cdr -> remaining list 
-Append -> list + lista a
-
-
-LIST
-Length -> el tam de la lista
-Reverse -> reverso de la lista
-list_ref -> devuelve el kth Element 
-
-
-Filter
-Map
-Lambda
+<LAMBDA> //cambios
+S -> ( ( lambda (PARAM) BLOQUE ) S' )
+S' -> EXPRESION S' | LISTFUNCITONS S' | epsilon
 
 
 
 
- 
-((lambda (x) x)
-   1)
-
-<LAMBDA>
- ( ( lambda (PARAM) BLOQUE ) EXP )
-
-//se pueden hacer cond (switch)
-//(list? , null?, int?, float? )
-
-
-(define (fibonacci n)	
-  (cond          
-    ((= n 0) 0)          
-    ((= n 1) 1 )          
-    (else (+ (fibonacci (- n 1)) (fibonacci (- n 2))))          
-  )
-)
-
-FUNCION
-(Define (id PARAM ) BLOQUE)
-(Define (fibonacci id S ) BLOQUE)
-(Define (fibonacci id ) BLOQUE)
-(define(fibonacci id) 
