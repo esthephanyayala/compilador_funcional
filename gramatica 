@@ -15,8 +15,7 @@ S' -> FUNCION S' | epsilon
 S -> ( main S' )
 S' -> BLOQUE S' | epsilon
 
-
-<IMPRIMIR>  //NO TENEMOS LA COMA
+<IMPRIMIR> 
 S -> ( print S' )
 S' -> cte_ctar | EXPRESION | LISTFUNCITONS | LAMBDA 
 
@@ -65,8 +64,7 @@ S'' -> ( lambda (PARAM) BLOQUE )
 S -> ( filter S' RETURNLIST )
 S' -> ( lambda (PARAM) BLOQUE ) | even? | int? | float?
 
-
-<EXP>  //para sumas y restas
+<EXP> 
 S -> ( + EXP EXP ) 
 S -> ( - EXP EXP )
 S -> ( * EXP EXP ) 
@@ -74,10 +72,10 @@ S -> ( / EXP EXP )
 S -> ( + VARCTE ) 
 S -> ( - VARCTE ) 
 S -> VARCTE
-S -> LLAMADA // se tiene que agregar para este caso (* n (factorial (- n 1)))
+S -> LLAMADA 
 S -> RETURNELEMENT
 
-<EXPRESION>  // para comparativas o lo demas
+<EXPRESION>  // para comparativas
 S -> EXP 
 S -> ( S' EXP EXP )
 S' -> > | < | != | =
@@ -93,7 +91,7 @@ S -> ( if EXPRESION BLOQUE BLOQUE )
 <BLOQUE> 
 S -> CONDICION | IMPRIMIR | EXPRESION | LLAMADA | LAMBDA | LISTFUNCITONS
 
-<TIPO> //duda maestra, nos recomienda poner el tipo de variable en los parametros de una function o define o etc
+<TIPO> 
 S -> int 
 S -> float 
 S -> char
@@ -104,14 +102,12 @@ S -> id S | epsilon
 <FUNCION>
 S -> ( define ( id PARAM ) BLOQUE  )
 
-//falta read (NO OLVIDEN PERROS)
-
 
 <LLAMADA> //llamada de funcion
 S -> ( id S' )
 S' -> EXPRESION S' | LISTFUNCITONS S' | epsilon
 
-<LAMBDA> //cambios
+<LAMBDA> 
 S -> ( ( lambda (PARAM) BLOQUE ) S' )
 S' -> EXPRESION S' | LISTFUNCITONS S' | epsilon
 
