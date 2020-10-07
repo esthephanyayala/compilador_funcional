@@ -5,7 +5,7 @@ S'' -> DECLARACIONFUNCIONES | epsilon
 
 <DECLARACIONVARIABLLES>
 S -> ( vars S' )
-S' -> DEFINIRLISTA S' | DEFINIR S' | epsilon
+S' -> DECLARE S' | epsilon
 
 <DECLARACIONFUNCIONES>
 S -> ( functions S' )
@@ -19,13 +19,16 @@ S' -> BLOQUE S' | epsilon
 S -> ( print S' )
 S' -> cte_ctar | EXPRESION | LISTFUNCITONS | LAMBDA 
 
-<DEFINIRLISTA>
-S -> ( declare id '( S' ) )
-S' -> cte_int S' | cte_float S' | cte_char | epsilon
+<DECLARE>
+S -> ( declare id S' )
+S' -> DEFINIRLISTA | DEFINIRCTE
 
-<DEFINIR> 
-S -> ( declare id S' ) //usemos el declare para variables y define para functions
-S' -> cte_int | cte_float | cte_char 
+<DEFINIRLISTA>
+S -> '( )
+S' -> DEFINIRCTE S' | epsilon
+
+<DEFINIRCTE>
+S -> cte_int | cte_float | cte_char 
 
 <LISTA> 
 S -> id | '( S' )  //aqui se deberia de agregar el poder poner una lista sin declarar 
@@ -64,6 +67,8 @@ S'' -> ( lambda (PARAM) BLOQUE )
 S -> ( filter S' RETURNLIST )
 S' -> ( lambda (PARAM) BLOQUE ) | even? | int? | float?
 
+------------------------------------------------------------
+Son equivalentes
 <EXP> 
 S -> ( + EXP EXP ) 
 S -> ( - EXP EXP )
@@ -75,11 +80,30 @@ S -> VARCTE
 S -> LLAMADA 
 S -> RETURNELEMENT
 
+
+<EXP> 
+S -> ( SIGNOS1 EXP EXP ) 
+S -> ( SIGNOS2 EXP EXP )
+S -> ( SIGNOS1 VARCTE ) 
+S -> VARCTE
+S -> LLAMADA 
+S -> RETURNELEMENT
+
+<SIGNOS1>
+S -> + | -
+
+<SIGNOS2>
+S -> * | /
+
+------------------------------------------------------------
+
 <EXPRESION>  // para comparativas
 S -> EXP 
-S -> ( S' EXP EXP )
-S' -> > | < | != | =
+S -> ( SIGNOSRELACIONALES EXP EXP )
 S -> EXPRESIONESUNARIAS
+
+<SIGNOSRELACIONALES>
+S -> > | < | != | =
 
 <EXPRESIONESUNARIAS>
 S -> ( S' EXP) | #t | #f

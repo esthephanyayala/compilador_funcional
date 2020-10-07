@@ -1,0 +1,17 @@
+(program
+    (vars
+        (declare i 1)
+        (declare a 2.3)
+        (declare l '())
+    )
+    (functions
+        (define (f1 l1 l2) 
+            (print 'e'))
+        (define (f2)
+            (print 'e')
+        )
+        (define (f3 l1) 
+            (print 'e')
+        )
+    )
+)
