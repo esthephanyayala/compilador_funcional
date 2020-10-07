@@ -203,7 +203,6 @@ def p_bloque(p):
                 | expresion'''#faltan un buen aqui
 
 
-
 def p_error(p):
     print(f"Syntax error at {p.value!r}")
 
