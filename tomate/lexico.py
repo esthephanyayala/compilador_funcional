@@ -16,18 +16,18 @@ reserved = {
     'cdr' : 'CDR',
     'car' : 'CAR',
     'length' : 'LENGTH',
-    'null?' : 'NULL_PREDICADE',
-    'list?' : 'LIST_PREDICADE',
-    'empty?' : 'EMPTY_PREDICADE',
+    'nullp' : 'NULL_PREDICADE',
+    'listp' : 'LIST_PREDICADE',
+    'emptyp' : 'EMPTY_PREDICADE',
     'append' : 'APPEND',
     'list' : 'LIST',
     'map' : 'MAP',
     'filter' : 'FILTER',
-    '#t' : 'FALSE',
-    '#f' : 'TRUE',
-    'even?' : 'EVEN_PREDICADE',
-    'int?' : 'INT_PREDICADE',
-    'float?' : 'FLOAT_PREDICADE'
+    'tt' : 'FALSE',
+    'ff' : 'TRUE',
+    'evenp' : 'EVEN_PREDICADE',
+    'intp' : 'INT_PREDICADE',
+    'floatp' : 'FLOAT_PREDICADE'
 }
 
 tokens = [
@@ -104,7 +104,9 @@ def p_imprimir_2(p):
 
 def p_expresion(p):
     ''' expresion   : exp 
-                    | OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN '''
+                    | OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN 
+                    | expresionesunarias'''
+
 
 ##### SIGNOSRELACIONALES #####
 
@@ -113,6 +115,21 @@ def p_signosrelacionales(p):
                             | GT
                             | NE
                             | EQUAL '''
+
+##### EXPRESIONESUNARIAS #####
+
+def p_expresionesunarias(p):
+    ''' expresionesunarias  : OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN 
+                            | TRUE
+                            | FALSE '''
+
+def p_expresionesunarias_2(p):
+    ''' expresionesunarias_2    : EVEN_PREDICADE 
+                                | INT_PREDICADE
+                                | FLOAT_PREDICADE
+                                | LIST_PREDICADE
+                                | NULL_PREDICADE
+                                | EMPTY_PREDICADE '''
 
 ##### EXP #####
 
@@ -200,8 +217,22 @@ def p_definirlista_2(p):
 
 def p_bloque(p):
     ''' bloque : imprimir 
-                | expresion'''#faltan un buen aqui
+                | expresion
+                | condicion 
+                | lambda'''#faltan un buen aqui
 
+##### CONDICION #####
+
+def p_condicion(p):
+    ''' condicion : OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN '''
+
+##### LAMBDA #####
+def p_lambda(p):
+    ''' lambda : OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN '''
+
+def p_lambda_2(p):
+    ''' lambda_2    : expresion
+                    | empty '''
 
 def p_error(p):
     print(f"Syntax error at {p.value!r}")
@@ -213,7 +244,7 @@ def p_empty(p):
 import ply.yacc as yacc
 yacc.yacc()
 
-'''
+#'''
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -227,13 +258,13 @@ f = open(filename, "r")
 
 input = f.read()
 yacc.parse(input)
-'''
+#'''
 
-#''' # para testear a mano
+''' # para testear a mano
 while True:
     try:
         s = input('programa > ')
     except EOFError:
         break
     yacc.parse(s)
-#'''
+'''
