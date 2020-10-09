@@ -1,0 +1,1672 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    APPEND
+    CAR
+    CDR
+    CHAR
+    FILTER
+    FLOAT
+    INT
+    LENGTH
+    LIST
+    MAIN
+    MAP
+
+Grammar
+
+Rule 0     S' -> programa
+Rule 1     programa -> OPEN_PAREN PROGRAM programa_2 programa_3 CLOSE_PAREN
+Rule 2     programa_2 -> declaracionvariables
+Rule 3     programa_2 -> empty
+Rule 4     programa_3 -> declaracionfuncion
+Rule 5     programa_3 -> empty
+Rule 6     imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN
+Rule 7     imprimir_2 -> CTEC
+Rule 8     imprimir_2 -> expresion
+Rule 9     expresion -> exp
+Rule 10    expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+Rule 11    expresion -> expresionesunarias
+Rule 12    signosrelacionales -> LT
+Rule 13    signosrelacionales -> GT
+Rule 14    signosrelacionales -> NE
+Rule 15    signosrelacionales -> EQUAL
+Rule 16    expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+Rule 17    expresionesunarias -> TRUE
+Rule 18    expresionesunarias -> FALSE
+Rule 19    expresionesunarias_2 -> EVEN_PREDICADE
+Rule 20    expresionesunarias_2 -> INT_PREDICADE
+Rule 21    expresionesunarias_2 -> FLOAT_PREDICADE
+Rule 22    expresionesunarias_2 -> LIST_PREDICADE
+Rule 23    expresionesunarias_2 -> NULL_PREDICADE
+Rule 24    expresionesunarias_2 -> EMPTY_PREDICADE
+Rule 25    exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN
+Rule 26    exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN
+Rule 27    exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN
+Rule 28    exp -> varcte
+Rule 29    signos1 -> PLUS
+Rule 30    signos1 -> MINUS
+Rule 31    signos2 -> TIMES
+Rule 32    signos2 -> DIVIDE
+Rule 33    varcte -> ID
+Rule 34    varcte -> CTEI
+Rule 35    varcte -> CTEF
+Rule 36    declaracionfuncion -> OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN
+Rule 37    declaracionfuncion_2 -> funcion declaracionfuncion_2
+Rule 38    declaracionfuncion_2 -> empty
+Rule 39    funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN
+Rule 40    param -> ID param
+Rule 41    param -> empty
+Rule 42    declaracionvariables -> OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN
+Rule 43    declaracionvariables_2 -> declare declaracionvariables_2
+Rule 44    declaracionvariables_2 -> empty
+Rule 45    declare -> OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN
+Rule 46    declare_2 -> definircte
+Rule 47    declare_2 -> definirlista
+Rule 48    definircte -> CTEI
+Rule 49    definircte -> CTEF
+Rule 50    definircte -> CTEC
+Rule 51    definirlista -> QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN
+Rule 52    definirlista_2 -> definircte definirlista_2
+Rule 53    definirlista_2 -> empty
+Rule 54    bloque -> imprimir
+Rule 55    bloque -> expresion
+Rule 56    bloque -> condicion
+Rule 57    bloque -> lambda
+Rule 58    condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN
+Rule 59    lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+Rule 60    lambda_2 -> expresion
+Rule 61    lambda_2 -> empty
+Rule 62    empty -> <empty>
+
+Terminals, with rules where they appear
+
+APPEND               : 
+CAR                  : 
+CDR                  : 
+CHAR                 : 
+CLOSE_PAREN          : 1 6 10 16 25 26 27 36 39 39 42 45 51 58 59 59 59
+CTEC                 : 7 50
+CTEF                 : 35 49
+CTEI                 : 34 48
+DECLARE              : 45
+DEFINE               : 39
+DIVIDE               : 32
+EMPTY_PREDICADE      : 24
+EQUAL                : 15
+EVEN_PREDICADE       : 19
+FALSE                : 18
+FILTER               : 
+FLOAT                : 
+FLOAT_PREDICADE      : 21
+FUNCTIONS            : 36
+GT                   : 13
+ID                   : 33 39 40 45
+IF                   : 58
+INT                  : 
+INT_PREDICADE        : 20
+LAMBDA               : 59
+LENGTH               : 
+LIST                 : 
+LIST_PREDICADE       : 22
+LT                   : 12
+MAIN                 : 
+MAP                  : 
+MINUS                : 30
+NE                   : 14
+NULL_PREDICADE       : 23
+OPEN_PAREN           : 1 6 10 16 25 26 27 36 39 39 42 45 51 58 59 59 59
+PLUS                 : 29
+PRINT                : 6
+PROGRAM              : 1
+QUOTE                : 51
+TIMES                : 31
+TRUE                 : 17
+VARS                 : 42
+error                : 
+
+Nonterminals, with rules where they appear
+
+bloque               : 39 58 58 59
+condicion            : 56
+declaracionfuncion   : 4
+declaracionfuncion_2 : 36 37
+declaracionvariables : 2
+declaracionvariables_2 : 42 43
+declare              : 43
+declare_2            : 45
+definircte           : 46 52
+definirlista         : 47
+definirlista_2       : 51 52
+empty                : 3 5 38 41 44 53 61
+exp                  : 9 10 10 16 25 25 26 26
+expresion            : 8 55 58 60
+expresionesunarias   : 11
+expresionesunarias_2 : 16
+funcion              : 37
+imprimir             : 54
+imprimir_2           : 6
+lambda               : 57
+lambda_2             : 59
+param                : 39 40 59
+programa             : 0
+programa_2           : 1
+programa_3           : 1
+signos1              : 25 27
+signos2              : 26
+signosrelacionales   : 10
+varcte               : 27 28
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . programa
+    (1) programa -> . OPEN_PAREN PROGRAM programa_2 programa_3 CLOSE_PAREN
+
+    OPEN_PAREN      shift and go to state 2
+
+    programa                       shift and go to state 1
+
+state 1
+
+    (0) S' -> programa .
+
+
+
+state 2
+
+    (1) programa -> OPEN_PAREN . PROGRAM programa_2 programa_3 CLOSE_PAREN
+
+    PROGRAM         shift and go to state 3
+
+
+state 3
+
+    (1) programa -> OPEN_PAREN PROGRAM . programa_2 programa_3 CLOSE_PAREN
+    (2) programa_2 -> . declaracionvariables
+    (3) programa_2 -> . empty
+    (42) declaracionvariables -> . OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN
+    (62) empty -> .
+
+  ! shift/reduce conflict for OPEN_PAREN resolved as shift
+    OPEN_PAREN      shift and go to state 4
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+  ! OPEN_PAREN      [ reduce using rule 62 (empty -> .) ]
+
+    programa_2                     shift and go to state 5
+    declaracionvariables           shift and go to state 6
+    empty                          shift and go to state 7
+
+state 4
+
+    (42) declaracionvariables -> OPEN_PAREN . VARS declaracionvariables_2 CLOSE_PAREN
+
+    VARS            shift and go to state 8
+
+
+state 5
+
+    (1) programa -> OPEN_PAREN PROGRAM programa_2 . programa_3 CLOSE_PAREN
+    (4) programa_3 -> . declaracionfuncion
+    (5) programa_3 -> . empty
+    (36) declaracionfuncion -> . OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN
+    (62) empty -> .
+
+    OPEN_PAREN      shift and go to state 9
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    programa_3                     shift and go to state 10
+    declaracionfuncion             shift and go to state 11
+    empty                          shift and go to state 12
+
+state 6
+
+    (2) programa_2 -> declaracionvariables .
+
+    OPEN_PAREN      reduce using rule 2 (programa_2 -> declaracionvariables .)
+    CLOSE_PAREN     reduce using rule 2 (programa_2 -> declaracionvariables .)
+
+
+state 7
+
+    (3) programa_2 -> empty .
+
+    OPEN_PAREN      reduce using rule 3 (programa_2 -> empty .)
+    CLOSE_PAREN     reduce using rule 3 (programa_2 -> empty .)
+
+
+state 8
+
+    (42) declaracionvariables -> OPEN_PAREN VARS . declaracionvariables_2 CLOSE_PAREN
+    (43) declaracionvariables_2 -> . declare declaracionvariables_2
+    (44) declaracionvariables_2 -> . empty
+    (45) declare -> . OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN
+    (62) empty -> .
+
+    OPEN_PAREN      shift and go to state 13
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    declaracionvariables_2         shift and go to state 14
+    declare                        shift and go to state 15
+    empty                          shift and go to state 16
+
+state 9
+
+    (36) declaracionfuncion -> OPEN_PAREN . FUNCTIONS declaracionfuncion_2 CLOSE_PAREN
+
+    FUNCTIONS       shift and go to state 17
+
+
+state 10
+
+    (1) programa -> OPEN_PAREN PROGRAM programa_2 programa_3 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 18
+
+
+state 11
+
+    (4) programa_3 -> declaracionfuncion .
+
+    CLOSE_PAREN     reduce using rule 4 (programa_3 -> declaracionfuncion .)
+
+
+state 12
+
+    (5) programa_3 -> empty .
+
+    CLOSE_PAREN     reduce using rule 5 (programa_3 -> empty .)
+
+
+state 13
+
+    (45) declare -> OPEN_PAREN . DECLARE ID declare_2 CLOSE_PAREN
+
+    DECLARE         shift and go to state 19
+
+
+state 14
+
+    (42) declaracionvariables -> OPEN_PAREN VARS declaracionvariables_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 20
+
+
+state 15
+
+    (43) declaracionvariables_2 -> declare . declaracionvariables_2
+    (43) declaracionvariables_2 -> . declare declaracionvariables_2
+    (44) declaracionvariables_2 -> . empty
+    (45) declare -> . OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN
+    (62) empty -> .
+
+    OPEN_PAREN      shift and go to state 13
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    declare                        shift and go to state 15
+    declaracionvariables_2         shift and go to state 21
+    empty                          shift and go to state 16
+
+state 16
+
+    (44) declaracionvariables_2 -> empty .
+
+    CLOSE_PAREN     reduce using rule 44 (declaracionvariables_2 -> empty .)
+
+
+state 17
+
+    (36) declaracionfuncion -> OPEN_PAREN FUNCTIONS . declaracionfuncion_2 CLOSE_PAREN
+    (37) declaracionfuncion_2 -> . funcion declaracionfuncion_2
+    (38) declaracionfuncion_2 -> . empty
+    (39) funcion -> . OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN
+    (62) empty -> .
+
+    OPEN_PAREN      shift and go to state 22
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    declaracionfuncion_2           shift and go to state 23
+    funcion                        shift and go to state 24
+    empty                          shift and go to state 25
+
+state 18
+
+    (1) programa -> OPEN_PAREN PROGRAM programa_2 programa_3 CLOSE_PAREN .
+
+    $end            reduce using rule 1 (programa -> OPEN_PAREN PROGRAM programa_2 programa_3 CLOSE_PAREN .)
+
+
+state 19
+
+    (45) declare -> OPEN_PAREN DECLARE . ID declare_2 CLOSE_PAREN
+
+    ID              shift and go to state 26
+
+
+state 20
+
+    (42) declaracionvariables -> OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN .
+
+    OPEN_PAREN      reduce using rule 42 (declaracionvariables -> OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN .)
+    CLOSE_PAREN     reduce using rule 42 (declaracionvariables -> OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN .)
+
+
+state 21
+
+    (43) declaracionvariables_2 -> declare declaracionvariables_2 .
+
+    CLOSE_PAREN     reduce using rule 43 (declaracionvariables_2 -> declare declaracionvariables_2 .)
+
+
+state 22
+
+    (39) funcion -> OPEN_PAREN . DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN
+
+    DEFINE          shift and go to state 27
+
+
+state 23
+
+    (36) declaracionfuncion -> OPEN_PAREN FUNCTIONS declaracionfuncion_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 28
+
+
+state 24
+
+    (37) declaracionfuncion_2 -> funcion . declaracionfuncion_2
+    (37) declaracionfuncion_2 -> . funcion declaracionfuncion_2
+    (38) declaracionfuncion_2 -> . empty
+    (39) funcion -> . OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN
+    (62) empty -> .
+
+    OPEN_PAREN      shift and go to state 22
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    funcion                        shift and go to state 24
+    declaracionfuncion_2           shift and go to state 29
+    empty                          shift and go to state 25
+
+state 25
+
+    (38) declaracionfuncion_2 -> empty .
+
+    CLOSE_PAREN     reduce using rule 38 (declaracionfuncion_2 -> empty .)
+
+
+state 26
+
+    (45) declare -> OPEN_PAREN DECLARE ID . declare_2 CLOSE_PAREN
+    (46) declare_2 -> . definircte
+    (47) declare_2 -> . definirlista
+    (48) definircte -> . CTEI
+    (49) definircte -> . CTEF
+    (50) definircte -> . CTEC
+    (51) definirlista -> . QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN
+
+    CTEI            shift and go to state 33
+    CTEF            shift and go to state 34
+    CTEC            shift and go to state 35
+    QUOTE           shift and go to state 36
+
+    declare_2                      shift and go to state 30
+    definircte                     shift and go to state 31
+    definirlista                   shift and go to state 32
+
+state 27
+
+    (39) funcion -> OPEN_PAREN DEFINE . OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN
+
+    OPEN_PAREN      shift and go to state 37
+
+
+state 28
+
+    (36) declaracionfuncion -> OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 36 (declaracionfuncion -> OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN .)
+
+
+state 29
+
+    (37) declaracionfuncion_2 -> funcion declaracionfuncion_2 .
+
+    CLOSE_PAREN     reduce using rule 37 (declaracionfuncion_2 -> funcion declaracionfuncion_2 .)
+
+
+state 30
+
+    (45) declare -> OPEN_PAREN DECLARE ID declare_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 38
+
+
+state 31
+
+    (46) declare_2 -> definircte .
+
+    CLOSE_PAREN     reduce using rule 46 (declare_2 -> definircte .)
+
+
+state 32
+
+    (47) declare_2 -> definirlista .
+
+    CLOSE_PAREN     reduce using rule 47 (declare_2 -> definirlista .)
+
+
+state 33
+
+    (48) definircte -> CTEI .
+
+    CLOSE_PAREN     reduce using rule 48 (definircte -> CTEI .)
+    CTEI            reduce using rule 48 (definircte -> CTEI .)
+    CTEF            reduce using rule 48 (definircte -> CTEI .)
+    CTEC            reduce using rule 48 (definircte -> CTEI .)
+
+
+state 34
+
+    (49) definircte -> CTEF .
+
+    CLOSE_PAREN     reduce using rule 49 (definircte -> CTEF .)
+    CTEI            reduce using rule 49 (definircte -> CTEF .)
+    CTEF            reduce using rule 49 (definircte -> CTEF .)
+    CTEC            reduce using rule 49 (definircte -> CTEF .)
+
+
+state 35
+
+    (50) definircte -> CTEC .
+
+    CLOSE_PAREN     reduce using rule 50 (definircte -> CTEC .)
+    CTEI            reduce using rule 50 (definircte -> CTEC .)
+    CTEF            reduce using rule 50 (definircte -> CTEC .)
+    CTEC            reduce using rule 50 (definircte -> CTEC .)
+
+
+state 36
+
+    (51) definirlista -> QUOTE . OPEN_PAREN definirlista_2 CLOSE_PAREN
+
+    OPEN_PAREN      shift and go to state 39
+
+
+state 37
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN . ID param CLOSE_PAREN bloque CLOSE_PAREN
+
+    ID              shift and go to state 40
+
+
+state 38
+
+    (45) declare -> OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN .
+
+    OPEN_PAREN      reduce using rule 45 (declare -> OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN .)
+    CLOSE_PAREN     reduce using rule 45 (declare -> OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN .)
+
+
+state 39
+
+    (51) definirlista -> QUOTE OPEN_PAREN . definirlista_2 CLOSE_PAREN
+    (52) definirlista_2 -> . definircte definirlista_2
+    (53) definirlista_2 -> . empty
+    (48) definircte -> . CTEI
+    (49) definircte -> . CTEF
+    (50) definircte -> . CTEC
+    (62) empty -> .
+
+    CTEI            shift and go to state 33
+    CTEF            shift and go to state 34
+    CTEC            shift and go to state 35
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    definirlista_2                 shift and go to state 41
+    definircte                     shift and go to state 42
+    empty                          shift and go to state 43
+
+state 40
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID . param CLOSE_PAREN bloque CLOSE_PAREN
+    (40) param -> . ID param
+    (41) param -> . empty
+    (62) empty -> .
+
+    ID              shift and go to state 44
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    param                          shift and go to state 45
+    empty                          shift and go to state 46
+
+state 41
+
+    (51) definirlista -> QUOTE OPEN_PAREN definirlista_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 47
+
+
+state 42
+
+    (52) definirlista_2 -> definircte . definirlista_2
+    (52) definirlista_2 -> . definircte definirlista_2
+    (53) definirlista_2 -> . empty
+    (48) definircte -> . CTEI
+    (49) definircte -> . CTEF
+    (50) definircte -> . CTEC
+    (62) empty -> .
+
+    CTEI            shift and go to state 33
+    CTEF            shift and go to state 34
+    CTEC            shift and go to state 35
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    definircte                     shift and go to state 42
+    definirlista_2                 shift and go to state 48
+    empty                          shift and go to state 43
+
+state 43
+
+    (53) definirlista_2 -> empty .
+
+    CLOSE_PAREN     reduce using rule 53 (definirlista_2 -> empty .)
+
+
+state 44
+
+    (40) param -> ID . param
+    (40) param -> . ID param
+    (41) param -> . empty
+    (62) empty -> .
+
+    ID              shift and go to state 44
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    param                          shift and go to state 49
+    empty                          shift and go to state 46
+
+state 45
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param . CLOSE_PAREN bloque CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 50
+
+
+state 46
+
+    (41) param -> empty .
+
+    CLOSE_PAREN     reduce using rule 41 (param -> empty .)
+
+
+state 47
+
+    (51) definirlista -> QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 51 (definirlista -> QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN .)
+
+
+state 48
+
+    (52) definirlista_2 -> definircte definirlista_2 .
+
+    CLOSE_PAREN     reduce using rule 52 (definirlista_2 -> definircte definirlista_2 .)
+
+
+state 49
+
+    (40) param -> ID param .
+
+    CLOSE_PAREN     reduce using rule 40 (param -> ID param .)
+
+
+state 50
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN . bloque CLOSE_PAREN
+    (54) bloque -> . imprimir
+    (55) bloque -> . expresion
+    (56) bloque -> . condicion
+    (57) bloque -> . lambda
+    (6) imprimir -> . OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (58) condicion -> . OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN
+    (59) lambda -> . OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 51
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    bloque                         shift and go to state 53
+    imprimir                       shift and go to state 54
+    expresion                      shift and go to state 55
+    condicion                      shift and go to state 56
+    lambda                         shift and go to state 57
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 51
+
+    (6) imprimir -> OPEN_PAREN . PRINT imprimir_2 CLOSE_PAREN
+    (10) expresion -> OPEN_PAREN . signosrelacionales exp exp CLOSE_PAREN
+    (58) condicion -> OPEN_PAREN . IF expresion bloque bloque CLOSE_PAREN
+    (59) lambda -> OPEN_PAREN . OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (25) exp -> OPEN_PAREN . signos1 exp exp CLOSE_PAREN
+    (26) exp -> OPEN_PAREN . signos2 exp exp CLOSE_PAREN
+    (27) exp -> OPEN_PAREN . signos1 varcte CLOSE_PAREN
+    (16) expresionesunarias -> OPEN_PAREN . expresionesunarias_2 exp CLOSE_PAREN
+    (12) signosrelacionales -> . LT
+    (13) signosrelacionales -> . GT
+    (14) signosrelacionales -> . NE
+    (15) signosrelacionales -> . EQUAL
+    (29) signos1 -> . PLUS
+    (30) signos1 -> . MINUS
+    (31) signos2 -> . TIMES
+    (32) signos2 -> . DIVIDE
+    (19) expresionesunarias_2 -> . EVEN_PREDICADE
+    (20) expresionesunarias_2 -> . INT_PREDICADE
+    (21) expresionesunarias_2 -> . FLOAT_PREDICADE
+    (22) expresionesunarias_2 -> . LIST_PREDICADE
+    (23) expresionesunarias_2 -> . NULL_PREDICADE
+    (24) expresionesunarias_2 -> . EMPTY_PREDICADE
+
+    PRINT           shift and go to state 66
+    IF              shift and go to state 68
+    OPEN_PAREN      shift and go to state 65
+    LT              shift and go to state 72
+    GT              shift and go to state 73
+    NE              shift and go to state 74
+    EQUAL           shift and go to state 75
+    PLUS            shift and go to state 76
+    MINUS           shift and go to state 77
+    TIMES           shift and go to state 78
+    DIVIDE          shift and go to state 79
+    EVEN_PREDICADE  shift and go to state 80
+    INT_PREDICADE   shift and go to state 81
+    FLOAT_PREDICADE shift and go to state 82
+    LIST_PREDICADE  shift and go to state 83
+    NULL_PREDICADE  shift and go to state 84
+    EMPTY_PREDICADE shift and go to state 85
+
+    signosrelacionales             shift and go to state 67
+    signos1                        shift and go to state 69
+    signos2                        shift and go to state 70
+    expresionesunarias_2           shift and go to state 71
+
+state 52
+
+    (33) varcte -> ID .
+
+    CLOSE_PAREN     reduce using rule 33 (varcte -> ID .)
+    OPEN_PAREN      reduce using rule 33 (varcte -> ID .)
+    ID              reduce using rule 33 (varcte -> ID .)
+    CTEI            reduce using rule 33 (varcte -> ID .)
+    CTEF            reduce using rule 33 (varcte -> ID .)
+    TRUE            reduce using rule 33 (varcte -> ID .)
+    FALSE           reduce using rule 33 (varcte -> ID .)
+
+
+state 53
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 86
+
+
+state 54
+
+    (54) bloque -> imprimir .
+
+    CLOSE_PAREN     reduce using rule 54 (bloque -> imprimir .)
+    OPEN_PAREN      reduce using rule 54 (bloque -> imprimir .)
+    TRUE            reduce using rule 54 (bloque -> imprimir .)
+    FALSE           reduce using rule 54 (bloque -> imprimir .)
+    ID              reduce using rule 54 (bloque -> imprimir .)
+    CTEI            reduce using rule 54 (bloque -> imprimir .)
+    CTEF            reduce using rule 54 (bloque -> imprimir .)
+
+
+state 55
+
+    (55) bloque -> expresion .
+
+    CLOSE_PAREN     reduce using rule 55 (bloque -> expresion .)
+    OPEN_PAREN      reduce using rule 55 (bloque -> expresion .)
+    TRUE            reduce using rule 55 (bloque -> expresion .)
+    FALSE           reduce using rule 55 (bloque -> expresion .)
+    ID              reduce using rule 55 (bloque -> expresion .)
+    CTEI            reduce using rule 55 (bloque -> expresion .)
+    CTEF            reduce using rule 55 (bloque -> expresion .)
+
+
+state 56
+
+    (56) bloque -> condicion .
+
+    CLOSE_PAREN     reduce using rule 56 (bloque -> condicion .)
+    OPEN_PAREN      reduce using rule 56 (bloque -> condicion .)
+    TRUE            reduce using rule 56 (bloque -> condicion .)
+    FALSE           reduce using rule 56 (bloque -> condicion .)
+    ID              reduce using rule 56 (bloque -> condicion .)
+    CTEI            reduce using rule 56 (bloque -> condicion .)
+    CTEF            reduce using rule 56 (bloque -> condicion .)
+
+
+state 57
+
+    (57) bloque -> lambda .
+
+    CLOSE_PAREN     reduce using rule 57 (bloque -> lambda .)
+    OPEN_PAREN      reduce using rule 57 (bloque -> lambda .)
+    TRUE            reduce using rule 57 (bloque -> lambda .)
+    FALSE           reduce using rule 57 (bloque -> lambda .)
+    ID              reduce using rule 57 (bloque -> lambda .)
+    CTEI            reduce using rule 57 (bloque -> lambda .)
+    CTEF            reduce using rule 57 (bloque -> lambda .)
+
+
+state 58
+
+    (9) expresion -> exp .
+
+    CLOSE_PAREN     reduce using rule 9 (expresion -> exp .)
+    OPEN_PAREN      reduce using rule 9 (expresion -> exp .)
+    TRUE            reduce using rule 9 (expresion -> exp .)
+    FALSE           reduce using rule 9 (expresion -> exp .)
+    ID              reduce using rule 9 (expresion -> exp .)
+    CTEI            reduce using rule 9 (expresion -> exp .)
+    CTEF            reduce using rule 9 (expresion -> exp .)
+
+
+state 59
+
+    (11) expresion -> expresionesunarias .
+
+    CLOSE_PAREN     reduce using rule 11 (expresion -> expresionesunarias .)
+    OPEN_PAREN      reduce using rule 11 (expresion -> expresionesunarias .)
+    TRUE            reduce using rule 11 (expresion -> expresionesunarias .)
+    FALSE           reduce using rule 11 (expresion -> expresionesunarias .)
+    ID              reduce using rule 11 (expresion -> expresionesunarias .)
+    CTEI            reduce using rule 11 (expresion -> expresionesunarias .)
+    CTEF            reduce using rule 11 (expresion -> expresionesunarias .)
+
+
+state 60
+
+    (28) exp -> varcte .
+
+    CLOSE_PAREN     reduce using rule 28 (exp -> varcte .)
+    OPEN_PAREN      reduce using rule 28 (exp -> varcte .)
+    ID              reduce using rule 28 (exp -> varcte .)
+    CTEI            reduce using rule 28 (exp -> varcte .)
+    CTEF            reduce using rule 28 (exp -> varcte .)
+    TRUE            reduce using rule 28 (exp -> varcte .)
+    FALSE           reduce using rule 28 (exp -> varcte .)
+
+
+state 61
+
+    (17) expresionesunarias -> TRUE .
+
+    CLOSE_PAREN     reduce using rule 17 (expresionesunarias -> TRUE .)
+    OPEN_PAREN      reduce using rule 17 (expresionesunarias -> TRUE .)
+    TRUE            reduce using rule 17 (expresionesunarias -> TRUE .)
+    FALSE           reduce using rule 17 (expresionesunarias -> TRUE .)
+    ID              reduce using rule 17 (expresionesunarias -> TRUE .)
+    CTEI            reduce using rule 17 (expresionesunarias -> TRUE .)
+    CTEF            reduce using rule 17 (expresionesunarias -> TRUE .)
+
+
+state 62
+
+    (18) expresionesunarias -> FALSE .
+
+    CLOSE_PAREN     reduce using rule 18 (expresionesunarias -> FALSE .)
+    OPEN_PAREN      reduce using rule 18 (expresionesunarias -> FALSE .)
+    TRUE            reduce using rule 18 (expresionesunarias -> FALSE .)
+    FALSE           reduce using rule 18 (expresionesunarias -> FALSE .)
+    ID              reduce using rule 18 (expresionesunarias -> FALSE .)
+    CTEI            reduce using rule 18 (expresionesunarias -> FALSE .)
+    CTEF            reduce using rule 18 (expresionesunarias -> FALSE .)
+
+
+state 63
+
+    (34) varcte -> CTEI .
+
+    CLOSE_PAREN     reduce using rule 34 (varcte -> CTEI .)
+    OPEN_PAREN      reduce using rule 34 (varcte -> CTEI .)
+    ID              reduce using rule 34 (varcte -> CTEI .)
+    CTEI            reduce using rule 34 (varcte -> CTEI .)
+    CTEF            reduce using rule 34 (varcte -> CTEI .)
+    TRUE            reduce using rule 34 (varcte -> CTEI .)
+    FALSE           reduce using rule 34 (varcte -> CTEI .)
+
+
+state 64
+
+    (35) varcte -> CTEF .
+
+    CLOSE_PAREN     reduce using rule 35 (varcte -> CTEF .)
+    OPEN_PAREN      reduce using rule 35 (varcte -> CTEF .)
+    ID              reduce using rule 35 (varcte -> CTEF .)
+    CTEI            reduce using rule 35 (varcte -> CTEF .)
+    CTEF            reduce using rule 35 (varcte -> CTEF .)
+    TRUE            reduce using rule 35 (varcte -> CTEF .)
+    FALSE           reduce using rule 35 (varcte -> CTEF .)
+
+
+state 65
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN . LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+
+    LAMBDA          shift and go to state 87
+
+
+state 66
+
+    (6) imprimir -> OPEN_PAREN PRINT . imprimir_2 CLOSE_PAREN
+    (7) imprimir_2 -> . CTEC
+    (8) imprimir_2 -> . expresion
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    CTEC            shift and go to state 90
+    OPEN_PAREN      shift and go to state 88
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    imprimir_2                     shift and go to state 89
+    expresion                      shift and go to state 91
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 67
+
+    (10) expresion -> OPEN_PAREN signosrelacionales . exp exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 93
+    varcte                         shift and go to state 60
+
+state 68
+
+    (58) condicion -> OPEN_PAREN IF . expresion bloque bloque CLOSE_PAREN
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 88
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    expresion                      shift and go to state 94
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 69
+
+    (25) exp -> OPEN_PAREN signos1 . exp exp CLOSE_PAREN
+    (27) exp -> OPEN_PAREN signos1 . varcte CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 95
+    varcte                         shift and go to state 96
+
+state 70
+
+    (26) exp -> OPEN_PAREN signos2 . exp exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 97
+    varcte                         shift and go to state 60
+
+state 71
+
+    (16) expresionesunarias -> OPEN_PAREN expresionesunarias_2 . exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 98
+    varcte                         shift and go to state 60
+
+state 72
+
+    (12) signosrelacionales -> LT .
+
+    OPEN_PAREN      reduce using rule 12 (signosrelacionales -> LT .)
+    ID              reduce using rule 12 (signosrelacionales -> LT .)
+    CTEI            reduce using rule 12 (signosrelacionales -> LT .)
+    CTEF            reduce using rule 12 (signosrelacionales -> LT .)
+
+
+state 73
+
+    (13) signosrelacionales -> GT .
+
+    OPEN_PAREN      reduce using rule 13 (signosrelacionales -> GT .)
+    ID              reduce using rule 13 (signosrelacionales -> GT .)
+    CTEI            reduce using rule 13 (signosrelacionales -> GT .)
+    CTEF            reduce using rule 13 (signosrelacionales -> GT .)
+
+
+state 74
+
+    (14) signosrelacionales -> NE .
+
+    OPEN_PAREN      reduce using rule 14 (signosrelacionales -> NE .)
+    ID              reduce using rule 14 (signosrelacionales -> NE .)
+    CTEI            reduce using rule 14 (signosrelacionales -> NE .)
+    CTEF            reduce using rule 14 (signosrelacionales -> NE .)
+
+
+state 75
+
+    (15) signosrelacionales -> EQUAL .
+
+    OPEN_PAREN      reduce using rule 15 (signosrelacionales -> EQUAL .)
+    ID              reduce using rule 15 (signosrelacionales -> EQUAL .)
+    CTEI            reduce using rule 15 (signosrelacionales -> EQUAL .)
+    CTEF            reduce using rule 15 (signosrelacionales -> EQUAL .)
+
+
+state 76
+
+    (29) signos1 -> PLUS .
+
+    OPEN_PAREN      reduce using rule 29 (signos1 -> PLUS .)
+    ID              reduce using rule 29 (signos1 -> PLUS .)
+    CTEI            reduce using rule 29 (signos1 -> PLUS .)
+    CTEF            reduce using rule 29 (signos1 -> PLUS .)
+
+
+state 77
+
+    (30) signos1 -> MINUS .
+
+    OPEN_PAREN      reduce using rule 30 (signos1 -> MINUS .)
+    ID              reduce using rule 30 (signos1 -> MINUS .)
+    CTEI            reduce using rule 30 (signos1 -> MINUS .)
+    CTEF            reduce using rule 30 (signos1 -> MINUS .)
+
+
+state 78
+
+    (31) signos2 -> TIMES .
+
+    OPEN_PAREN      reduce using rule 31 (signos2 -> TIMES .)
+    ID              reduce using rule 31 (signos2 -> TIMES .)
+    CTEI            reduce using rule 31 (signos2 -> TIMES .)
+    CTEF            reduce using rule 31 (signos2 -> TIMES .)
+
+
+state 79
+
+    (32) signos2 -> DIVIDE .
+
+    OPEN_PAREN      reduce using rule 32 (signos2 -> DIVIDE .)
+    ID              reduce using rule 32 (signos2 -> DIVIDE .)
+    CTEI            reduce using rule 32 (signos2 -> DIVIDE .)
+    CTEF            reduce using rule 32 (signos2 -> DIVIDE .)
+
+
+state 80
+
+    (19) expresionesunarias_2 -> EVEN_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 19 (expresionesunarias_2 -> EVEN_PREDICADE .)
+    ID              reduce using rule 19 (expresionesunarias_2 -> EVEN_PREDICADE .)
+    CTEI            reduce using rule 19 (expresionesunarias_2 -> EVEN_PREDICADE .)
+    CTEF            reduce using rule 19 (expresionesunarias_2 -> EVEN_PREDICADE .)
+
+
+state 81
+
+    (20) expresionesunarias_2 -> INT_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 20 (expresionesunarias_2 -> INT_PREDICADE .)
+    ID              reduce using rule 20 (expresionesunarias_2 -> INT_PREDICADE .)
+    CTEI            reduce using rule 20 (expresionesunarias_2 -> INT_PREDICADE .)
+    CTEF            reduce using rule 20 (expresionesunarias_2 -> INT_PREDICADE .)
+
+
+state 82
+
+    (21) expresionesunarias_2 -> FLOAT_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 21 (expresionesunarias_2 -> FLOAT_PREDICADE .)
+    ID              reduce using rule 21 (expresionesunarias_2 -> FLOAT_PREDICADE .)
+    CTEI            reduce using rule 21 (expresionesunarias_2 -> FLOAT_PREDICADE .)
+    CTEF            reduce using rule 21 (expresionesunarias_2 -> FLOAT_PREDICADE .)
+
+
+state 83
+
+    (22) expresionesunarias_2 -> LIST_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 22 (expresionesunarias_2 -> LIST_PREDICADE .)
+    ID              reduce using rule 22 (expresionesunarias_2 -> LIST_PREDICADE .)
+    CTEI            reduce using rule 22 (expresionesunarias_2 -> LIST_PREDICADE .)
+    CTEF            reduce using rule 22 (expresionesunarias_2 -> LIST_PREDICADE .)
+
+
+state 84
+
+    (23) expresionesunarias_2 -> NULL_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 23 (expresionesunarias_2 -> NULL_PREDICADE .)
+    ID              reduce using rule 23 (expresionesunarias_2 -> NULL_PREDICADE .)
+    CTEI            reduce using rule 23 (expresionesunarias_2 -> NULL_PREDICADE .)
+    CTEF            reduce using rule 23 (expresionesunarias_2 -> NULL_PREDICADE .)
+
+
+state 85
+
+    (24) expresionesunarias_2 -> EMPTY_PREDICADE .
+
+    OPEN_PAREN      reduce using rule 24 (expresionesunarias_2 -> EMPTY_PREDICADE .)
+    ID              reduce using rule 24 (expresionesunarias_2 -> EMPTY_PREDICADE .)
+    CTEI            reduce using rule 24 (expresionesunarias_2 -> EMPTY_PREDICADE .)
+    CTEF            reduce using rule 24 (expresionesunarias_2 -> EMPTY_PREDICADE .)
+
+
+state 86
+
+    (39) funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN .
+
+    OPEN_PAREN      reduce using rule 39 (funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN .)
+    CLOSE_PAREN     reduce using rule 39 (funcion -> OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN .)
+
+
+state 87
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA . OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+
+    OPEN_PAREN      shift and go to state 99
+
+
+state 88
+
+    (10) expresion -> OPEN_PAREN . signosrelacionales exp exp CLOSE_PAREN
+    (25) exp -> OPEN_PAREN . signos1 exp exp CLOSE_PAREN
+    (26) exp -> OPEN_PAREN . signos2 exp exp CLOSE_PAREN
+    (27) exp -> OPEN_PAREN . signos1 varcte CLOSE_PAREN
+    (16) expresionesunarias -> OPEN_PAREN . expresionesunarias_2 exp CLOSE_PAREN
+    (12) signosrelacionales -> . LT
+    (13) signosrelacionales -> . GT
+    (14) signosrelacionales -> . NE
+    (15) signosrelacionales -> . EQUAL
+    (29) signos1 -> . PLUS
+    (30) signos1 -> . MINUS
+    (31) signos2 -> . TIMES
+    (32) signos2 -> . DIVIDE
+    (19) expresionesunarias_2 -> . EVEN_PREDICADE
+    (20) expresionesunarias_2 -> . INT_PREDICADE
+    (21) expresionesunarias_2 -> . FLOAT_PREDICADE
+    (22) expresionesunarias_2 -> . LIST_PREDICADE
+    (23) expresionesunarias_2 -> . NULL_PREDICADE
+    (24) expresionesunarias_2 -> . EMPTY_PREDICADE
+
+    LT              shift and go to state 72
+    GT              shift and go to state 73
+    NE              shift and go to state 74
+    EQUAL           shift and go to state 75
+    PLUS            shift and go to state 76
+    MINUS           shift and go to state 77
+    TIMES           shift and go to state 78
+    DIVIDE          shift and go to state 79
+    EVEN_PREDICADE  shift and go to state 80
+    INT_PREDICADE   shift and go to state 81
+    FLOAT_PREDICADE shift and go to state 82
+    LIST_PREDICADE  shift and go to state 83
+    NULL_PREDICADE  shift and go to state 84
+    EMPTY_PREDICADE shift and go to state 85
+
+    signosrelacionales             shift and go to state 67
+    signos1                        shift and go to state 69
+    signos2                        shift and go to state 70
+    expresionesunarias_2           shift and go to state 71
+
+state 89
+
+    (6) imprimir -> OPEN_PAREN PRINT imprimir_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 100
+
+
+state 90
+
+    (7) imprimir_2 -> CTEC .
+
+    CLOSE_PAREN     reduce using rule 7 (imprimir_2 -> CTEC .)
+
+
+state 91
+
+    (8) imprimir_2 -> expresion .
+
+    CLOSE_PAREN     reduce using rule 8 (imprimir_2 -> expresion .)
+
+
+state 92
+
+    (25) exp -> OPEN_PAREN . signos1 exp exp CLOSE_PAREN
+    (26) exp -> OPEN_PAREN . signos2 exp exp CLOSE_PAREN
+    (27) exp -> OPEN_PAREN . signos1 varcte CLOSE_PAREN
+    (29) signos1 -> . PLUS
+    (30) signos1 -> . MINUS
+    (31) signos2 -> . TIMES
+    (32) signos2 -> . DIVIDE
+
+    PLUS            shift and go to state 76
+    MINUS           shift and go to state 77
+    TIMES           shift and go to state 78
+    DIVIDE          shift and go to state 79
+
+    signos1                        shift and go to state 69
+    signos2                        shift and go to state 70
+
+state 93
+
+    (10) expresion -> OPEN_PAREN signosrelacionales exp . exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 101
+    varcte                         shift and go to state 60
+
+state 94
+
+    (58) condicion -> OPEN_PAREN IF expresion . bloque bloque CLOSE_PAREN
+    (54) bloque -> . imprimir
+    (55) bloque -> . expresion
+    (56) bloque -> . condicion
+    (57) bloque -> . lambda
+    (6) imprimir -> . OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (58) condicion -> . OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN
+    (59) lambda -> . OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 51
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    expresion                      shift and go to state 55
+    bloque                         shift and go to state 102
+    imprimir                       shift and go to state 54
+    condicion                      shift and go to state 56
+    lambda                         shift and go to state 57
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 95
+
+    (25) exp -> OPEN_PAREN signos1 exp . exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 103
+    varcte                         shift and go to state 60
+
+state 96
+
+    (27) exp -> OPEN_PAREN signos1 varcte . CLOSE_PAREN
+    (28) exp -> varcte .
+
+    CLOSE_PAREN     shift and go to state 104
+    OPEN_PAREN      reduce using rule 28 (exp -> varcte .)
+    ID              reduce using rule 28 (exp -> varcte .)
+    CTEI            reduce using rule 28 (exp -> varcte .)
+    CTEF            reduce using rule 28 (exp -> varcte .)
+
+
+state 97
+
+    (26) exp -> OPEN_PAREN signos2 exp . exp CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 92
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    exp                            shift and go to state 105
+    varcte                         shift and go to state 60
+
+state 98
+
+    (16) expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 106
+
+
+state 99
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN . param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (40) param -> . ID param
+    (41) param -> . empty
+    (62) empty -> .
+
+    ID              shift and go to state 44
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+
+    param                          shift and go to state 107
+    empty                          shift and go to state 46
+
+state 100
+
+    (6) imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    TRUE            reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    FALSE           reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    ID              reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    CTEI            reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+    CTEF            reduce using rule 6 (imprimir -> OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN .)
+
+
+state 101
+
+    (10) expresion -> OPEN_PAREN signosrelacionales exp exp . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 108
+
+
+state 102
+
+    (58) condicion -> OPEN_PAREN IF expresion bloque . bloque CLOSE_PAREN
+    (54) bloque -> . imprimir
+    (55) bloque -> . expresion
+    (56) bloque -> . condicion
+    (57) bloque -> . lambda
+    (6) imprimir -> . OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (58) condicion -> . OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN
+    (59) lambda -> . OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 51
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    expresion                      shift and go to state 55
+    bloque                         shift and go to state 109
+    imprimir                       shift and go to state 54
+    condicion                      shift and go to state 56
+    lambda                         shift and go to state 57
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 103
+
+    (25) exp -> OPEN_PAREN signos1 exp exp . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 110
+
+
+state 104
+
+    (27) exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    ID              reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    CTEI            reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    CTEF            reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    TRUE            reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+    FALSE           reduce using rule 27 (exp -> OPEN_PAREN signos1 varcte CLOSE_PAREN .)
+
+
+state 105
+
+    (26) exp -> OPEN_PAREN signos2 exp exp . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 111
+
+
+state 106
+
+    (16) expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    TRUE            reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    FALSE           reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    ID              reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    CTEI            reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+    CTEF            reduce using rule 16 (expresionesunarias -> OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN .)
+
+
+state 107
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param . CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 112
+
+
+state 108
+
+    (10) expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    TRUE            reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    FALSE           reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    ID              reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    CTEI            reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+    CTEF            reduce using rule 10 (expresion -> OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN .)
+
+
+state 109
+
+    (58) condicion -> OPEN_PAREN IF expresion bloque bloque . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 113
+
+
+state 110
+
+    (25) exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    ID              reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    CTEI            reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    CTEF            reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    TRUE            reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+    FALSE           reduce using rule 25 (exp -> OPEN_PAREN signos1 exp exp CLOSE_PAREN .)
+
+
+state 111
+
+    (26) exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    ID              reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    CTEI            reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    CTEF            reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    TRUE            reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+    FALSE           reduce using rule 26 (exp -> OPEN_PAREN signos2 exp exp CLOSE_PAREN .)
+
+
+state 112
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN . bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (54) bloque -> . imprimir
+    (55) bloque -> . expresion
+    (56) bloque -> . condicion
+    (57) bloque -> . lambda
+    (6) imprimir -> . OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (58) condicion -> . OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN
+    (59) lambda -> . OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 51
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    bloque                         shift and go to state 114
+    imprimir                       shift and go to state 54
+    expresion                      shift and go to state 55
+    condicion                      shift and go to state 56
+    lambda                         shift and go to state 57
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 113
+
+    (58) condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    TRUE            reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    FALSE           reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    ID              reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    CTEI            reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+    CTEF            reduce using rule 58 (condicion -> OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN .)
+
+
+state 114
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque . CLOSE_PAREN lambda_2 CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 115
+
+
+state 115
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN . lambda_2 CLOSE_PAREN
+    (60) lambda_2 -> . expresion
+    (61) lambda_2 -> . empty
+    (9) expresion -> . exp
+    (10) expresion -> . OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN
+    (11) expresion -> . expresionesunarias
+    (62) empty -> .
+    (25) exp -> . OPEN_PAREN signos1 exp exp CLOSE_PAREN
+    (26) exp -> . OPEN_PAREN signos2 exp exp CLOSE_PAREN
+    (27) exp -> . OPEN_PAREN signos1 varcte CLOSE_PAREN
+    (28) exp -> . varcte
+    (16) expresionesunarias -> . OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN
+    (17) expresionesunarias -> . TRUE
+    (18) expresionesunarias -> . FALSE
+    (33) varcte -> . ID
+    (34) varcte -> . CTEI
+    (35) varcte -> . CTEF
+
+    OPEN_PAREN      shift and go to state 88
+    CLOSE_PAREN     reduce using rule 62 (empty -> .)
+    TRUE            shift and go to state 61
+    FALSE           shift and go to state 62
+    ID              shift and go to state 52
+    CTEI            shift and go to state 63
+    CTEF            shift and go to state 64
+
+    lambda_2                       shift and go to state 116
+    expresion                      shift and go to state 117
+    empty                          shift and go to state 118
+    exp                            shift and go to state 58
+    expresionesunarias             shift and go to state 59
+    varcte                         shift and go to state 60
+
+state 116
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 119
+
+
+state 117
+
+    (60) lambda_2 -> expresion .
+
+    CLOSE_PAREN     reduce using rule 60 (lambda_2 -> expresion .)
+
+
+state 118
+
+    (61) lambda_2 -> empty .
+
+    CLOSE_PAREN     reduce using rule 61 (lambda_2 -> empty .)
+
+
+state 119
+
+    (59) lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .
+
+    CLOSE_PAREN     reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    OPEN_PAREN      reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    TRUE            reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    FALSE           reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    ID              reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    CTEI            reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+    CTEF            reduce using rule 59 (lambda -> OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for OPEN_PAREN in state 3 resolved as shift

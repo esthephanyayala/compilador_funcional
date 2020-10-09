@@ -16,18 +16,18 @@ reserved = {
     'cdr' : 'CDR',
     'car' : 'CAR',
     'length' : 'LENGTH',
-    'nullp' : 'NULL_PREDICADE',
-    'listp' : 'LIST_PREDICADE',
-    'emptyp' : 'EMPTY_PREDICADE',
+    'nullp' : 'NULL_PREDICATE',
+    'listp' : 'LIST_PREDICATE',
+    'emptyp' : 'EMPTY_PREDICATE',
     'append' : 'APPEND',
     'list' : 'LIST',
     'map' : 'MAP',
     'filter' : 'FILTER',
     'tt' : 'FALSE',
     'ff' : 'TRUE',
-    'evenp' : 'EVEN_PREDICADE',
-    'intp' : 'INT_PREDICADE',
-    'floatp' : 'FLOAT_PREDICADE'
+    'evenp' : 'EVEN_PREDICATE',
+    'intp' : 'INT_PREDICATE',
+    'floatp' : 'FLOAT_PREDICATE'
 }
 
 tokens = [
@@ -78,10 +78,11 @@ def t_error(t):
 import ply.lex as lex
 lex.lex()
 
+    
 ##### PROGRAMA #####
 
 def p_programa(p):
-    ''' programa : OPEN_PAREN PROGRAM programa_2 programa_3 CLOSE_PAREN'''
+    ''' programa : OPEN_PAREN PROGRAM programa_2 programa_3 main CLOSE_PAREN'''
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -98,7 +99,10 @@ def p_imprimir(p):
 
 def p_imprimir_2(p):
     ''' imprimir_2  : CTEC 
-                    | expresion''' #faltan otros aqui
+                    | expresion
+                    | lambda
+                    | listfunctions
+    ''' 
 
 ##### EXPRESION #####
 
@@ -124,12 +128,12 @@ def p_expresionesunarias(p):
                             | FALSE '''
 
 def p_expresionesunarias_2(p):
-    ''' expresionesunarias_2    : EVEN_PREDICADE 
-                                | INT_PREDICADE
-                                | FLOAT_PREDICADE
-                                | LIST_PREDICADE
-                                | NULL_PREDICADE
-                                | EMPTY_PREDICADE '''
+    ''' expresionesunarias_2    : EVEN_PREDICATE 
+                                | INT_PREDICATE
+                                | FLOAT_PREDICATE
+                                | LIST_PREDICATE
+                                | NULL_PREDICATE
+                                | EMPTY_PREDICATE '''
 
 ##### EXP #####
 
@@ -137,7 +141,9 @@ def p_exp(p):
     ''' exp : OPEN_PAREN signos1 exp exp CLOSE_PAREN
             | OPEN_PAREN signos2 exp exp CLOSE_PAREN 
             | OPEN_PAREN signos1 varcte CLOSE_PAREN 
-            | varcte '''
+            | varcte 
+            | llamada
+            | returnelement'''
 
 ##### SIGNOS 1 #####
 
@@ -213,13 +219,84 @@ def p_definirlista_2(p):
     ''' definirlista_2  : definircte definirlista_2
                         | empty'''
 
+
+##### LISTA #####
+def p_lista(p):
+    ''' lista : ID
+              | QUOTE OPEN_PAREN lista_2 CLOSE_PAREN
+    '''
+
+def p_lista_2(p):
+    ''' lista_2 : CTEI lista_2
+                | CTEF lista_2
+                | CTEC lista_2
+                | empty
+    '''
+
+
+##### LISTFUNCTIONS #####
+def p_listfunctions(p):
+    ''' listfunctions : returnelement
+                      | returnlist
+    '''
+
+##### RETURNLIST #####
+def p_returnlist(p):
+    ''' returnlist : OPEN_PAREN returnlist_2 lista CLOSE_PAREN 
+                    | append
+                    | lista
+                    | createlist
+                    | map
+                    | llamada
+                    | filter
+    '''
+
+def p_returnlist_2(p):
+    ''' returnlist_2 : CDR '''
+
+##### RETURNELEMENT #####
+def p_returnelement(p):
+    ''' returnelement : OPEN_PAREN returnelement_2 returnlist CLOSE_PAREN
+                     | TRUE
+                     | FALSE 
+    '''
+
+def p_returnelement_2(p):
+    ''' returnelement_2 : CAR
+                        | LENGTH
+                        | NULL_PREDICATE
+                        | LIST_PREDICATE
+                        | EMPTY_PREDICATE 
+    '''
+
+##### CREATELIST #####
+def p_createlist(p):
+    ''' createlist : OPEN_PAREN LIST createlist_2 CLOSE_PAREN '''
+
+def p_createlist_2(p):
+    ''' createlist_2 : expresion createlist_2 
+                     | empty
+    '''
+
+
 ##### BLOQUE #####
 
 def p_bloque(p):
     ''' bloque : imprimir 
                 | expresion
                 | condicion 
-                | lambda'''#faltan un buen aqui
+                | lambda
+                | listfunctions 
+                | llamada 
+    '''
+
+##### MAIN #####
+def p_main(p):
+    ''' main        : OPEN_PAREN MAIN main_2 CLOSE_PAREN
+                    | empty '''
+def p_main_2(p):
+    ''' main_2      : bloque main_2 
+                    | empty '''
 
 ##### CONDICION #####
 
@@ -233,6 +310,55 @@ def p_lambda(p):
 def p_lambda_2(p):
     ''' lambda_2    : expresion
                     | empty '''
+
+##### APPEND #####
+
+def p_append(p):
+    ''' append : OPEN_PAREN APPEND returnlist returnlist append_2 CLOSE_PAREN '''
+
+def p_append_2(p):
+    ''' append_2 : returnlist append_2
+                | empty 
+    '''
+
+##### MAP #####
+def p_map(p):
+    ''' map : OPEN_PAREN MAP map_3 returnlist map_2 CLOSE_PAREN '''
+
+def p_map_2(p):
+    ''' map_2 : returnlist map_2
+              | empty 
+    '''
+def p_map_3(p):
+    ''' map_3 : OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN '''
+
+
+##### FILTER #####
+def p_filter(p):
+    ''' filter : OPEN_PAREN FILTER filter_2 returnlist CLOSE_PAREN '''
+
+def p_filter_2(p):
+    ''' filter_2 : OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN
+                 | EVEN_PREDICATE
+                 | INT_PREDICATE
+                 | FLOAT_PREDICATE '''
+
+###### TIPO #####
+def p_tipo(p):
+    ''' tipo : INT
+            | FLOAT
+            | CHAR
+    '''
+
+##### LLAMADA #####
+def p_llamada(p):
+    ''' llamada : OPEN_PAREN ID llamada_2 CLOSE_PAREN '''
+
+def p_llamada_2(p):
+    ''' llamada_2 : expresion llamada_2
+                  | listfunctions llamada_2
+                  | empty '''
+
 
 def p_error(p):
     print(f"Syntax error at {p.value!r}")
@@ -252,8 +378,8 @@ print( fileDir)
 
 #programa = input('file > ') #descoment este si quieres poner el nombre del file en la terminal
 
-programa = 'test1.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+programa = 'test2.txt'
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 
 input = f.read()

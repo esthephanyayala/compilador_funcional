@@ -1,0 +1,78 @@
+(program 
+
+    (vars
+        (declare i 10)
+        (declare j 20)
+        (declare f 30)
+        (declare l '(1 2 3))
+        (declare l2 '(3 4 5))
+    )
+
+    (functions 
+
+        (define (factorial n)
+            (if (= n 1)
+                1
+                (* n (factorial (- n 1)))
+            )
+        )
+
+        (define (haseven l)
+            (if (emptyp l)
+                ff
+                (if (evenp (car l) )
+                    tt
+                    (haseven (cdr l))
+                )
+            )
+        )
+
+        (define (hasevenfilter l)
+            (if (> (length (filter evenp l)) 0) 
+                tt
+                ff
+            )
+        )
+
+        (define (reverse x)
+            (if (nullp x)
+                ln
+                (append (reverse (cdr x)) (list(car x)))
+            )
+        )
+
+        (define (sumavectores l1 l2)
+            (map (lambda (n1 n2)
+                    (+ n1 n2))
+                l1
+                l2
+            )
+        )
+
+    )
+
+    (main 
+
+        (print (factorial i))
+        
+        (print (factorial f))
+        
+        (if (haseven l) 
+            (print(reverse l))
+            (print 'n') 
+        )
+         (if (hasevenfilter l) 
+            (print(reverse l))
+            (print 'n') 
+        )
+        (print ((lambda (x) (+ x 1 ) ) 1 ) )
+        (print (sumavectores l l1 ))
+
+        (print (car l))
+        
+        
+        
+       
+        
+    )
+)

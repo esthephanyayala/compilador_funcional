@@ -1,0 +1,28 @@
+
+##### LISTFUNCTIONS #####
+def p_listfunctions(p):
+    ''' listfunctions: returnelement
+                     | returnlist
+    '''
+
+##### RETURNLIST #####
+def p_returnlist(p):
+    ''' returnlist: OPEN_PAREN returnlist_2 lista CLOSE_PAREN '''
+
+def p_returnlist_2(p):
+    ''' returnlist_2: CDR '''
+
+##### RETURNELEMENT #####
+def p_returnelement(p):
+    ''' returnelement: OPEN_PAREN returnelement_2 returnlist CLOSE_PAREN
+                     | TRUE
+                     | FALSE 
+    '''
+
+def p_returnelement_2(p):
+    ''' returnelement_2: CAR
+                        | LENGTH
+                        | NULL_PREDICATE
+                        | LIST_PREDICATE
+                        | EMPTY_PREDICATE 
+    '''
