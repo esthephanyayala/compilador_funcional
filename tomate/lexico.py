@@ -83,6 +83,9 @@ lex.lex()
 
 def p_programa(p):
     ''' programa : OPEN_PAREN PROGRAM programa_2 programa_3 main CLOSE_PAREN'''
+    print("programa 0" , p[0])
+    print("programa 1" ,p[1])
+    print("programa 2" ,p[2])
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -189,6 +192,9 @@ def p_param(p):
 
 def p_declaracionvariables(p):
     ''' declaracionvariables : OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN '''
+    print("vars 0" ,p[0])
+    print("vars 1" ,p[1])
+    print("vars 2" ,p[2])
 
 def p_declaracionvariables_2(p):
     ''' declaracionvariables_2 : declare declaracionvariables_2
@@ -294,6 +300,10 @@ def p_bloque(p):
 def p_main(p):
     ''' main        : OPEN_PAREN MAIN main_2 CLOSE_PAREN
                     | empty '''
+    print("main 0" ,p[0])
+    print("main 1" ,p[1])
+    print("main 2" ,p[2])
+
 def p_main_2(p):
     ''' main_2      : bloque main_2 
                     | empty '''
@@ -370,7 +380,7 @@ def p_empty(p):
 import ply.yacc as yacc
 yacc.yacc()
 
-#'''
+'''
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -384,13 +394,13 @@ f = open(filename, "r")
 
 input = f.read()
 yacc.parse(input)
-#'''
+'''
 
-''' # para testear a mano
+#''' # para testear a mano
 while True:
     try:
         s = input('programa > ')
     except EOFError:
         break
     yacc.parse(s)
-'''
+#'''
