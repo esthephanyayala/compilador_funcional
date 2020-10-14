@@ -78,11 +78,21 @@ def t_error(t):
 import ply.lex as lex
 lex.lex()
 
+
+
+scope = ['global']
+ultTipo = []
+varTable = {}
+varTable[scope[len(scope)-1]] = {}
+# Directorio de funciones
+dirFunc = {}
     
 ##### PROGRAMA #####
 
 def p_programa(p):
-    ''' programa : OPEN_PAREN PROGRAM programa_2 programa_3 main CLOSE_PAREN'''
+    ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
+
+
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -168,7 +178,14 @@ def p_varcte(p):
 ##### DECLARACIONFUNCION #####
 
 def p_declaracionfuncion(p):
-    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN '''
+    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS create_func declaracionfuncion_2 CLOSE_PAREN '''
+
+def p_create_func(p):
+    ''' create_func : '''
+    funct = p[-1]
+    scope.append(funct)
+    varTable[funct] = {}
+    
 
 def p_declaracionfuncion_2(p):
     ''' declaracionfuncion_2    : funcion declaracionfuncion_2 
@@ -177,7 +194,15 @@ def p_declaracionfuncion_2(p):
 ##### FUNCION #####
 
 def p_funcion(p):
-    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN ID param CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN ID create_dirFunc param CLOSE_PAREN bloque CLOSE_PAREN '''
+
+def p_create_dirFunc(p):
+    ''' create_dirFunc : '''   
+    funcName = p[-1]
+    if funcName not in varTable['global'] and funcName not in varTable[scope[len(scope)-1]]:
+        varTable[scope[len(scope)-1]][funcName] = "tipo funcion"  #no se que poner aqui, si num o apostrofe
+        print (varTable)
+
 
 ##### PARAM #####
 
@@ -188,7 +213,17 @@ def p_param(p):
 ##### DECLARACIONVARIABLES #####
 
 def p_declaracionvariables(p):
-    ''' declaracionvariables : OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN '''
+    ''' declaracionvariables : OPEN_PAREN VARS create_dirFuncVars declaracionvariables_2 CLOSE_PAREN '''
+
+def p_create_dirFuncVars(p):
+    ''' create_dirFuncVars : '''
+    funcName = p[-1]
+    #print(progName)
+    scope.append(funcName)
+    varTable[funcName] = {}
+
+
+    
 
 def p_declaracionvariables_2(p):
     ''' declaracionvariables_2 : declare declaracionvariables_2
@@ -197,23 +232,40 @@ def p_declaracionvariables_2(p):
 ##### DECLARE #####
 
 def p_declare(p):
-    ''' declare : OPEN_PAREN DECLARE ID declare_2 CLOSE_PAREN '''
+    ''' declare : OPEN_PAREN DECLARE ID declare_2 create_varTable CLOSE_PAREN '''
+    #print("declare2 :", p[5])    
+
+def p_create_varTable(p):
+    ''' create_varTable : '''
+    varId = p[-2] # o mejor poner vars
+    print(varId)
+    if varId not in varTable['global'] and varId not in varTable[scope[len(scope)-1]]:
+        varTable[scope[len(scope)-1]][varId] =  ultTipo[len(ultTipo)-1]  #no se que poner aqui, si num o apostrofe
+        #print (varTable)
+        #print("ultTipo", ultTipo[len(ultTipo)-1])
 
 def p_declare_2(p):
     ''' declare_2   : definircte
                     | definirlista'''
-
+    
+    
 ##### DEFINIRCTE #####
 
 def p_definircte(p):
     ''' definircte  : CTEI
                     | CTEF
                     | CTEC '''
-
+    p[0] = p[1]
+    ultTipo.append(p[1])
+    #print ("cte: ", p[0]) #guardo el numero o solo cte? me suena a numero 
+  
 ##### DEFINIRLISTA #####
 
 def p_definirlista(p):
     ''' definirlista : QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN '''
+    p[0] = p[1]
+    #print("list: ", p[0])
+    ultTipo.append(p[1])
 
 def p_definirlista_2(p):
     ''' definirlista_2  : definircte definirlista_2
@@ -370,7 +422,7 @@ def p_empty(p):
 import ply.yacc as yacc
 yacc.yacc()
 
-#'''
+'''
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -384,13 +436,13 @@ f = open(filename, "r")
 
 input = f.read()
 yacc.parse(input)
-#'''
+'''
 
-''' # para testear a mano
+#''' # para testear a mano
 while True:
     try:
         s = input('programa > ')
     except EOFError:
         break
     yacc.parse(s)
-'''
+#'''
