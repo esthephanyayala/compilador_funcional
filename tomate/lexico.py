@@ -90,7 +90,9 @@ dirFunc = {}
 ##### PROGRAMA #####
 
 def p_programa(p):
+
     ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
+
 
 
 
@@ -346,6 +348,10 @@ def p_bloque(p):
 def p_main(p):
     ''' main        : OPEN_PAREN MAIN main_2 CLOSE_PAREN
                     | empty '''
+    print("main 0" ,p[0])
+    print("main 1" ,p[1])
+    print("main 2" ,p[2])
+
 def p_main_2(p):
     ''' main_2      : bloque main_2 
                     | empty '''
