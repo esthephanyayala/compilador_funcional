@@ -1,99 +1,24 @@
+from lexer import tokens
+from Quadruples import Quadruple
+from CuboSemantico import semanticCube
 
-reserved = {
-    'print' : 'PRINT',
-    'declare' : 'DECLARE',
-    #'id' : 'ID', -- lo tenemos como palabra reservada pero no creo que sea el caso
-    'if' : 'IF',
-    'define' : 'DEFINE',
-    'int' : 'INT',
-    'float' : 'FLOAT',
-    'char' : 'CHAR',
-    'lambda' : 'LAMBDA',# mismo caso que id con cte_XXX
-    'program' : 'PROGRAM',
-    'vars' : 'VARS',
-    'functions' : 'FUNCTIONS',
-    'main' : 'MAIN', #igual con epsilon
-    'cdr' : 'CDR',
-    'car' : 'CAR',
-    'length' : 'LENGTH',
-    'nullp' : 'NULL_PREDICATE',
-    'listp' : 'LIST_PREDICATE',
-    'emptyp' : 'EMPTY_PREDICATE',
-    'append' : 'APPEND',
-    'list' : 'LIST',
-    'map' : 'MAP',
-    'filter' : 'FILTER',
-    'tt' : 'FALSE',
-    'ff' : 'TRUE',
-    'evenp' : 'EVEN_PREDICATE',
-    'intp' : 'INT_PREDICATE',
-    'floatp' : 'FLOAT_PREDICATE'
-}
-
-tokens = [
-    'ID',
-    'CTEI',
-    'CTEF',
-    'CTEC',
-    'OPEN_PAREN','CLOSE_PAREN',
-    'PLUS','MINUS','TIMES','DIVIDE',
-    'LT','GT','NE','EQUAL',
-    'QUOTE'
-] + list(reserved.values())
-
-digit            = r'([0-9])'
-nondigit         = r'([_A-Za-z])'
-t_CTEI = r'(' + digit + r'+)'
-t_CTEF = r'(' + digit + r'+(\.' + digit +  r')+)'
-t_CTEC = r'\'(' + nondigit + r')\''
-t_OPEN_PAREN = r'\('
-t_CLOSE_PAREN = r'\)'
-t_PLUS    = r'\+'
-t_MINUS   = r'-'
-t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
-t_LT = r'<'
-t_GT = r'>'
-t_NE = r'!='
-t_EQUAL = r'='
-t_QUOTE = r'\''
-
-def t_ID(t):
-     r'[a-zA-Z_][a-zA-Z_0-9]*'
-     t.type = reserved.get(t.value,'ID')    # Check for reserved words
-     return t
-
-# Ignored characters
-t_ignore = " \t"
-
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += t.value.count("\n")
-
-def t_error(t):
-    print(f"Illegal character {t.value[0]!r}")
-    t.lexer.skip(1)
-
-# Build the lexer
-import ply.lex as lex
-lex.lex()
-
-
-
-scope = ['global']
 ultTipo = []
 varTable = {}
-varTable[scope[len(scope)-1]] = {}
-# Directorio de funciones
-dirFunc = {}
+
+stackIds = []
+
+direcciones = {
+        "direccionesGlobales" : {"int": [] , "float" : [] , "char" : [] } ,
+        "direccionesTemp" : {"int": [] , "float" : [] , "char" : [] , "bool" : [] }   
+    }
+
+#direcciones = {"int": [] , "float" : [] , "char" : [] }
+counterDirecciones = []
     
 ##### PROGRAMA #####
 
 def p_programa(p):
-
     ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
-
-
 
 
 def p_programa_2(p):
@@ -150,18 +75,45 @@ def p_expresionesunarias_2(p):
 ##### EXP #####
 
 def p_exp(p):
-    ''' exp : OPEN_PAREN signos1 exp exp CLOSE_PAREN
-            | OPEN_PAREN signos2 exp exp CLOSE_PAREN 
-            | OPEN_PAREN signos1 varcte CLOSE_PAREN 
+    ''' exp : OPEN_PAREN PLUS exp exp CLOSE_PAREN
+            | OPEN_PAREN MINUS exp exp CLOSE_PAREN 
+            | OPEN_PAREN TIMES exp exp CLOSE_PAREN 
+            | OPEN_PAREN DIVIDE exp exp CLOSE_PAREN 
+            | OPEN_PAREN PLUS varcte CLOSE_PAREN 
+            | OPEN_PAREN MINUS varcte CLOSE_PAREN 
             | varcte 
             | llamada
             | returnelement'''
+    try:
+        operator = p[2]
+
+        # right
+        right = stackIds.pop()
+        rightObject = varTable['vars'][right]
+        rightType = rightObject['type']
+        rightDir = rightObject['pointer']
+        
+
+        #left
+        left = stackIds.pop()
+        leftObject = varTable['vars'][left]
+        leftType = leftObject['type']
+        leftDir = leftObject['pointer']
+
+        #
+        temp = 1
+        q = Quadruple(operator,leftDir,rightDir,temp,'direccionesGlobales','direccionesGlobales','global',leftType,rightType,'int')
+        q.print()
+    except:
+        print('nel')
+    
 
 ##### SIGNOS 1 #####
 
 def p_signos1(p):
     '''signos1 : PLUS 
                 | MINUS ''' 
+    print(p[1])
 
 ##### SIGNOS 2 #####
 
@@ -175,19 +127,18 @@ def p_varcte(p):
     ''' varcte : ID 
                 | CTEI
                 | CTEF '''
-
+    #print(p[1])
+    stackIds.append(p[1])
                     
 ##### DECLARACIONFUNCION #####
 
 def p_declaracionfuncion(p):
-    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS create_func declaracionfuncion_2 CLOSE_PAREN '''
+    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS np_create_funcObject declaracionfuncion_2 CLOSE_PAREN '''
 
-def p_create_func(p):
-    ''' create_func : '''
+def p_np_create_funcObject(p):
+    ''' np_create_funcObject : '''
     funct = p[-1]
-    scope.append(funct)
     varTable[funct] = {}
-    
 
 def p_declaracionfuncion_2(p):
     ''' declaracionfuncion_2    : funcion declaracionfuncion_2 
@@ -196,14 +147,16 @@ def p_declaracionfuncion_2(p):
 ##### FUNCION #####
 
 def p_funcion(p):
-    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN ID create_dirFunc param CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN ID np_create_dirFunc param CLOSE_PAREN bloque CLOSE_PAREN '''
 
-def p_create_dirFunc(p):
-    ''' create_dirFunc : '''   
+def p_np_create_dirFunc(p):
+    ''' np_create_dirFunc : '''   
     funcName = p[-1]
-    if funcName not in varTable['global'] and funcName not in varTable[scope[len(scope)-1]]:
-        varTable[scope[len(scope)-1]][funcName] = "tipo funcion"  #no se que poner aqui, si num o apostrofe
-        print (varTable)
+
+    if funcName in varTable['functions']:
+        print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
+    else:
+        varTable['functions'][funcName] = "tipo"
 
 
 ##### PARAM #####
@@ -215,17 +168,12 @@ def p_param(p):
 ##### DECLARACIONVARIABLES #####
 
 def p_declaracionvariables(p):
-    ''' declaracionvariables : OPEN_PAREN VARS create_dirFuncVars declaracionvariables_2 CLOSE_PAREN '''
+    ''' declaracionvariables : OPEN_PAREN VARS np_create_dirFuncVars declaracionvariables_2 CLOSE_PAREN '''
 
-def p_create_dirFuncVars(p):
-    ''' create_dirFuncVars : '''
+def p_np_create_dirFuncVars(p):
+    ''' np_create_dirFuncVars : '''
     funcName = p[-1]
-    #print(progName)
-    scope.append(funcName)
     varTable[funcName] = {}
-
-
-    
 
 def p_declaracionvariables_2(p):
     ''' declaracionvariables_2 : declare declaracionvariables_2
@@ -234,45 +182,62 @@ def p_declaracionvariables_2(p):
 ##### DECLARE #####
 
 def p_declare(p):
-    ''' declare : OPEN_PAREN DECLARE ID declare_2 create_varTable CLOSE_PAREN '''
+    ''' declare : OPEN_PAREN DECLARE ID declare_2 np_create_varTable CLOSE_PAREN '''
     #print("declare2 :", p[5])    
 
-def p_create_varTable(p):
-    ''' create_varTable : '''
+def p_np_create_varTable(p):
+    ''' np_create_varTable : '''
     varId = p[-2] # o mejor poner vars
-    print(varId)
-    if varId not in varTable['global'] and varId not in varTable[scope[len(scope)-1]]:
-        varTable[scope[len(scope)-1]][varId] =  ultTipo[len(ultTipo)-1]  #no se que poner aqui, si num o apostrofe
-        #print (varTable)
-        #print("ultTipo", ultTipo[len(ultTipo)-1])
+    #print(varId)
+    if varId in varTable['vars']:
+        print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
+    else :
+        varTable['vars'][varId] = {"type": ultTipo[-1] , "pointer":counterDirecciones[-1]}
 
 def p_declare_2(p):
     ''' declare_2   : definircte
                     | definirlista'''
     
-    
 ##### DEFINIRCTE #####
 
 def p_definircte(p):
-    ''' definircte  : CTEI
-                    | CTEF
-                    | CTEC '''
-    p[0] = p[1]
-    ultTipo.append(p[1])
-    #print ("cte: ", p[0]) #guardo el numero o solo cte? me suena a numero 
+    ''' definircte  : CTEI np_definicioni
+                    | CTEF np_definicionf
+                    | CTEC np_definicionc '''
   
+def p_np_definicioni(p):
+    ''' np_definicioni : '''
+    ultTipo.append("int")
+    #print(p[-1])
+    direcciones["direccionesGlobales"]["int"].append(p[-1])
+    counterDirecciones.append(len(direcciones["direccionesGlobales"]["int"]) - 1)
+    #print(direcciones)
+    #print(counterDirecciones)
+
+def p_np_definicionf(p):
+    ''' np_definicionf : '''
+    ultTipo.append("float")
+    #print(p[-1])
+    direcciones["direccionesGlobales"]["float"].append(p[-1])
+    counterDirecciones.append(len(direcciones["direccionesGlobales"]["float"]) - 1)
+    #print(direcciones)
+    #print(counterDirecciones)
+
+def p_np_definicionc(p):
+    ''' np_definicionc : '''
+    ultTipo.append("char")
+    direcciones["direccionesGlobales"]["char"].append(p[-1])
+    counterDirecciones.append(len(direcciones["direccionesGlobales"]["char"]) - 1)
+
 ##### DEFINIRLISTA #####
 
 def p_definirlista(p):
     ''' definirlista : QUOTE OPEN_PAREN definirlista_2 CLOSE_PAREN '''
-    p[0] = p[1]
-    #print("list: ", p[0])
-    ultTipo.append(p[1])
+    ultTipo.append("lista")
 
 def p_definirlista_2(p):
     ''' definirlista_2  : definircte definirlista_2
                         | empty'''
-
 
 ##### LISTA #####
 def p_lista(p):
@@ -348,9 +313,6 @@ def p_bloque(p):
 def p_main(p):
     ''' main        : OPEN_PAREN MAIN main_2 CLOSE_PAREN
                     | empty '''
-    print("main 0" ,p[0])
-    print("main 1" ,p[1])
-    print("main 2" ,p[2])
 
 def p_main_2(p):
     ''' main_2      : bloque main_2 
@@ -427,28 +389,28 @@ def p_empty(p):
 
 import ply.yacc as yacc
 yacc.yacc()
+    
 
-'''
+#'''
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-print( fileDir)
-
-#programa = input('file > ') #descoment este si quieres poner el nombre del file en la terminal
-
-programa = 'test2.txt'
-filename = os.path.join(fileDir, 'tests/' + programa )
+programa = 'test4.txt'
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
-
 input = f.read()
 yacc.parse(input)
-'''
 
-#''' # para testear a mano
+print(varTable)
+print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
+#'''
+
+''' # para testear a mano
 while True:
     try:
         s = input('programa > ')
     except EOFError:
         break
     yacc.parse(s)
-#'''
+'''

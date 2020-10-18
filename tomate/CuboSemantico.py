@@ -1,17 +1,4 @@
-+
--
-*
-/
-<
->
-!=
-=
 
-int 
-float
-bool
-char
-list
 
 semanticCube = {
     "int" : {
@@ -270,7 +257,7 @@ semanticCube = {
             ">" : "ERROR",
             "!=" : "ERROR",
             "=" : "ERROR"
-        }
+        },
 
         "char" : {
             "+" : "ERROR",
@@ -295,3 +282,5 @@ semanticCube = {
         }
     }
 }
+
+#print(semanticCube['int']['list']['+'])

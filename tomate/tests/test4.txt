@@ -1,0 +1,13 @@
+(program factorial
+    (vars
+        (declare i 1)
+        (declare j 2)
+        (declare a 2.2)
+        (declare b 'c')
+    )
+    (functions)
+    (main 
+        (print (+ i j))
+
+    )
+)

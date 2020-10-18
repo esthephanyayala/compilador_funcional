@@ -1,28 +1,20 @@
-(program
+(program factorial
     (vars
         (declare i 1)
+        (declare j 2)
+        (declare a 2.2)
+        (declare b 'c')
     )
     (functions
         (define (f1 l1 l2) 
-            (   ( lambda 
-                    ( id1 ) 
-                    ( + 1 id1 ) 
-                    ) 
-                ( + 1 2 ) 
-            )
-        )
-        (define (f1 l1 l2) 
             (print 'e')
         )
-        (define (f2)
-            ( + (- 1 2) id2 )
-        )
-        (define (f3 l1 )
-            (if (< id1 id2)
-                (print 'e')
-                (print (+ 1 id2 ) )
-            )
+        (define (f2 l1 l2) 
+            (print 'e')
         )
     )
-
+    
+    (main 
+        (print i)
+    )
 )
