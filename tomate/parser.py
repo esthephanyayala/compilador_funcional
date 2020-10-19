@@ -6,6 +6,7 @@ ultTipo = []
 varTable = {}
 
 stackIds = []
+stackCTE = []
 
 direcciones = {
         "direccionesGlobales" : {"int": [] , "float" : [] , "char" : [] } ,
@@ -87,22 +88,39 @@ def p_exp(p):
     try:
         operator = p[2]
 
-        # right
-        right = stackIds.pop()
-        rightObject = varTable['vars'][right]
-        rightType = rightObject['type']
-        rightDir = rightObject['pointer']
+        # right 
+        rightStackCTE = stackCTE.pop()
         
+        if  not(rightStackCTE['isCTE']) :
+            rightID = rightStackCTE['value']
+            rightObject = varTable['vars'][rightID]
+            rightType = rightObject['type']
+            rightDir = rightObject['pointer']
+            rightDirObject = 'direccionesGlobales'
+        else :
+            rightValue = rightStackCTE['value']
+            rightType = rightStackCTE['type']
+            rightDir = rightValue
+            rightDirObject = "NULL"
 
-        #left
-        left = stackIds.pop()
-        leftObject = varTable['vars'][left]
-        leftType = leftObject['type']
-        leftDir = leftObject['pointer']
+        # left
+        leftStackCTE = stackCTE.pop()
+
+        if not(leftStackCTE['isCTE']) :
+            leftID = leftStackCTE['value']
+            leftObject = varTable['vars'][leftID]
+            leftType = leftObject['type']
+            leftDir = leftObject['pointer']
+            leftDirObject = 'direccionesGlobales'
+        else :
+            leftValue = leftStackCTE['value']
+            leftType = leftStackCTE['type']
+            leftDir = leftValue
+            leftDirObject = "NULL"
 
         #
         temp = 1
-        q = Quadruple(operator,leftDir,rightDir,temp,'direccionesGlobales','direccionesGlobales','global',leftType,rightType,'int')
+        q = Quadruple(operator,leftDir,rightDir,temp,leftDirObject,rightDirObject,'global',leftType,rightType,'int')
         q.print()
     except:
         print('nel')
@@ -113,6 +131,7 @@ def p_exp(p):
 def p_signos1(p):
     '''signos1 : PLUS 
                 | MINUS ''' 
+    
     print(p[1])
 
 ##### SIGNOS 2 #####
@@ -124,12 +143,44 @@ def p_signos2(p):
 ##### VARCTE #####
 
 def p_varcte(p):
-    ''' varcte : ID 
-                | CTEI
-                | CTEF '''
+    ''' varcte : ID np_stackCTEID
+                | CTEI np_stackCTEI
+                | CTEF np_stackCTEF '''
     #print(p[1])
     stackIds.append(p[1])
-                    
+
+def p_np_stackCTEID(p):
+    '''np_stackCTEID : '''
+    value = p[-1]
+    object = {
+        "isCTE" : False,
+        "value" : value
+    }
+    stackCTE.append( object )
+    print(stackCTE)
+  
+def p_np_stackCTEI(p):
+    '''np_stackCTEI : '''
+    value = p[-1]
+    object = {
+        "isCTE" : True,
+        "value" : int(value),
+        "type" : "int"
+    }
+    stackCTE.append( object )
+    print(stackCTE)
+    
+def p_np_stackCTEF(p):
+    '''np_stackCTEF : '''
+    value = p[-1]
+    object = {
+        "isCTE" : True,
+        "value" : float(value),
+        "type" : "float"
+    }
+    stackCTE.append( object )
+    print(stackCTE)
+
 ##### DECLARACIONFUNCION #####
 
 def p_declaracionfuncion(p):

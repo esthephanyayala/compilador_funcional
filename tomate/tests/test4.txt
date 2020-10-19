@@ -7,7 +7,7 @@
     )
     (functions)
     (main 
-        (print (+ i j))
+        (print (+ a 1) )
 
     )
 )

@@ -20,3 +20,12 @@ class Quadruple:
                                                                         self.rightType,
                                                                         self.rightObject,
                                                                         self.temp))
+
+class Quadruples:
+    quadruples = []
+
+    def add(self,quadruple):
+        self.quadruples.append(quadruple)
+
+    def print(self):
+        print(self.quadruples)
