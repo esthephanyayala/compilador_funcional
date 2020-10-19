@@ -98,10 +98,11 @@ def p_exp(p):
             rightType = rightObject['type']
             rightDir = rightObject['pointer']
             rightDirObject = 'direccionesGlobales'
+            rightVal = direcciones["direccionesGlobales"][rightType][rightDir]
         else :
-            rightValue = rightStackCTE['value']
+            rightVal = rightStackCTE['value']
             rightType = rightStackCTE['type']
-            rightDir = rightValue
+            rightDir = rightVal
             rightDirObject = "NULL"
 
         # left
@@ -113,15 +114,36 @@ def p_exp(p):
             leftType = leftObject['type']
             leftDir = leftObject['pointer']
             leftDirObject = 'direccionesGlobales'
+            leftVal = direcciones["direccionesGlobales"][leftType][leftDir]
         else :
-            leftValue = leftStackCTE['value']
+            leftVal = leftStackCTE['value']
             leftType = leftStackCTE['type']
-            leftDir = leftValue
+            leftDir = leftVal
             leftDirObject = "NULL"
 
+        tempType = semanticCube[leftType][rightType][operator]
+         
+        if tempType != 'ERROR':
+            #operacion
+            if operator == '+':
+                resTemp = leftVal + rightVal
+            elif operator == '-':
+                resTemp = leftVal - rightVal
+            elif operator == '*':
+                resTemp = leftVal * rightVal
+            elif operator == '/':
+                resTemp = leftVal / rightVal
+            
+   
+            direcciones['direccionesTemp'][tempType].append(resTemp)
+            tempDir = len(direcciones["direccionesTemp"][tempType]) - 1
+            
+            
+        else:
+            print("Error cubo semantico")
 
         temp = 1
-        q = Quadruple(operator,leftDir,rightDir,temp,leftDirObject,rightDirObject,'global',leftType,rightType,'int')
+        q = Quadruple(operator,leftDir,rightDir,tempDir,leftDirObject,rightDirObject,'direccionesTemp',leftType,rightType,tempType)
         q.print()
     except:
         print('nel')
@@ -158,7 +180,7 @@ def p_np_stackCTEID(p):
         "value" : value
     }
     stackCTE.append( object )
-    print(stackCTE)
+    #print(stackCTE)
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
@@ -169,7 +191,7 @@ def p_np_stackCTEI(p):
         "type" : "int"
     }
     stackCTE.append( object )
-    print(stackCTE)
+    #print(stackCTE)
     
 def p_np_stackCTEF(p):
     '''np_stackCTEF : '''
@@ -180,7 +202,7 @@ def p_np_stackCTEF(p):
         "type" : "float"
     }
     stackCTE.append( object )
-    print(stackCTE)
+    #print(stackCTE)
 
 ##### DECLARACIONFUNCION #####
 
@@ -455,7 +477,7 @@ input = f.read()
 yacc.parse(input)
 
 print(varTable)
-print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
+#print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 print(direcciones)
 #'''
 

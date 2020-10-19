@@ -12,20 +12,14 @@ class Quadruple:
         self.tempType = tt
 
     def print(self):
-        print("[ {} , [ {} , {}, {} ] , [ {} , {}, {} ] , {} ]".format( self.operator,
+        print("[ {} , [ {} , {}, {} ] , [ {} , {}, {} ] , [ {} , {}, {} ] ]".format( self.operator,
                                                                         self.left,
                                                                         self.leftType,
                                                                         self.leftObject,
                                                                         self.right,
                                                                         self.rightType,
                                                                         self.rightObject,
-                                                                        self.temp))
-
-class Quadruples:
-    quadruples = []
-
-    def add(self,quadruple):
-        self.quadruples.append(quadruple)
-
-    def print(self):
-        print(self.quadruples)
+                                                                        self.temp,
+                                                                        self.tempType,
+                                                                        self.tempObject
+                                                                        ))
