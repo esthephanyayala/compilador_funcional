@@ -6,7 +6,7 @@ semanticCube = {
             "+" : "int",
             "-" : "int",
             "*" : "int",
-            "/" : "int",
+            "/" : "float",
             "<" : "bool",
             ">" : "bool",
             "!=" : "bool",

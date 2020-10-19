@@ -92,6 +92,7 @@ def p_exp(p):
         rightObject = varTable['vars'][right]
         rightType = rightObject['type']
         rightDir = rightObject['pointer']
+        rightVal = direcciones["direccionesGlobales"][rightType][rightDir]
         
 
         #left
@@ -99,8 +100,33 @@ def p_exp(p):
         leftObject = varTable['vars'][left]
         leftType = leftObject['type']
         leftDir = leftObject['pointer']
+        leftVal = direcciones["direccionesGlobales"][leftType][leftDir]
+        
 
-        #
+        #temp
+        tempType = semanticCube[leftType][rightType][operator]
+        #print('TEMP TYPTE' , tempType)
+       
+        
+        if tempType != 'ERROR':
+            #operacion
+            if operator == '+':
+                resTemp = leftVal + rightVal
+            elif operator == '-':
+                resTemp = leftVal - rightVal
+            elif operator == '*':
+                resTemp = leftVal * rightVal
+            elif operator == '/':
+                resTemp = leftVal / rightVal
+
+   
+            direcciones['direccionesTemp'][tempType].append(resTemp)
+            
+        else:
+            print("Error cubo semantico")
+       
+
+
         temp = 1
         q = Quadruple(operator,leftDir,rightDir,temp,'direccionesGlobales','direccionesGlobales','global',leftType,rightType,'int')
         q.print()
@@ -209,7 +235,7 @@ def p_np_definicioni(p):
     ''' np_definicioni : '''
     ultTipo.append("int")
     #print(p[-1])
-    direcciones["direccionesGlobales"]["int"].append(p[-1])
+    direcciones["direccionesGlobales"]["int"].append(int(p[-1]))
     counterDirecciones.append(len(direcciones["direccionesGlobales"]["int"]) - 1)
     #print(direcciones)
     #print(counterDirecciones)
@@ -218,7 +244,7 @@ def p_np_definicionf(p):
     ''' np_definicionf : '''
     ultTipo.append("float")
     #print(p[-1])
-    direcciones["direccionesGlobales"]["float"].append(p[-1])
+    direcciones["direccionesGlobales"]["float"].append(float(p[-1]))
     counterDirecciones.append(len(direcciones["direccionesGlobales"]["float"]) - 1)
     #print(direcciones)
     #print(counterDirecciones)
@@ -396,14 +422,15 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test4.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
 
 print(varTable)
 print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
+print(direcciones)
 #'''
 
 ''' # para testear a mano
