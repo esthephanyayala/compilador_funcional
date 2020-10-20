@@ -1,25 +1,26 @@
 class Quadruple:
-    def __init__(self,operator,left,right,temp,lo,ro,to,lt,rt,tt):
+    def __init__(self,operator,left,right,temp):
         self.operator = operator
         self.left = left
         self.right = right
         self.temp = temp
-        self.leftObject = lo
-        self.rightObject = ro
-        self.tempObject = to
-        self.leftType = lt
-        self.rightType = rt
-        self.tempType = tt
 
     def print(self):
-        print("[ {} , [ {} , {}, {} ] , [ {} , {}, {} ] , [ {} , {}, {} ] ]".format( self.operator,
-                                                                        self.left,
-                                                                        self.leftType,
-                                                                        self.leftObject,
-                                                                        self.right,
-                                                                        self.rightType,
-                                                                        self.rightObject,
-                                                                        self.temp,
-                                                                        self.tempType,
-                                                                        self.tempObject
-                                                                        ))
+        print("[ {} , {} , {} , {} ]".format( self.operator,
+                                                self.left,
+                                                self.right,
+                                                self.temp
+                                                ))
+
+
+class Quadruples:
+
+    def __init__(self):
+        self.quadruples = []
+
+    def add(self, quadruple):
+        self.quadruples.append(quadruple)
+
+    def print(self):
+        for i in self.quadruples:
+            i.print()

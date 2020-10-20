@@ -1,14 +1,32 @@
 from lexer import tokens
-from Quadruples import Quadruple#,Quadruples
+from Quadruples import Quadruple,Quadruples
 from CuboSemantico import semanticCube
 
-#quadruples = Quadruples()
+quadruples = Quadruples()
 
 ultTipo = []
 varTable = {}
 
-stackIds = []
-stackCTE = []
+stackOperadores = []
+stackOperandos = []
+stackTypes = []
+
+# Virtual Address
+address = { 
+            "global" :  {
+                            "int":  1000, 
+                            "float":2000,
+                            "char": 3000
+                        },
+            "temp" :    {
+                            "int":  4000, 
+                            "float":5000,
+                            "char": 6000,
+                            "bool": 7000
+                        }
+        
+        }
+
 
 direcciones = {
         "direccionesGlobales" : {"int": [] , "float" : [] , "char" : [] } ,
@@ -36,9 +54,14 @@ def p_programa_3(p):
 
 def p_imprimir(p):
     ''' imprimir : OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN '''
+    address = stackOperandos.pop()
+    stackTypes.pop()
+    
+    q = Quadruple("print","NULL","NULL", address )
+    q.print()
 
 def p_imprimir_2(p):
-    ''' imprimir_2  : CTEC 
+    ''' imprimir_2  : CTEC np_stackCTEC
                     | expresion
                     | lambda
                     | listfunctions
@@ -78,87 +101,50 @@ def p_expresionesunarias_2(p):
 ##### EXP #####
 
 def p_exp(p):
-    ''' exp : OPEN_PAREN PLUS exp exp CLOSE_PAREN
-            | OPEN_PAREN MINUS exp exp CLOSE_PAREN 
-            | OPEN_PAREN TIMES exp exp CLOSE_PAREN 
-            | OPEN_PAREN DIVIDE exp exp CLOSE_PAREN 
-            | OPEN_PAREN PLUS varcte CLOSE_PAREN 
-            | OPEN_PAREN MINUS varcte CLOSE_PAREN 
+    ''' exp : OPEN_PAREN signos1 exp exp CLOSE_PAREN
+            | OPEN_PAREN signos2 exp exp CLOSE_PAREN
             | varcte 
             | llamada
             | returnelement'''
-    try:
-        operator = p[2]
 
+    if len(p) == 6:
 
-        # right 
-        rightStackCTE = stackCTE.pop()
+        # operator
+        operator = stackOperadores.pop()
 
-        if  not(rightStackCTE['isCTE']) :
-            rightID = rightStackCTE['value']
-            rightObject = varTable['vars'][rightID]
-            rightType = rightObject['type']
-            rightDir = rightObject['pointer']
-            rightDirObject = 'direccionesGlobales'
-            rightVal = direcciones["direccionesGlobales"][rightType][rightDir]
-        else :
-            rightVal = rightStackCTE['value']
-            rightType = rightStackCTE['type']
-            rightDir = rightVal
-            rightDirObject = "NULL"
+        # right
+        right = stackOperandos.pop()
+        rightType = stackTypes.pop()
 
         # left
-        leftStackCTE = stackCTE.pop()
+        left = stackOperandos.pop()
+        leftType = stackTypes.pop()
 
-        if not(leftStackCTE['isCTE']) :
-            leftID = leftStackCTE['value']
-            leftObject = varTable['vars'][leftID]
-            leftType = leftObject['type']
-            leftDir = leftObject['pointer']
-            leftDirObject = 'direccionesGlobales'
-            leftVal = direcciones["direccionesGlobales"][leftType][leftDir]
+        # check semanticCube
+        semanticCubeType = semanticCube[leftType][rightType][operator]
+
+        if semanticCubeType != 'ERROR':
+            scope = "temp"
+            ad = address[scope][semanticCubeType]
+            address[scope][semanticCubeType] += 1
+
+            stackOperandos.append(ad)
+            stackTypes.append(semanticCubeType)
+
+            q = Quadruple(operator,left,right,ad)
+            q.print()
+            
         else :
-            leftVal = leftStackCTE['value']
-            leftType = leftStackCTE['type']
-            leftDir = leftVal
-            leftDirObject = "NULL"
+            print("Error de compilacion")
+                
 
-        tempType = semanticCube[leftType][rightType][operator]
-         
-        if tempType != 'ERROR':
-            #operacion
-            if operator == '+':
-                resTemp = leftVal + rightVal
-            elif operator == '-':
-                resTemp = leftVal - rightVal
-            elif operator == '*':
-                resTemp = leftVal * rightVal
-            elif operator == '/':
-                resTemp = leftVal / rightVal
-            
-   
-            direcciones['direccionesTemp'][tempType].append(resTemp)
-            tempDir = len(direcciones["direccionesTemp"][tempType]) - 1
-            
-            
-        else:
-            print("Error cubo semantico")
-
-        temp = 1
-        q = Quadruple(operator,leftDir,rightDir,tempDir,leftDirObject,rightDirObject,'direccionesTemp',leftType,rightType,tempType)
-        q.print()
-        #quadruples.add(q)
-        #quadruples.print()
-    except:
-        print('nel')
-    
 
 ##### SIGNOS 1 #####
 
 def p_signos1(p):
     '''signos1 : PLUS 
                 | MINUS ''' 
-    
+    stackOperadores.append( p[1] )
     #print(p[1])
 
 ##### SIGNOS 2 #####
@@ -166,6 +152,7 @@ def p_signos1(p):
 def p_signos2(p):
     '''signos2 : TIMES 
                 | DIVIDE '''
+    stackOperadores.append( p[1] )
 
 ##### VARCTE #####
 
@@ -174,39 +161,54 @@ def p_varcte(p):
                 | CTEI np_stackCTEI
                 | CTEF np_stackCTEF '''
     #print(p[1])
-    stackIds.append(p[1])
 
 def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
     value = p[-1]
-    object = {
-        "isCTE" : False,
-        "value" : value
-    }
-    stackCTE.append( object )
-    #print(stackCTE)
+
+    valueObject = varTable["vars"][value]
+
+    address = valueObject['virtualAddress']
+    type = valueObject['type']
+
+    stackOperandos.append(address)
+    stackTypes.append(type)
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
-    value = p[-1]
-    object = {
-        "isCTE" : True,
-        "value" : int(value),
-        "type" : "int"
-    }
-    stackCTE.append( object )
-    #print(stackCTE)
+
+    type = "int"
+    scope = "temp"
+
+    ad = address[scope][type]
+    address[scope][type] += 1
+
+    stackOperandos.append(ad)
+    stackTypes.append(type)
     
 def p_np_stackCTEF(p):
     '''np_stackCTEF : '''
-    value = p[-1]
-    object = {
-        "isCTE" : True,
-        "value" : float(value),
-        "type" : "float"
-    }
-    stackCTE.append( object )
-    #print(stackCTE)
+    
+    type = "float"
+    scope = "temp"
+
+    ad = address[scope][type]
+    address[scope][type] += 1
+
+    stackOperandos.append(ad)
+    stackTypes.append(type)
+
+def p_np_stackCTEC(p):
+    '''np_stackCTEC : '''
+    
+    type = "char"
+    scope = "temp"
+
+    ad = address[scope][type]
+    address[scope][type] += 1
+
+    stackOperandos.append(ad)
+    stackTypes.append(type)
 
 ##### DECLARACIONFUNCION #####
 
@@ -270,7 +272,12 @@ def p_np_create_varTable(p):
     if varId in varTable['vars']:
         print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
     else :
-        varTable['vars'][varId] = {"type": ultTipo[-1] , "pointer":counterDirecciones[-1]}
+        type = ultTipo[-1]
+        scope = "global"
+        ad = address[scope][type]
+        address[scope][type] += 1
+        varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+        
 
 def p_declare_2(p):
     ''' declare_2   : definircte
@@ -286,26 +293,14 @@ def p_definircte(p):
 def p_np_definicioni(p):
     ''' np_definicioni : '''
     ultTipo.append("int")
-    #print(p[-1])
-    direcciones["direccionesGlobales"]["int"].append(int(p[-1]))
-    counterDirecciones.append(len(direcciones["direccionesGlobales"]["int"]) - 1)
-    #print(direcciones)
-    #print(counterDirecciones)
 
 def p_np_definicionf(p):
     ''' np_definicionf : '''
     ultTipo.append("float")
-    #print(p[-1])
-    direcciones["direccionesGlobales"]["float"].append(float(p[-1]))
-    counterDirecciones.append(len(direcciones["direccionesGlobales"]["float"]) - 1)
-    #print(direcciones)
-    #print(counterDirecciones)
 
 def p_np_definicionc(p):
     ''' np_definicionc : '''
     ultTipo.append("char")
-    direcciones["direccionesGlobales"]["char"].append(p[-1])
-    counterDirecciones.append(len(direcciones["direccionesGlobales"]["char"]) - 1)
 
 ##### DEFINIRLISTA #####
 
@@ -480,9 +475,12 @@ f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
 
-print(varTable)
+#print(stackOperadores)
+#print(stackOperandos)
+#print(stackTypes)
+#print(varTable)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
-print(direcciones)
+#print(direcciones)
 #'''
 
 ''' # para testear a mano
