@@ -9,7 +9,13 @@
     (main 
         (print (- 1 (* i (+ i j))))
         (print 'c')
+        (if tt
+                (print 'e')
+                (print (+ 1 j ) )
+            )
+        
 
     )
 )
+
 

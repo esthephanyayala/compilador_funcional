@@ -74,6 +74,41 @@ def p_expresion(p):
                     | OPEN_PAREN signosrelacionales exp exp CLOSE_PAREN 
                     | expresionesunarias'''
 
+    #solo para el segundo caso (> i j)
+    if len(p) == 6:
+
+        #operator 
+        operator = stackOperadores.pop()
+
+        #right
+        right = stackOperandos.pop()
+        rightType = stackTypes.pop()
+
+        #left 
+        left = stackOperandos.pop()
+        leftType = stackTypes.pop()
+
+        # check semanticCube
+        semanticCubeType = semanticCube[leftType][rightType][operator]
+        
+        if semanticCubeType != 'ERROR':
+            scope = "temp"
+            ad = address[scope][semanticCubeType]
+            address[scope][semanticCubeType] += 1
+
+            stackOperandos.append(ad)
+            stackTypes.append(semanticCubeType)
+
+            q = Quadruple(operator,left,right,ad)
+            q.print()
+            
+        else :
+            print("Error de compilacion")
+       
+        
+
+
+
 
 ##### SIGNOSRELACIONALES #####
 
@@ -82,6 +117,7 @@ def p_signosrelacionales(p):
                             | GT
                             | NE
                             | EQUAL '''
+    stackOperadores.append(p[1])
 
 ##### EXPRESIONESUNARIAS #####
 
@@ -89,6 +125,35 @@ def p_expresionesunarias(p):
     ''' expresionesunarias  : OPEN_PAREN expresionesunarias_2 exp CLOSE_PAREN 
                             | TRUE
                             | FALSE '''
+    #solo primer caso (int? i)
+    if len(p) == 5:
+
+        #operator == 6:
+        operator = stackOperadores.pop()
+
+        #left  
+        left = stackOperandos.pop()
+        leftType = stackTypes.pop()
+
+        semanticCubeType = 'bool'
+        scope = "temp"
+        ad = address[scope][semanticCubeType]
+        address[scope][semanticCubeType] += 1
+        stackOperandos.append(ad)
+        stackTypes.append(semanticCubeType)
+        q = Quadruple(operator,left,"NULL",ad)
+        q.print()
+    
+    else: ## para 2do y 3er caso
+        semanticCubeType = 'bool'
+        scope = "temp"
+        ad = address[scope][semanticCubeType]
+        address[scope][semanticCubeType] += 1
+        stackOperandos.append(ad)
+        stackTypes.append(semanticCubeType)
+
+        
+
 
 def p_expresionesunarias_2(p):
     ''' expresionesunarias_2    : EVEN_PREDICATE 
@@ -97,7 +162,7 @@ def p_expresionesunarias_2(p):
                                 | LIST_PREDICATE
                                 | NULL_PREDICATE
                                 | EMPTY_PREDICATE '''
-
+    stackOperadores.append(p[1])
 ##### EXP #####
 
 def p_exp(p):
@@ -469,8 +534,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test4.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)

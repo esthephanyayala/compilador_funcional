@@ -283,4 +283,11 @@ semanticCube = {
     }
 }
 
+
+semanticCubePredicates = {
+    "intp": {
+        "int" : "bool"
+    }
+}
+
 #print(semanticCube['int']['list']['+'])
