@@ -1,6 +1,8 @@
 from lexer import tokens
-from Quadruples import Quadruple
+from Quadruples import Quadruple#,Quadruples
 from CuboSemantico import semanticCube
+
+#quadruples = Quadruples()
 
 ultTipo = []
 varTable = {}
@@ -91,7 +93,7 @@ def p_exp(p):
 
         # right 
         rightStackCTE = stackCTE.pop()
-        
+
         if  not(rightStackCTE['isCTE']) :
             rightID = rightStackCTE['value']
             rightObject = varTable['vars'][rightID]
@@ -145,6 +147,8 @@ def p_exp(p):
         temp = 1
         q = Quadruple(operator,leftDir,rightDir,tempDir,leftDirObject,rightDirObject,'direccionesTemp',leftType,rightType,tempType)
         q.print()
+        #quadruples.add(q)
+        #quadruples.print()
     except:
         print('nel')
     
@@ -155,7 +159,7 @@ def p_signos1(p):
     '''signos1 : PLUS 
                 | MINUS ''' 
     
-    print(p[1])
+    #print(p[1])
 
 ##### SIGNOS 2 #####
 
@@ -470,8 +474,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test4.txt'
-#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-filename = os.path.join(fileDir, 'tests/' + programa )
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
