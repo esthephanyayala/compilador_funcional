@@ -1,5 +1,5 @@
 from lexer import tokens
-from Quadruples import Quadruple,Quadruples
+from Quadruples import *
 from CuboSemantico import semanticCube
 
 quadruples = Quadruples()
@@ -24,17 +24,7 @@ address = {
                             "char": 6000,
                             "bool": 7000
                         }
-        
         }
-
-
-direcciones = {
-        "direccionesGlobales" : {"int": [] , "float" : [] , "char" : [] } ,
-        "direccionesTemp" : {"int": [] , "float" : [] , "char" : [] , "bool" : [] }   
-    }
-
-#direcciones = {"int": [] , "float" : [] , "char" : [] }
-counterDirecciones = []
     
 ##### PROGRAMA #####
 
@@ -58,7 +48,7 @@ def p_imprimir(p):
     stackTypes.pop()
     
     q = Quadruple("print","NULL","NULL", address )
-    q.print()
+    quadruples.add(q)
 
 def p_imprimir_2(p):
     ''' imprimir_2  : CTEC np_stackCTEC
@@ -100,14 +90,11 @@ def p_expresion(p):
             stackTypes.append(semanticCubeType)
 
             q = Quadruple(operator,left,right,ad)
-            q.print()
+            quadruples.add(q)
             
         else :
             print("Error de compilacion")
        
-        
-
-
 
 
 ##### SIGNOSRELACIONALES #####
@@ -142,7 +129,7 @@ def p_expresionesunarias(p):
         stackOperandos.append(ad)
         stackTypes.append(semanticCubeType)
         q = Quadruple(operator,left,"NULL",ad)
-        q.print()
+        quadruples.add(q)
     
     else: ## para 2do y 3er caso
         semanticCubeType = 'bool'
@@ -197,7 +184,7 @@ def p_exp(p):
             stackTypes.append(semanticCubeType)
 
             q = Quadruple(operator,left,right,ad)
-            q.print()
+            quadruples.add(q)
             
         else :
             print("Error de compilacion")
@@ -534,8 +521,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test4.txt'
-#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-filename = os.path.join(fileDir, 'tests/' + programa )
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -547,7 +534,7 @@ yacc.parse(input)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
-
+quadruples.print()
 ''' # para testear a mano
 while True:
     try:
