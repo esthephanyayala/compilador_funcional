@@ -10,6 +10,8 @@ varTable = {}
 stackOperadores = []
 stackOperandos = []
 stackTypes = []
+stackSaltos = []
+counterQuad = 0
 
 # Virtual Address
 address = { 
@@ -46,8 +48,11 @@ def p_imprimir(p):
     ''' imprimir : OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN '''
     address = stackOperandos.pop()
     stackTypes.pop()
+
+    global counterQuad
+    counterQuad = counterQuad + 1
     
-    q = Quadruple("print","NULL","NULL", address )
+    q = Quadruple("print","NULL","NULL", address,counterQuad)
     quadruples.add(q)
 
 def p_imprimir_2(p):
@@ -89,8 +94,17 @@ def p_expresion(p):
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
 
-            q = Quadruple(operator,left,right,ad)
+            global counterQuad
+            counterQuad = counterQuad + 1
+            q = Quadruple(operator,left,right,ad, counterQuad)
+            
             quadruples.add(q)
+
+            ##agregar gotF al quad 
+            counterQuad = counterQuad + 1
+            gf = Quadruple("GOTOF",ad,"NULL","NULL",counterQuad)
+            quadruples.add(gf)
+            stackSaltos.append(counterQuad)
             
         else :
             print("Error de compilacion")
@@ -128,7 +142,10 @@ def p_expresionesunarias(p):
         address[scope][semanticCubeType] += 1
         stackOperandos.append(ad)
         stackTypes.append(semanticCubeType)
-        q = Quadruple(operator,left,"NULL",ad)
+
+        global counterQuad
+        counterQuad = counterQuad + 1
+        q = Quadruple(operator,left,"NULL",ad,counterQuad)
         quadruples.add(q)
     
     else: ## para 2do y 3er caso
@@ -183,8 +200,12 @@ def p_exp(p):
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
 
-            q = Quadruple(operator,left,right,ad)
+            global counterQuad
+            counterQuad = counterQuad  + 1
+            
+            q = Quadruple(operator,left,right,ad,counterQuad)
             quadruples.add(q)
+            
             
         else :
             print("Error de compilacion")
@@ -446,7 +467,18 @@ def p_main_2(p):
 ##### CONDICION #####
 
 def p_condicion(p):
-    ''' condicion : OPEN_PAREN IF expresion bloque bloque CLOSE_PAREN '''
+    ''' condicion : OPEN_PAREN IF expresion bloque rellenar_gotof bloque  CLOSE_PAREN '''
+
+def p_rellenar_gotof(p):
+    ''' rellenar_gotof : '''
+
+    print("quad num", counterQuad+1) 
+    #quadruples.pop()
+    #print(quadruples.pop())
+    numF = stackSaltos.pop()
+    quadruples.fillGoto(numF,counterQuad+1)
+    
+
 
 ##### LAMBDA #####
 def p_lambda(p):
@@ -521,8 +553,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test4.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -535,6 +567,7 @@ yacc.parse(input)
 #print(direcciones)
 #'''
 quadruples.print()
+print(stackSaltos)
 ''' # para testear a mano
 while True:
     try:
