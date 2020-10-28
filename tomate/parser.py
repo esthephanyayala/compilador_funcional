@@ -10,8 +10,8 @@ varTable = {}
 stackOperadores = []
 stackOperandos = []
 stackTypes = []
+
 stackSaltos = []
-counterQuad = 0
 
 # Virtual Address
 address = { 
@@ -32,7 +32,9 @@ address = {
 
 def p_programa(p):
     ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
-
+    
+    #q = Quadruple("goto","NULL","NULL", address,counterQuad)
+    #quadruples.add(q)
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -49,10 +51,8 @@ def p_imprimir(p):
     address = stackOperandos.pop()
     stackTypes.pop()
 
-    global counterQuad
-    counterQuad = counterQuad + 1
     
-    q = Quadruple("print","NULL","NULL", address,counterQuad)
+    q = Quadruple("print","NULL","NULL", address)
     quadruples.add(q)
 
 def p_imprimir_2(p):
@@ -94,18 +94,13 @@ def p_expresion(p):
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
 
-            global counterQuad
-            counterQuad = counterQuad + 1
-            q = Quadruple(operator,left,right,ad, counterQuad)
+            q = Quadruple(operator,left,right,ad)
             
             quadruples.add(q)
 
             ##agregar gotF al quad 
-            counterQuad = counterQuad + 1
-            gf = Quadruple("GOTOF",ad,"NULL","NULL",counterQuad)
-            quadruples.add(gf)
-            stackSaltos.append(counterQuad)
-            
+            quadruples.addGotoF(ad)
+
         else :
             print("Error de compilacion")
        
@@ -143,9 +138,7 @@ def p_expresionesunarias(p):
         stackOperandos.append(ad)
         stackTypes.append(semanticCubeType)
 
-        global counterQuad
-        counterQuad = counterQuad + 1
-        q = Quadruple(operator,left,"NULL",ad,counterQuad)
+        q = Quadruple(operator,left,"NULL",ad)
         quadruples.add(q)
     
     else: ## para 2do y 3er caso
@@ -199,17 +192,13 @@ def p_exp(p):
 
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
-
-            global counterQuad
-            counterQuad = counterQuad  + 1
             
-            q = Quadruple(operator,left,right,ad,counterQuad)
+            q = Quadruple(operator,left,right,ad)
             quadruples.add(q)
             
             
         else :
-            print("Error de compilacion")
-                
+            print("Error de compilacion")    
 
 
 ##### SIGNOS 1 #####
@@ -485,17 +474,16 @@ def p_main_2(p):
 ##### CONDICION #####
 
 def p_condicion(p):
-    ''' condicion : OPEN_PAREN IF expresion bloque rellenar_gotof bloque  CLOSE_PAREN '''
+    ''' condicion : OPEN_PAREN IF expresion bloque rellenar_gotof bloque fill_goto CLOSE_PAREN '''
 
 def p_rellenar_gotof(p):
     ''' rellenar_gotof : '''
+    quadruples.fillGotoF()
+    quadruples.addGoto()
 
-    print("quad num", counterQuad+1) 
-    #quadruples.pop()
-    #print(quadruples.pop())
-    numF = stackSaltos.pop()
-    quadruples.fillGoto(numF,counterQuad+1)
-    
+def p_fill_goto(p):
+    ''' fill_goto : '''
+    quadruples.fillGoto()
 
 
 ##### LAMBDA #####
@@ -583,7 +571,7 @@ yacc.yacc()
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-programa = 'test3.txt'
+programa = 'test4.txt'
 filename = os.path.join(fileDir, 'tomate/tests/' + programa )
 #filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
@@ -597,7 +585,7 @@ print(varTable)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
-#quadruples.print()
+quadruples.print()
 #print(stackSaltos)
 ''' # para testear a mano
 while True:
