@@ -598,7 +598,7 @@ yacc.yacc()
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-programa = 'test4.txt'
+programa = 'test3.txt'
 filename = os.path.join(fileDir, 'tomate/tests/' + programa )
 #filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
