@@ -10,6 +10,10 @@
         (define ( ( void f1 ) int i1 int i2) 
             (print 'e')
         )
+
+         (define ( ( void f2 ) int i3 int i4) 
+            (print 'e')
+        )
     )
     
     (main 
