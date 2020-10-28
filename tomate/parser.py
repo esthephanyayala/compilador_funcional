@@ -6,6 +6,7 @@ quadruples = Quadruples()
 
 ultTipo = []
 varTable = {}
+ 
 
 stackOperadores = []
 stackOperandos = []
@@ -25,6 +26,12 @@ address = {
                             "float":5000,
                             "char": 6000,
                             "bool": 7000
+                        },
+            "local":    {
+                        "int": 8000,
+                        "float": 9000,
+                        "char": 10000,
+                        "bool": 11000
                         }
         }
     
@@ -300,7 +307,7 @@ def p_declaracionfuncion_2(p):
 ##### FUNCION #####
 
 def p_funcion(p):
-    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN OPEN_PAREN tipo ID np_create_dirFunc CLOSE_PAREN typeparam  CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN OPEN_PAREN tipo ID np_create_dirFunc CLOSE_PAREN typeparam np_varTabFunc CLOSE_PAREN bloque CLOSE_PAREN '''
 
 def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
@@ -319,14 +326,33 @@ def p_np_create_dirFunc(p):
             address[scope][typeFunc] += 1
             varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
 
+def p_np_varTabFunc(p):
+    ''' np_varTabFunc : '''
+    funcName = p[-4]
+    varTableFunc = {}
+    varTableFunc[funcName] = {}
+
+    for i in range(0,len(stackOperandos)):
+        typeParam = stackTypes.pop()
+        idparam = stackOperandos.pop()
+        scope = "local"
+        ad = address[scope][typeParam]
+        address[scope][typeParam] += 1
+        varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress:":ad }
+        
+    print (varTableFunc)
+   
+   
+
 ##### TYPEPARAM #####
 
 def p_typeparam(p):
-    ''' typeparam  : tipovars ID np_typeparam typeparam
+    ''' typeparam  : tipovars ID np_idparam typeparam
                     | empty ''' 
+    p[0] = p[-1]
 
-def p_np_typeparam(p):
-    ''' np_typeparam : '''
+def p_np_idparam(p):
+    ''' np_idparam : '''
     #print(p[-1])
     stackOperandos.append(p[-1])
 
@@ -472,6 +498,7 @@ def p_bloque(p):
                 | listfunctions 
                 | llamada 
     '''
+    
 
 ##### MAIN #####
 def p_main(p):
@@ -584,8 +611,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
