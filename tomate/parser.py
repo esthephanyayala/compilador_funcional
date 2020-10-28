@@ -300,7 +300,7 @@ def p_declaracionfuncion_2(p):
 ##### FUNCION #####
 
 def p_funcion(p):
-    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN ID np_create_dirFunc param CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN OPEN_PAREN tipo ID np_create_dirFunc CLOSE_PAREN typeparam  CLOSE_PAREN bloque CLOSE_PAREN '''
 
 def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
@@ -309,8 +309,26 @@ def p_np_create_dirFunc(p):
     if funcName in varTable['functions']:
         print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
     else:
-        varTable['functions'][funcName] = "tipo"
+        typeFunc = stackTypes.pop()
+        varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 }
 
+        # if function is not void then push to var table
+        if typeFunc != 'void':
+            scope = "global"
+            ad = address[scope][typeFunc]
+            address[scope][typeFunc] += 1
+            varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+
+##### TYPEPARAM #####
+
+def p_typeparam(p):
+    ''' typeparam  : tipovars ID np_typeparam typeparam
+                    | empty ''' 
+
+def p_np_typeparam(p):
+    ''' np_typeparam : '''
+    #print(p[-1])
+    stackOperandos.append(p[-1])
 
 ##### PARAM #####
 
@@ -525,7 +543,20 @@ def p_tipo(p):
     ''' tipo : INT
             | FLOAT
             | CHAR
+            | VOID
+            | LIST
     '''
+    stackTypes.append(p[1])
+
+###### TIPOVARS #####
+def p_tipovars(p):
+    ''' tipovars : INT
+            | FLOAT
+            | CHAR
+            | LIST
+    '''
+    #print(p[1])
+    stackTypes.append(p[1])
 
 ##### LLAMADA #####
 def p_llamada(p):
@@ -552,22 +583,22 @@ yacc.yacc()
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-programa = 'test4.txt'
-#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-filename = os.path.join(fileDir, 'tests/' + programa )
+programa = 'test3.txt'
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
 
 #print(stackOperadores)
-#print(stackOperandos)
-#print(stackTypes)
-#print(varTable)
+print(stackOperandos)
+print(stackTypes)
+print(varTable)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
-quadruples.print()
-print(stackSaltos)
+#quadruples.print()
+#print(stackSaltos)
 ''' # para testear a mano
 while True:
     try:

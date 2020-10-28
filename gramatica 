@@ -119,12 +119,24 @@ S -> CONDICION | IMPRIMIR | EXPRESION | LLAMADA | LAMBDA | LISTFUNCITONS
 S -> int 
 S -> float 
 S -> char
+S -> void
+S -> list
+
+<TIPOVARS> 
+S -> int 
+S -> float 
+S -> char
+S -> list
 
 <PARAM>
 S -> id S | epsilon
 
+
+<TYPEPARAM>
+S -> TIPOVARS id S | epsilon
+
 <FUNCION>
-S -> ( define ( id PARAM ) BLOQUE  )
+S -> ( define ( ( TIPO id )  TYPEPARAM ) BLOQUE  )
 
 
 <LLAMADA> //llamada de funcion

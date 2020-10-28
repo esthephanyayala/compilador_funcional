@@ -26,7 +26,8 @@ reserved = {
     'ff' : 'TRUE',
     'evenp' : 'EVEN_PREDICATE',
     'intp' : 'INT_PREDICATE',
-    'floatp' : 'FLOAT_PREDICATE'
+    'floatp' : 'FLOAT_PREDICATE',
+    'void' : 'VOID'
 }
 
 tokens = [
