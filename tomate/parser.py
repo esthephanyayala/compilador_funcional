@@ -2,6 +2,8 @@ from lexer import tokens
 from Quadruples import *
 from CuboSemantico import semanticCube
 
+queueParams = []
+
 quadruples = Quadruples()
 
 ultTipo = []
@@ -38,10 +40,15 @@ address = {
 ##### PROGRAMA #####
 
 def p_programa(p):
-    ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
+    ''' programa : np_first_quad OPEN_PAREN PROGRAM ID programa_2 programa_3 np_fill_goto_main main CLOSE_PAREN'''
     
-    #q = Quadruple("goto","NULL","NULL", address,counterQuad)
-    #quadruples.add(q)
+def p_np_first_quad(p):
+    ''' np_first_quad : '''
+    quadruples.addGoto()
+
+def p_np_fill_goto_main(p):
+    ''' np_fill_goto_main : '''
+    quadruples.fillGoto()
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -234,6 +241,7 @@ def p_varcte(p):
 def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
     value = p[-1]
+    #print(value)
 
     valueObject = varTable["vars"][value]
 
@@ -296,7 +304,13 @@ def p_declaracionfuncion_2(p):
 ##### FUNCION #####
 
 def p_funcion(p):
-    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN OPEN_PAREN tipo ID np_create_dirFunc CLOSE_PAREN typeparam np_varTabFunc CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' funcion : OPEN_PAREN DEFINE OPEN_PAREN OPEN_PAREN tipo ID np_create_dirFunc CLOSE_PAREN typeparam np_varTabFunc CLOSE_PAREN bloque CLOSE_PAREN np_finish_function '''
+
+def p_np_finish_function(p):
+    ''' np_finish_function : '''
+
+    q = Quadruple("ENDFUNC","NULL","NULL", "NULL")
+    quadruples.add(q)
 
 def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
@@ -575,13 +589,49 @@ def p_tipovars(p):
 
 ##### LLAMADA #####
 def p_llamada(p):
-    ''' llamada : OPEN_PAREN ID llamada_2 CLOSE_PAREN '''
+    ''' llamada : OPEN_PAREN ID np_check_func_exits llamada_2 np_check_params CLOSE_PAREN '''
+
+def p_np_check_func_exits(p):
+    ''' np_check_func_exits : '''
+    funcName = p[-1]
+    
+    if funcName in varTable['functions']:
+        q = Quadruple("ERA","NULL","NULL", funcName ) 
+        quadruples.add(q)
+    else :
+        print('Error function {} is not declare'.format(funcName))
 
 def p_llamada_2(p):
-    ''' llamada_2 : expresion llamada_2
-                  | listfunctions llamada_2
-                  | empty '''
+    ''' llamada_2 : expresion np_append_params llamada_2
+                  | listfunctions llamada_2 
+                  | empty ''' #faltan el 2 y 3
 
+def p_np_append_params(p):
+    ''' np_append_params : '''
+    address = stackOperandos.pop()
+    type = stackTypes.pop()
+    queueParams.append([address,type])
+
+def p_np_check_params(p):
+    ''' np_check_params : '''
+    print(queueParams)
+    lenParamsFunction = 2 # tenemos que sacar el len del objeto que tiene los params [int,int]
+    lenParamstoCheck = len(queueParams) 
+    if lenParamsFunction != lenParamstoCheck :
+        print("Number of arguments doesn't match the definition of the funcion")
+    else:
+        for i in range(0, lenParamsFunction ):
+            currentParamObject = queueParams.pop(0)
+            address = currentParamObject[0]
+            type = currentParamObject[0]
+            if True: # cambiar el True a checar si hacen sentido el typo con el param actual de la funcion
+                q = Quadruple("param",address,"NULL", "param" + str(i + 1) ) 
+                quadruples.add(q)
+            else:
+                print("Error type mismatch on params of functions")
+    
+    q = Quadruple("GOSUB","NULL","NULL", "numquad" ) #<- aqui mejor poner el quad donde empieza la funcion
+    quadruples.add(q)
 
 def p_error(p):
     print(f"Syntax error at {p.value!r}")
@@ -622,3 +672,10 @@ while True:
         break
     yacc.parse(s)
 '''
+
+
+
+# add resultado de funcion to stack de types y operandos
+# check variables dentro de funcion en global y funcion local
+# contadores raros de cuantos de cada tipo
+# cambier referencias a nueva funcion
