@@ -1,6 +1,7 @@
 (program factorial
     (vars
         (declare i 1)
+
     )
     (functions
         (define ( ( void f1 ) float i1 int i2) 
