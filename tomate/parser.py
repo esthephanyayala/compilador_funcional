@@ -6,6 +6,7 @@ quadruples = Quadruples()
 
 ultTipo = []
 varTable = {}
+dirFunctions = {}
  
 
 stackOperadores = []
@@ -13,6 +14,8 @@ stackOperandos = []
 stackTypes = []
 stackSaltos = []
 counterQuad = 0
+
+
 
 # Virtual Address
 address = { 
@@ -38,8 +41,11 @@ address = {
 ##### PROGRAMA #####
 
 def p_programa(p):
-    ''' programa : OPEN_PAREN PROGRAM ID programa_2 programa_3 main CLOSE_PAREN'''
+    ''' programa : OPEN_PAREN PROGRAM ID np_dirProgram programa_2 programa_3 main CLOSE_PAREN'''
 
+def p_np_dirProgram(p):
+    ''' np_dirProgram : '''
+    dirFunctions[p[-1]] = {}
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -312,12 +318,19 @@ def p_funcion(p):
 def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
     funcName = p[-1]
+    dirFKeys = list(dirFunctions)
 
     if funcName in varTable['functions']:
         print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
     else:
-        typeFunc = stackTypes.pop()
-        varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 }
+        
+        #para dirFunction
+        if funcName in dirFunctions:
+            print("function {} already declare".format(funcName))
+        else:      
+            typeFunc = stackTypes.pop()
+            varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
+            dirFunctions[funcName] = {"type":typeFunc, "quad": 0 } #dirFunction
 
         # if function is not void then push to var table
         if typeFunc != 'void':
@@ -325,22 +338,33 @@ def p_np_create_dirFunc(p):
             ad = address[scope][typeFunc]
             address[scope][typeFunc] += 1
             varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+            dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+    
+
 
 def p_np_varTabFunc(p):
     ''' np_varTabFunc : '''
     funcName = p[-4]
     varTableFunc = {}
     varTableFunc[funcName] = {}
-
+    typesParam = []
+    
     for i in range(0,len(stackOperandos)):
         typeParam = stackTypes.pop()
         idparam = stackOperandos.pop()
         scope = "local"
         ad = address[scope][typeParam]
         address[scope][typeParam] += 1
-        varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress:":ad }
-        
-    print (varTableFunc)
+        #varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress":ad }
+        typesParam.append(typeParam)
+        varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
+        paramsCar = {"typeParam": typeParam, "virtualAdressParam":ad }
+        dirFunctions[funcName]['vars'] = { idparam: paramsCar }
+        #print (varTableFunc)
+    dictTypes = {"typeParams": typesParam}
+    varTable['functions'][funcName].update(dictTypes)
+    dirFunctions[funcName].update(dictTypes)
+    print("param", typesParam)
    
    
 
@@ -385,16 +409,26 @@ def p_declare(p):
 def p_np_create_varTable(p):
     ''' np_create_varTable : '''
     varId = p[-2] # o mejor poner vars
+    dirFKeys = list(dirFunctions)
+    
+
     #print(varId)
     if varId in varTable['vars']:
         print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
     else :
-        type = ultTipo[-1]
-        scope = "global"
-        ad = address[scope][type]
-        address[scope][type] += 1
-        varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
-        
+        #if varId in dirFunctions
+        if varId in dirFunctions[dirFKeys[0]]:
+            print("variable {} already declare".format(varId))
+        else:
+            type = ultTipo[-1]
+            scope = "global"
+            ad = address[scope][type]
+            address[scope][type] += 1
+            varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+            varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
+            dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
+           
+
 
 def p_declare_2(p):
     ''' declare_2   : definircte
@@ -620,7 +654,8 @@ yacc.parse(input)
 #print(stackOperadores)
 print(stackOperandos)
 print(stackTypes)
-print(varTable)
+#print(varTable)
+print(dirFunctions)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
