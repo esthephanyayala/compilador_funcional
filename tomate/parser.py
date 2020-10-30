@@ -15,7 +15,14 @@ nextScopeMemory = ""
 stackOperadores = []
 stackOperandos = []
 stackTypes = []
+
 stackScope = []
+
+
+stackSaltos = []
+
+scopeMemory = 0
+
 
 # Virtual Address
 address = { 
@@ -54,6 +61,9 @@ def p_np_fill_goto_main(p):
 def p_np_dirProgram(p):
     ''' np_dirProgram : '''
     dirFunctions[p[-1]] = {}
+    global scopeMemory
+    scopeMemory = p[-1]
+    
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -247,14 +257,17 @@ def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
     value = p[-1]
     #print(value)
+    dirFKeys = list(dirFunctions)
 
-    valueObject = varTable["vars"][value]
+    #valueObject = varTable["vars"][value]
+    valueObject = dirFunctions[dirFKeys[0]]["vars"][value] 
 
     address = valueObject['virtualAddress']
     type = valueObject['type']
 
     stackOperandos.append(address)
     stackTypes.append(type)
+    
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
@@ -299,8 +312,9 @@ def p_declaracionfuncion(p):
 
 def p_np_create_funcObject(p):
     ''' np_create_funcObject : '''
-    funct = p[-1]
-    varTable[funct] = {}
+    funct = p[-1] # es la palabra "functions"
+    #varTable[funct] = {} #creo que ya no lo necesitamos
+  
 
 def p_declaracionfuncion_2(p):
     ''' declaracionfuncion_2    : funcion declaracionfuncion_2 
@@ -321,26 +335,30 @@ def p_np_create_dirFunc(p):
     funcName = p[-1]
     dirFKeys = list(dirFunctions)
     currentQuad = quadruples.getCurrentQuad()
+    global scopeMemory
 
-    if funcName in varTable['functions']:
-        print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
-    else:
+    #if funcName in varTable['functions']:
+    # print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
+    #else:
         
-        #para dirFunction
-        if funcName in dirFunctions:
-            print("function {} already declare".format(funcName))
-        else:      
-            typeFunc = stackTypes.pop()
-            varTable['functions'][funcName] = {"type":typeFunc, "quad" : currentQuad } #varTable
-            dirFunctions[funcName] = {"type":typeFunc, "quad": currentQuad } #dirFunction
+    #para dirFunction
+    if funcName in dirFunctions:
+        print("function {} already declare".format(funcName))
+    else:      
+        typeFunc = stackTypes.pop()
+        #varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
+        dirFunctions[funcName] = {"type":typeFunc, "quad": currentQuad } #dirFunction
+        scopeMemory = funcName
+        
 
-        # if function is not void then push to var table
-        if typeFunc != 'void':
-            scope = "global"
-            ad = address[scope][typeFunc]
-            address[scope][typeFunc] += 1
-            varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
-            dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+    # if function is not void then push to var table
+    if typeFunc != 'void':
+        scope = "global"
+        ad = address[scope][typeFunc]
+        address[scope][typeFunc] += 1
+        #varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+        dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+    
 
 
 def p_np_varTabFunc(p):
@@ -358,12 +376,12 @@ def p_np_varTabFunc(p):
         address[scope][typeParam] += 1
         #varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress":ad }
         typesParam.append(typeParam)
-        varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
+        #varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
         paramsCar = {"typeParam": typeParam, "virtualAdressParam":ad }
         dirFunctions[funcName]['vars'] = { idparam: paramsCar }
         #print (varTableFunc)
     dictTypes = {"typeParams": typesParam}
-    varTable['functions'][funcName].update(dictTypes)
+    #varTable['functions'][funcName].update(dictTypes)
     dirFunctions[funcName].update(dictTypes)
     #print("param", typesParam)
    
@@ -396,6 +414,7 @@ def p_np_create_dirFuncVars(p):
     funcName = p[-1]
     varTable[funcName] = {}
 
+
 def p_declaracionvariables_2(p):
     ''' declaracionvariables_2 : declare declaracionvariables_2
                                 | empty '''
@@ -413,20 +432,20 @@ def p_np_create_varTable(p):
     
 
     #print(varId)
-    if varId in varTable['vars']:
-        print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
-    else :
-        #if varId in dirFunctions
-        if varId in dirFunctions[dirFKeys[0]]:
-            print("variable {} already declare".format(varId))
-        else:
-            type = ultTipo[-1]
-            scope = "global"
-            ad = address[scope][type]
-            address[scope][type] += 1
-            varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
-            varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
-            dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
+  # if varId in varTable['vars']:
+   #     print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
+    #else :
+    #if varId in dirFunctions
+    if varId in dirFunctions[dirFKeys[0]]:
+        print("variable {} already declare".format(varId))
+    else:
+        type = ultTipo[-1]
+        scope = "global"
+        ad = address[scope][type]
+        address[scope][type] += 1
+        #varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+        varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
+        dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
            
 
 
@@ -654,19 +673,22 @@ def p_np_check_params(p):
     
     #function variables
     funcName = stackScope[-1]
+    print(funcName)
+
     funcObj = dirFunctions[funcName]
     funcQuad = funcObj["quad"]
-    funcParams = funcObj["typeParams"]
+    funcParams = funcObj["typeParams"].copy()
     lenParamsFunction = len(funcParams) 
 
+    global queueParams
     lenParamstoCheck = len(queueParams) 
     
     # check if the definition of the function and the params match
     if lenParamsFunction != lenParamstoCheck :
+        queueParams = []
         print("Number of arguments doesn't match the definition of the funcion")
     else:
         for i in range(0, lenParamsFunction ):
-
             currentParamObject = queueParams.pop(0)
             address = currentParamObject[0]
             type = currentParamObject[1]
@@ -710,6 +732,7 @@ print("stackTypes: " + str(stackTypes))
 print("stackScope: " + str(stackScope))
 #print(varTable)
 print(dirFunctions)
+print("scope", scopeMemory)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
@@ -727,6 +750,6 @@ while True:
 
 
 # add resultado de funcion to stack de types y operandos
-# check variables dentro de funcion en global y funcion local
-# contadores raros de cuantos de cada tipo
-# cambier referencias a nueva funcion
+# check variables dentro de funcion en global y funcion local 
+# contadores raros de cuantos de cada tipo √√
+# cambiar referencias a nuevo objeto √√
