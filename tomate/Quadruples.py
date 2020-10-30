@@ -66,4 +66,5 @@ class Quadruples:
     def addJump(self):
         self.stackJumps.append(self.cont - 1)
     
-    
+    def getCurrentQuad(self):
+        return self.cont

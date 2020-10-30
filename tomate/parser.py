@@ -9,15 +9,13 @@ quadruples = Quadruples()
 ultTipo = []
 varTable = {}
 dirFunctions = {}
- 
+scopeMemory = "factorial"
+nextScopeMemory = ""
 
 stackOperadores = []
 stackOperandos = []
 stackTypes = []
-
-stackSaltos = []
-
-
+stackScope = []
 
 # Virtual Address
 address = { 
@@ -315,7 +313,6 @@ def p_funcion(p):
 
 def p_np_finish_function(p):
     ''' np_finish_function : '''
-
     q = Quadruple("ENDFUNC","NULL","NULL", "NULL")
     quadruples.add(q)
 
@@ -323,6 +320,7 @@ def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
     funcName = p[-1]
     dirFKeys = list(dirFunctions)
+    currentQuad = quadruples.getCurrentQuad()
 
     if funcName in varTable['functions']:
         print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
@@ -333,8 +331,8 @@ def p_np_create_dirFunc(p):
             print("function {} already declare".format(funcName))
         else:      
             typeFunc = stackTypes.pop()
-            varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
-            dirFunctions[funcName] = {"type":typeFunc, "quad": 0 } #dirFunction
+            varTable['functions'][funcName] = {"type":typeFunc, "quad" : currentQuad } #varTable
+            dirFunctions[funcName] = {"type":typeFunc, "quad": currentQuad } #dirFunction
 
         # if function is not void then push to var table
         if typeFunc != 'void':
@@ -343,7 +341,6 @@ def p_np_create_dirFunc(p):
             address[scope][typeFunc] += 1
             varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
             dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
-    
 
 
 def p_np_varTabFunc(p):
@@ -368,8 +365,7 @@ def p_np_varTabFunc(p):
     dictTypes = {"typeParams": typesParam}
     varTable['functions'][funcName].update(dictTypes)
     dirFunctions[funcName].update(dictTypes)
-    print("param", typesParam)
-   
+    #print("param", typesParam)
    
 
 ##### TYPEPARAM #####
@@ -624,13 +620,19 @@ def p_tipovars(p):
 
 ##### LLAMADA #####
 def p_llamada(p):
-    ''' llamada : OPEN_PAREN ID np_check_func_exits llamada_2 np_check_params CLOSE_PAREN '''
+    ''' llamada : OPEN_PAREN ID np_check_func_exits llamada_2 np_check_params CLOSE_PAREN np_finish_llamada '''
+
+def p_np_finish_llamada(p):
+    ''' np_finish_llamada : '''
+    stackScope.pop()
+    #change scope
 
 def p_np_check_func_exits(p):
     ''' np_check_func_exits : '''
     funcName = p[-1]
+    stackScope.append(funcName)
     
-    if funcName in varTable['functions']:
+    if funcName in dirFunctions:
         q = Quadruple("ERA","NULL","NULL", funcName ) 
         quadruples.add(q)
     else :
@@ -649,23 +651,35 @@ def p_np_append_params(p):
 
 def p_np_check_params(p):
     ''' np_check_params : '''
-    print(queueParams)
-    lenParamsFunction = 2 # tenemos que sacar el len del objeto que tiene los params [int,int]
+    
+    #function variables
+    funcName = stackScope[-1]
+    funcObj = dirFunctions[funcName]
+    funcQuad = funcObj["quad"]
+    funcParams = funcObj["typeParams"]
+    lenParamsFunction = len(funcParams) 
+
     lenParamstoCheck = len(queueParams) 
+    
+    # check if the definition of the function and the params match
     if lenParamsFunction != lenParamstoCheck :
         print("Number of arguments doesn't match the definition of the funcion")
     else:
         for i in range(0, lenParamsFunction ):
+
             currentParamObject = queueParams.pop(0)
             address = currentParamObject[0]
-            type = currentParamObject[0]
-            if True: # cambiar el True a checar si hacen sentido el typo con el param actual de la funcion
+            type = currentParamObject[1]
+            typeFunc = funcParams.pop()
+            
+            # if the variable on the call and on the definition are the same then we can continue, if not error
+            if type == typeFunc: 
                 q = Quadruple("param",address,"NULL", "param" + str(i + 1) ) 
                 quadruples.add(q)
             else:
                 print("Error type mismatch on params of functions")
     
-    q = Quadruple("GOSUB","NULL","NULL", "numquad" ) #<- aqui mejor poner el quad donde empieza la funcion
+    q = Quadruple("GOSUB","NULL","NULL", funcQuad )
     quadruples.add(q)
 
 def p_error(p):
@@ -691,8 +705,9 @@ input = f.read()
 yacc.parse(input)
 
 #print(stackOperadores)
-print(stackOperandos)
-print(stackTypes)
+print("stackOperandos: " + str(stackOperandos))
+print("stackTypes: " + str(stackTypes))
+print("stackScope: " + str(stackScope))
 #print(varTable)
 print(dirFunctions)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))

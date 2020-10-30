@@ -3,7 +3,7 @@
         (declare i 1)
     )
     (functions
-        (define ( ( void f1 ) int i1 int i2) 
+        (define ( ( void f1 ) float i1 int i2) 
                 (print (+ 1 2))
         )
         (define ( ( void f2 ) int i1 int i2) 
