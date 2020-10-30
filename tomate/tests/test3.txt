@@ -1,9 +1,13 @@
 (program factorial
     (vars
         (declare i 1)
+        (declare j 1)
+        (declare k 2.2)
+        
+       
     )
     (functions
-        (define ( ( void f1 ) int i1 int i2) 
+        (define ( ( void f1 ) int i1 int i2 int i1) 
                 (print (+ 1 2))
         )
         (define ( ( void f2 ) int i1 int i2) 

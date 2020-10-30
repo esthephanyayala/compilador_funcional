@@ -56,7 +56,7 @@ def p_np_fill_goto_main(p):
 
 def p_np_dirProgram(p):
     ''' np_dirProgram : '''
-    dirFunctions[p[-1]] = {}
+    dirFunctions[p[-1]] = {"vars": {}}
     global scopeMemory
     scopeMemory = p[-1]
     
@@ -258,6 +258,7 @@ def p_np_stackCTEID(p):
     #valueObject = varTable["vars"][value]
     valueObject = dirFunctions[dirFKeys[0]]["vars"][value] 
 
+  
     address = valueObject['virtualAddress']
     type = valueObject['type']
 
@@ -433,7 +434,8 @@ def p_np_create_varTable(p):
    #     print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
     #else :
     #if varId in dirFunctions
-    if varId in dirFunctions[dirFKeys[0]]:
+    #print("df vars:",dirFunctions)
+    if varId in dirFunctions[dirFKeys[0]]['vars']:
         print("variable {} already declare".format(varId))
     else:
         type = ultTipo[-1]
@@ -441,8 +443,9 @@ def p_np_create_varTable(p):
         ad = address[scope][type]
         address[scope][type] += 1
         #varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
-        varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
-        dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
+        
+        dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+
            
 
 
