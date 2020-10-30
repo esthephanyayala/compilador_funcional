@@ -17,6 +17,7 @@ stackTypes = []
 
 stackSaltos = []
 
+scopeMemory = 0
 
 
 # Virtual Address
@@ -56,6 +57,9 @@ def p_np_fill_goto_main(p):
 def p_np_dirProgram(p):
     ''' np_dirProgram : '''
     dirFunctions[p[-1]] = {}
+    global scopeMemory
+    scopeMemory = p[-1]
+    
 
 def p_programa_2(p):
     ''' programa_2  : declaracionvariables
@@ -249,14 +253,17 @@ def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
     value = p[-1]
     #print(value)
+    dirFKeys = list(dirFunctions)
 
-    valueObject = varTable["vars"][value]
+    #valueObject = varTable["vars"][value]
+    valueObject = dirFunctions[dirFKeys[0]]["vars"][value] 
 
     address = valueObject['virtualAddress']
     type = valueObject['type']
 
     stackOperandos.append(address)
     stackTypes.append(type)
+    
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
@@ -301,8 +308,9 @@ def p_declaracionfuncion(p):
 
 def p_np_create_funcObject(p):
     ''' np_create_funcObject : '''
-    funct = p[-1]
-    varTable[funct] = {}
+    funct = p[-1] # es la palabra "functions"
+    #varTable[funct] = {} #creo que ya no lo necesitamos
+  
 
 def p_declaracionfuncion_2(p):
     ''' declaracionfuncion_2    : funcion declaracionfuncion_2 
@@ -323,26 +331,29 @@ def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
     funcName = p[-1]
     dirFKeys = list(dirFunctions)
+    global scopeMemory
 
-    if funcName in varTable['functions']:
-        print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
-    else:
+    #if funcName in varTable['functions']:
+    # print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
+    #else:
         
-        #para dirFunction
-        if funcName in dirFunctions:
-            print("function {} already declare".format(funcName))
-        else:      
-            typeFunc = stackTypes.pop()
-            varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
-            dirFunctions[funcName] = {"type":typeFunc, "quad": 0 } #dirFunction
+    #para dirFunction
+    if funcName in dirFunctions:
+        print("function {} already declare".format(funcName))
+    else:      
+        typeFunc = stackTypes.pop()
+        #varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
+        dirFunctions[funcName] = {"type":typeFunc, "quad": 0 } #dirFunction
+        scopeMemory = funcName
+        
 
-        # if function is not void then push to var table
-        if typeFunc != 'void':
-            scope = "global"
-            ad = address[scope][typeFunc]
-            address[scope][typeFunc] += 1
-            varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
-            dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+    # if function is not void then push to var table
+    if typeFunc != 'void':
+        scope = "global"
+        ad = address[scope][typeFunc]
+        address[scope][typeFunc] += 1
+        #varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+        dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
     
 
 
@@ -361,12 +372,12 @@ def p_np_varTabFunc(p):
         address[scope][typeParam] += 1
         #varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress":ad }
         typesParam.append(typeParam)
-        varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
+        #varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
         paramsCar = {"typeParam": typeParam, "virtualAdressParam":ad }
         dirFunctions[funcName]['vars'] = { idparam: paramsCar }
         #print (varTableFunc)
     dictTypes = {"typeParams": typesParam}
-    varTable['functions'][funcName].update(dictTypes)
+    #varTable['functions'][funcName].update(dictTypes)
     dirFunctions[funcName].update(dictTypes)
     print("param", typesParam)
    
@@ -400,6 +411,7 @@ def p_np_create_dirFuncVars(p):
     funcName = p[-1]
     varTable[funcName] = {}
 
+
 def p_declaracionvariables_2(p):
     ''' declaracionvariables_2 : declare declaracionvariables_2
                                 | empty '''
@@ -417,20 +429,20 @@ def p_np_create_varTable(p):
     
 
     #print(varId)
-    if varId in varTable['vars']:
-        print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
-    else :
-        #if varId in dirFunctions
-        if varId in dirFunctions[dirFKeys[0]]:
-            print("variable {} already declare".format(varId))
-        else:
-            type = ultTipo[-1]
-            scope = "global"
-            ad = address[scope][type]
-            address[scope][type] += 1
-            varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
-            varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
-            dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
+  # if varId in varTable['vars']:
+   #     print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
+    #else :
+    #if varId in dirFunctions
+    if varId in dirFunctions[dirFKeys[0]]:
+        print("variable {} already declare".format(varId))
+    else:
+        type = ultTipo[-1]
+        scope = "global"
+        ad = address[scope][type]
+        address[scope][type] += 1
+        #varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+        varCaract = {"type": ultTipo[-1] , "virtualAddress":ad}
+        dirFunctions[dirFKeys[0]]['vars'] = { varId : varCaract }
            
 
 
@@ -630,7 +642,8 @@ def p_np_check_func_exits(p):
     ''' np_check_func_exits : '''
     funcName = p[-1]
     
-    if funcName in varTable['functions']:
+    #if funcName in varTable['functions']:
+    if funcName in dirFunctions:
         q = Quadruple("ERA","NULL","NULL", funcName ) 
         quadruples.add(q)
     else :
@@ -684,8 +697,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -695,6 +708,7 @@ print(stackOperandos)
 print(stackTypes)
 #print(varTable)
 print(dirFunctions)
+print("scope", scopeMemory)
 #print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
 #print(direcciones)
 #'''
