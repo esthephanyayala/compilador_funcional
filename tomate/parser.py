@@ -63,6 +63,7 @@ def p_np_dirProgram(p):
     dirFunctions[p[-1]] = {"vars": {}}
     global scopeMemory
     scopeMemory = p[-1]
+    stackScope.append(p[-1])
     
 
 def p_programa_2(p):
@@ -79,7 +80,6 @@ def p_imprimir(p):
     ''' imprimir : OPEN_PAREN PRINT imprimir_2 CLOSE_PAREN '''
     address = stackOperandos.pop()
     stackTypes.pop()
-
     
     q = Quadruple("print","NULL","NULL", address)
     quadruples.add(q)
@@ -132,7 +132,6 @@ def p_expresion(p):
 
         else :
             print("Error de compilacion")
-       
 
 
 ##### SIGNOSRELACIONALES #####
@@ -180,7 +179,6 @@ def p_expresionesunarias(p):
 
         
 
-
 def p_expresionesunarias_2(p):
     ''' expresionesunarias_2    : EVEN_PREDICATE 
                                 | INT_PREDICATE
@@ -189,6 +187,7 @@ def p_expresionesunarias_2(p):
                                 | NULL_PREDICATE
                                 | EMPTY_PREDICATE '''
     stackOperadores.append(p[1])
+    
 ##### EXP #####
 
 def p_exp(p):
@@ -378,7 +377,7 @@ def p_np_varTabFunc(p):
         #varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress":ad }
         typesParam.append(typeParam)
         #varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
-        paramsCar = {"typeParam": typeParam, "virtualAdressParam":ad }
+        paramsCar = {"type": typeParam, "virtualAddress":ad }
         dirFunctions[funcName]['vars'] = { idparam: paramsCar }
         #print (varTableFunc)
     dictTypes = {"typeParams": typesParam}
