@@ -1,0 +1,1 @@
+Para la generacion de codigo vamos a un 80%, lo unico que nos falta relacionado a esto es tomar en cuenta la variables que hacen adentro de la funcion, y buscarlas no solo en el contexto de la funcion si no tambien del global
