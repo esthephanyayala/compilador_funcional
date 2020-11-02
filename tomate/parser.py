@@ -2,26 +2,19 @@ from lexer import tokens
 from Quadruples import *
 from CuboSemantico import semanticCube
 
-queueParams = []
-
 quadruples = Quadruples()
 
 ultTipo = []
-varTable = {}
-dirFunctions = {}
-scopeMemory = "factorial"
-nextScopeMemory = ""
 
+dirFunctions = {}
+
+queueParams = []
 stackOperadores = []
 stackOperandos = []
 stackTypes = []
-
 stackScope = []
-
-
-stackSaltos = []
-
-scopeMemory = 0
+stackConst = []
+scopeGlobal = ""
 
 
 # Virtual Address
@@ -41,14 +34,47 @@ address = {
                         "int": 8000,
                         "float": 9000,
                         "char": 10000,
-                        "bool": 11000
+                        "bool": 12000
+                        },
+            "const":    {
+                        "int": 13000,
+                        "float": 14000,
+                        "char": 15000
                         }
         }
-    
+constTable = {}
+
+def getAddress(addressType,type):
+
+    # When we are in a function we save types we use
+    if addressType == "temp" and not(boolScopeGlobal()) :
+        currentScope = stackScope[-1]
+        localMemory = dirFunctions[currentScope]["memory"]["local"]
+
+        # add += 1 to local memory
+        if type == "int":
+            localMemory[0] += 1
+        elif type == "float":
+            localMemory[1] += 1
+        elif type == "char":
+            localMemory[2] += 1
+        else :
+            localMemory[3] += 1
+        
+        addressType = "local"
+
+    ad = address[addressType][type]
+    address[addressType][type] += 1
+    return ad
+
+def boolScopeGlobal():
+    currentScope = stackScope[-1]
+    return currentScope == scopeGlobal
+
 ##### PROGRAMA #####
 
 def p_programa(p):
-    ''' programa : np_first_quad OPEN_PAREN PROGRAM ID np_dirProgram programa_2 programa_3 np_fill_goto_main main CLOSE_PAREN'''
+    ''' programa : OPEN_PAREN PROGRAM ID np_dirProgram programa_2 np_first_quad programa_3 np_fill_goto_main main CLOSE_PAREN'''
     
 def p_np_first_quad(p):
     ''' np_first_quad : '''
@@ -60,10 +86,12 @@ def p_np_fill_goto_main(p):
 
 def p_np_dirProgram(p):
     ''' np_dirProgram : '''
-    dirFunctions[p[-1]] = {"vars": {}}
-    global scopeMemory
-    scopeMemory = p[-1]
-    stackScope.append(p[-1])
+    programName = p[-1]
+    dirFunctions[programName] = {"vars": {}}
+    stackScope.append(programName)
+
+    global scopeGlobal
+    scopeGlobal = programName
     
 
 def p_programa_2(p):
@@ -90,6 +118,7 @@ def p_imprimir_2(p):
                     | lambda
                     | listfunctions
     ''' 
+    # e que pedo hay que agregar condicion aqui alv
 
 ##### EXPRESION #####
 
@@ -116,9 +145,8 @@ def p_expresion(p):
         semanticCubeType = semanticCube[leftType][rightType][operator]
         
         if semanticCubeType != 'ERROR':
-            scope = "temp"
-            ad = address[scope][semanticCubeType]
-            address[scope][semanticCubeType] += 1
+                
+            ad = getAddress("temp",semanticCubeType)
 
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
@@ -126,9 +154,6 @@ def p_expresion(p):
             q = Quadruple(operator,left,right,ad)
             
             quadruples.add(q)
-
-            ##agregar gotF al quad 
-            quadruples.addGotoF(ad)
 
         else :
             print("Error de compilacion")
@@ -160,9 +185,7 @@ def p_expresionesunarias(p):
         leftType = stackTypes.pop()
 
         semanticCubeType = 'bool'
-        scope = "temp"
-        ad = address[scope][semanticCubeType]
-        address[scope][semanticCubeType] += 1
+        ad = getAddress("temp", semanticCubeType)
         stackOperandos.append(ad)
         stackTypes.append(semanticCubeType)
 
@@ -170,12 +193,10 @@ def p_expresionesunarias(p):
         quadruples.add(q)
     
     else: ## para 2do y 3er caso
-        semanticCubeType = 'bool'
-        scope = "temp"
-        ad = address[scope][semanticCubeType]
-        address[scope][semanticCubeType] += 1
+        ad = getAddress("temp","bool")
+
         stackOperandos.append(ad)
-        stackTypes.append(semanticCubeType)
+        stackTypes.append("bool")
 
         
 
@@ -194,7 +215,7 @@ def p_exp(p):
     ''' exp : OPEN_PAREN signos1 exp exp CLOSE_PAREN
             | OPEN_PAREN signos2 exp exp CLOSE_PAREN
             | varcte 
-            | llamada
+            | llamada 
             | returnelement'''
 
     if len(p) == 6:
@@ -214,19 +235,17 @@ def p_exp(p):
         semanticCubeType = semanticCube[leftType][rightType][operator]
 
         if semanticCubeType != 'ERROR':
-            scope = "temp"
-            ad = address[scope][semanticCubeType]
-            address[scope][semanticCubeType] += 1
+            ad = getAddress("temp",semanticCubeType)
 
             stackOperandos.append(ad)
             stackTypes.append(semanticCubeType)
             
             q = Quadruple(operator,left,right,ad)
-            quadruples.add(q)
-            
+            quadruples.add(q)   
             
         else :
             print("Error de compilacion")    
+
 
 
 ##### SIGNOS 1 #####
@@ -255,65 +274,81 @@ def p_varcte(p):
 def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
     value = p[-1]
-    #print(value)
-    dirFKeys = list(dirFunctions)
 
-    #valueObject = varTable["vars"][value]
-    valueObject = dirFunctions[dirFKeys[0]]["vars"][value] 
+    currentScope = stackScope[-1]
 
-  
-    address = valueObject['virtualAddress']
-    type = valueObject['type']
+    varibleFound = False
+    valueObject = []
 
-    stackOperandos.append(address)
-    stackTypes.append(type)
+    # La primera condicion verifica si estamos en el scope de una funcion
+    # la segunda condicion verifica si esta la variable dentro de las variables de la funcion se guarda el value
+    if not(boolScopeGlobal()) and value in dirFunctions[currentScope]["vars"]:
+        varibleFound = True            
+        valueObject = dirFunctions[currentScope]["vars"][value] 
+
+    # la primera condicion es para verificar si aun estando en un scope de funcion no se encontro la variable en su scope,
+    # buscarla en el scope global
+    # y la segunda condicion es para verificar si existe
+    if not(varibleFound) and value in dirFunctions[scopeGlobal]["vars"]:
+        varibleFound = True
+        valueObject = dirFunctions[scopeGlobal]["vars"][value] 
+
     
+    # Condicion final para verificar si se encontro la variable, si no poder marcar el error correspondiente
+    if not(varibleFound) :
+        print("Variable {} not found".format(value))
+    else :
+        address = valueObject['virtualAddress']
+        type = valueObject['type']
+
+        stackOperandos.append(address)
+        stackTypes.append(type)
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
+    value = p[-1]
+    
+    if value in constTable:
+        addressConst = constTable[value]
+    else:
+        addressConst = getAddress("const","int")
+        constTable[value] = addressConst
 
-    type = "int"
-    scope = "temp"
-
-    ad = address[scope][type]
-    address[scope][type] += 1
-
-    stackOperandos.append(ad)
-    stackTypes.append(type)
+    stackOperandos.append(addressConst)
+    stackTypes.append("int")
     
 def p_np_stackCTEF(p):
     '''np_stackCTEF : '''
+
+    value = p[-1]
     
-    type = "float"
-    scope = "temp"
+    if value in constTable:
+        addressConst = constTable[value]
+    else:
+        addressConst = getAddress("const","float")
+        constTable[value] = addressConst
 
-    ad = address[scope][type]
-    address[scope][type] += 1
-
-    stackOperandos.append(ad)
-    stackTypes.append(type)
+    stackOperandos.append(addressConst)
+    stackTypes.append("float")
 
 def p_np_stackCTEC(p):
     '''np_stackCTEC : '''
+
+    value = p[-1]
     
-    type = "char"
-    scope = "temp"
+    if value in constTable:
+        addressConst = constTable[value]
+    else:
+        addressConst = getAddress("const","char")
+        constTable[value] = addressConst
 
-    ad = address[scope][type]
-    address[scope][type] += 1
-
-    stackOperandos.append(ad)
-    stackTypes.append(type)
+    stackOperandos.append(addressConst)
+    stackTypes.append("char")
 
 ##### DECLARACIONFUNCION #####
 
 def p_declaracionfuncion(p):
-    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS np_create_funcObject declaracionfuncion_2 CLOSE_PAREN '''
-
-def p_np_create_funcObject(p):
-    ''' np_create_funcObject : '''
-    funct = p[-1] # es la palabra "functions"
-    #varTable[funct] = {} #creo que ya no lo necesitamos
+    ''' declaracionfuncion : OPEN_PAREN FUNCTIONS declaracionfuncion_2 CLOSE_PAREN '''
   
 
 def p_declaracionfuncion_2(p):
@@ -327,6 +362,44 @@ def p_funcion(p):
 
 def p_np_finish_function(p):
     ''' np_finish_function : '''
+    funcName = stackScope.pop()
+    
+    global stackOperadores
+    global stackOperandos
+    global stackTypes
+
+    print(stackOperandos)
+
+    objectVars = dirFunctions[scopeGlobal]['vars']
+
+    if funcName in objectVars:
+        if not stackTypes:
+            print("Not return statement for function {}".format(funcName))
+        else :
+            type = stackTypes.pop()
+            address = stackOperandos.pop()
+
+            typeVars = objectVars[funcName]["type"]
+            addressVars = objectVars[funcName]["virtualAddress"]
+
+            # Condicion para poder generar cuadruplo, si no son igual marcamos error
+            if type == typeVars:
+                q = Quadruple("=",address,"NULL", addressVars ) 
+                quadruples.add(q)
+            else:
+                print("Error type mismatch on function return")
+            
+            # dirFunctions[scopeGlobal]['vars'][funcName]['virtualAddress'] = address
+            # el address declarado en un inicio no lo vamos a cambiar
+            # si no que vamos a hacer que sea igual al ultimo temporal 
+            # que este en el stack de Operandos
+
+    else :
+        
+        stackOperadores = []
+        stackOperandos = []
+        stackTypes = []
+
     q = Quadruple("ENDFUNC","NULL","NULL", "NULL")
     quadruples.add(q)
 
@@ -334,54 +407,55 @@ def p_np_create_dirFunc(p):
     ''' np_create_dirFunc : '''   
     funcName = p[-1]
     dirFKeys = list(dirFunctions)
-    currentQuad = quadruples.getCurrentQuad()
-    global scopeMemory
-
-    #if funcName in varTable['functions']:
-    # print("function {} already declare".format(funcName) ) # Aqui marcaremos el error de funcion ya definida
-    #else:
-        
+ 
     #para dirFunction
     if funcName in dirFunctions:
         print("function {} already declare".format(funcName))
     else:      
+        currentQuad = quadruples.getCurrentQuad()
+        stackScope.append(funcName)
         typeFunc = stackTypes.pop()
-        #varTable['functions'][funcName] = {"type":typeFunc, "quad" : 0 } #varTable
-        dirFunctions[funcName] = {"type":typeFunc, "quad": currentQuad } #dirFunction
-        scopeMemory = funcName
-        
+        memoryObject = {"params":[0,0,0,0],
+                        "local":[0,0,0,0]}
+        dirFunctions[funcName] = {"type":typeFunc, "quad": currentQuad, "vars" : {}, "memory":memoryObject} #dirFunction
 
-    # if function is not void then push to var table
-    if typeFunc != 'void':
-        scope = "global"
-        ad = address[scope][typeFunc]
-        address[scope][typeFunc] += 1
-        #varTable['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
-        dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
+        # if function is not void then push to var table
+        if typeFunc != 'void':
+            ad = getAddress("global",typeFunc)
+            
+            dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
     
-
 
 def p_np_varTabFunc(p):
     ''' np_varTabFunc : '''
     funcName = p[-4]
-    varTableFunc = {}
-    varTableFunc[funcName] = {}
+
     typesParam = []
+    paramsMemory = dirFunctions[funcName]["memory"]["params"]
     
     for i in range(0,len(stackOperandos)):
         typeParam = stackTypes.pop()
+        
+        # add += 1 to memory
+        if typeParam == "int":
+            paramsMemory[0] += 1
+        elif typeParam == "float":
+            paramsMemory[1] += 1
+        elif typeParam == "char":
+            paramsMemory[2] += 1
+        else :
+            paramsMemory[3] += 1
+
         idparam = stackOperandos.pop()
-        scope = "local"
-        ad = address[scope][typeParam]
-        address[scope][typeParam] += 1
-        #varTableFunc[funcName][idparam] = {"type": typeParam, "virtualAdress":ad }
+        ad = getAddress("local", typeParam)
+        
         typesParam.append(typeParam)
-        #varTable['functions'][funcName][idparam] = {"typeParam": typeParam, "virtualAdressParam":ad }
         paramsCar = {"type": typeParam, "virtualAddress":ad }
-        dirFunctions[funcName]['vars'] = { idparam: paramsCar }
-        #print (varTableFunc)
+        dirFunctions[funcName]['vars'][idparam] = paramsCar
+        
     dictTypes = {"typeParams": typesParam}
-    #varTable['functions'][funcName].update(dictTypes)
+
+    dirFunctions[funcName]["memory"]
     dirFunctions[funcName].update(dictTypes)
     #print("param", typesParam)
    
@@ -407,12 +481,7 @@ def p_param(p):
 ##### DECLARACIONVARIABLES #####
 
 def p_declaracionvariables(p):
-    ''' declaracionvariables : OPEN_PAREN VARS np_create_dirFuncVars declaracionvariables_2 CLOSE_PAREN '''
-
-def p_np_create_dirFuncVars(p):
-    ''' np_create_dirFuncVars : '''
-    funcName = p[-1]
-    varTable[funcName] = {}
+    ''' declaracionvariables : OPEN_PAREN VARS declaracionvariables_2 CLOSE_PAREN '''
 
 
 def p_declaracionvariables_2(p):
@@ -429,27 +498,27 @@ def p_np_create_varTable(p):
     ''' np_create_varTable : '''
     varId = p[-2] # o mejor poner vars
     dirFKeys = list(dirFunctions)
-    
 
-    #print(varId)
-  # if varId in varTable['vars']:
-   #     print("variable {} already declare".format(varId)) #Aqui vamos a marcar el error de variable ya declarada
-    #else :
-    #if varId in dirFunctions
-    #print("df vars:",dirFunctions)
     if varId in dirFunctions[dirFKeys[0]]['vars']:
         print("variable {} already declare".format(varId))
     else:
         type = ultTipo[-1]
-        scope = "global"
-        ad = address[scope][type]
-        address[scope][type] += 1
-        #varTable['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+
+        addressDirFunction = getAddress("global",type)
+
+        # if const ya existe
+        value = stackConst.pop()
         
-        dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":ad}
+        if value in constTable:
+            addressConst = constTable[value]
+        else:
+            addressConst = getAddress("const",type)
+            constTable[value] = addressConst
 
-           
-
+        q = Quadruple("=",addressConst,"NULL", addressDirFunction ) 
+        quadruples.add(q)
+        
+        dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":addressDirFunction}
 
 def p_declare_2(p):
     ''' declare_2   : definircte
@@ -461,10 +530,12 @@ def p_definircte(p):
     ''' definircte  : CTEI np_definicioni
                     | CTEF np_definicionf
                     | CTEC np_definicionc '''
+    stackConst.append(p[1])
   
 def p_np_definicioni(p):
     ''' np_definicioni : '''
     ultTipo.append("int")
+
 
 def p_np_definicionf(p):
     ''' np_definicionf : '''
@@ -567,7 +638,14 @@ def p_main_2(p):
 ##### CONDICION #####
 
 def p_condicion(p):
-    ''' condicion : OPEN_PAREN IF expresion bloque rellenar_gotof bloque fill_goto CLOSE_PAREN '''
+    ''' condicion : OPEN_PAREN IF expresion np_add_gotoF bloque rellenar_gotof bloque fill_goto CLOSE_PAREN '''
+
+def p_np_add_gotoF(p):
+    ''' np_add_gotoF : '''
+    ##agregar gotF al quad 
+    ad = stackOperandos.pop()
+    stackTypes.pop()
+    quadruples.addGotoF(ad)
 
 def p_rellenar_gotof(p):
     ''' rellenar_gotof : '''
@@ -641,17 +719,21 @@ def p_tipovars(p):
 
 ##### LLAMADA #####
 def p_llamada(p):
-    ''' llamada : OPEN_PAREN ID np_check_func_exits llamada_2 np_check_params CLOSE_PAREN np_finish_llamada '''
+    ''' llamada : OPEN_PAREN ID np_check_func_exits llamada_2 np_check_params CLOSE_PAREN np_enter_to_stack'''
 
-def p_np_finish_llamada(p):
-    ''' np_finish_llamada : '''
-    stackScope.pop()
-    #change scope
+def p_np_enter_to_stack(p):
+    ''' np_enter_to_stack : '''
+    funcName = p[-5]
+    objectVars = dirFunctions[scopeGlobal]["vars"]
+    if funcName in objectVars:
+        type = objectVars[funcName]["type"]
+        virtualAddress = objectVars[funcName]["virtualAddress"]
+        stackOperandos.append(virtualAddress)
+        stackTypes.append(type)
 
 def p_np_check_func_exits(p):
     ''' np_check_func_exits : '''
     funcName = p[-1]
-    stackScope.append(funcName)
     
     if funcName in dirFunctions:
         q = Quadruple("ERA","NULL","NULL", funcName ) 
@@ -674,8 +756,7 @@ def p_np_check_params(p):
     ''' np_check_params : '''
     
     #function variables
-    funcName = stackScope[-1]
-    print(funcName)
+    funcName = p[-3]
 
     funcObj = dirFunctions[funcName]
     funcQuad = funcObj["quad"]
@@ -732,14 +813,10 @@ yacc.parse(input)
 print("stackOperandos: " + str(stackOperandos))
 print("stackTypes: " + str(stackTypes))
 print("stackScope: " + str(stackScope))
-#print(varTable)
+print("Const Table: " + str(constTable))
 print(dirFunctions)
-print("scope", scopeMemory)
-#print("direccionesGlobales " + str(direcciones["direccionesGlobales"]))
-#print(direcciones)
 #'''
 quadruples.print()
-#print(stackSaltos)
 ''' # para testear a mano
 while True:
     try:
@@ -749,9 +826,27 @@ while True:
     yacc.parse(s)
 '''
 
-
-
 # add resultado de funcion to stack de types y operandos
 # check variables dentro de funcion en global y funcion local 
 # contadores raros de cuantos de cada tipo √√
 # cambiar referencias a nuevo objeto √√
+
+
+# las variables temporales que se creen dentro de una funcion se van a tratar como variables locales
+    # voy a meter ese cambio de una √√
+# los temporales dentro de una funcion tenemos que hacer que se guarden en la memorial local en lugar de la memoria temporal √√
+
+# constantes no tratarlos como temp √√
+
+# goto inicial despues de vars inicial Sthephy® 
+
+# faltan los negativos CAGAJOOOO
+
+# return de functions esto no marca error
+'''(define ( ( int f1 ) int i1 int i2)  
+            ( if (< i1 1)
+                (+ i1 i2)
+                (print i2)    
+            )
+        )
+'''
