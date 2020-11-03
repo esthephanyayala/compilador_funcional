@@ -14,8 +14,9 @@ stackOperandos = []
 stackTypes = []
 stackScope = []
 stackConst = []
+stackParams = []
 scopeGlobal = ""
-
+contCondiciones = 0
 
 # Virtual Address
 address = { 
@@ -42,6 +43,32 @@ address = {
                         "char": 15000
                         }
         }
+
+addressBases = { 
+            "global" :  {
+                            "int":  1000, 
+                            "float":2000,
+                            "char": 3000
+                        },
+            "temp" :    {
+                            "int":  4000, 
+                            "float":5000,
+                            "char": 6000,
+                            "bool": 7000
+                        },
+            "local":    {
+                        "int": 8000,
+                        "float": 9000,
+                        "char": 10000,
+                        "bool": 12000
+                        },
+            "const":    {
+                        "int": 13000,
+                        "float": 14000,
+                        "char": 15000
+                        }
+        }
+
 constTable = {}
 
 def getAddress(addressType,type):
@@ -49,19 +76,21 @@ def getAddress(addressType,type):
     # When we are in a function we save types we use
     if addressType == "temp" and not(boolScopeGlobal()) :
         currentScope = stackScope[-1]
-        localMemory = dirFunctions[currentScope]["memory"]["local"]
 
-        # add += 1 to local memory
-        if type == "int":
-            localMemory[0] += 1
-        elif type == "float":
-            localMemory[1] += 1
-        elif type == "char":
-            localMemory[2] += 1
-        else :
-            localMemory[3] += 1
-        
-        addressType = "local"
+        if dirFunctions[currentScope]["type"] != "lambda":
+            localMemory = dirFunctions[currentScope]["memory"]["local"]
+
+            # add += 1 to local memory
+            if type == "int":
+                localMemory[0] += 1
+            elif type == "float":
+                localMemory[1] += 1
+            elif type == "char":
+                localMemory[2] += 1
+            else :
+                localMemory[3] += 1
+            
+            addressType = "local"
 
     ad = address[addressType][type]
     address[addressType][type] += 1
@@ -269,7 +298,7 @@ def p_varcte(p):
     ''' varcte : ID np_stackCTEID
                 | CTEI np_stackCTEI
                 | CTEF np_stackCTEF '''
-    #print(p[1])
+
 
 def p_np_stackCTEID(p):
     '''np_stackCTEID : '''
@@ -367,39 +396,40 @@ def p_np_finish_function(p):
     global stackOperadores
     global stackOperandos
     global stackTypes
+    global address
+    global contCondiciones
 
-    print(stackOperandos)
 
     objectVars = dirFunctions[scopeGlobal]['vars']
 
     if funcName in objectVars:
-        if not stackTypes:
-            print("Not return statement for function {}".format(funcName))
+
+        returnType = objectVars[funcName]["type"]
+        numberOfReturnExpected = 1 + contCondiciones
+        lenStack = len(stackOperandos)
+
+        if numberOfReturnExpected != lenStack :
+            print("Number of returns doesn't match the function {}".format(funcName))
         else :
-            type = stackTypes.pop()
-            address = stackOperandos.pop()
-
-            typeVars = objectVars[funcName]["type"]
-            addressVars = objectVars[funcName]["virtualAddress"]
-
-            # Condicion para poder generar cuadruplo, si no son igual marcamos error
-            if type == typeVars:
-                q = Quadruple("=",address,"NULL", addressVars ) 
-                quadruples.add(q)
-            else:
-                print("Error type mismatch on function return")
+            for _ in range(0,lenStack):
+                currentTypeCheck = stackTypes.pop()
+                if currentTypeCheck != returnType :
+                    print("Return type doesn't the return type of the function {}".format(funcName))
             
-            # dirFunctions[scopeGlobal]['vars'][funcName]['virtualAddress'] = address
-            # el address declarado en un inicio no lo vamos a cambiar
-            # si no que vamos a hacer que sea igual al ultimo temporal 
-            # que este en el stack de Operandos
+    stackOperadores = []
+    stackOperandos = []
+    stackTypes = []
 
-    else :
-        
-        stackOperadores = []
-        stackOperandos = []
-        stackTypes = []
+    # Reset Temporal Address used by current Function
+    address["local"] = addressBases["local"]
 
+    # Erase Vars from current function on dirFunctions
+    del dirFunctions[funcName]["vars"]
+    
+    # Reset contCondiciones to zero
+    contCondiciones = 0
+
+    # Quadruple to end function
     q = Quadruple("ENDFUNC","NULL","NULL", "NULL")
     quadruples.add(q)
 
@@ -450,7 +480,7 @@ def p_np_varTabFunc(p):
         ad = getAddress("local", typeParam)
         
         typesParam.append(typeParam)
-        paramsCar = {"type": typeParam, "virtualAddress":ad }
+        paramsCar = {"type": typeParam, "virtualAddress": ad }
         dirFunctions[funcName]['vars'][idparam] = paramsCar
         
     dictTypes = {"typeParams": typesParam}
@@ -475,8 +505,12 @@ def p_np_idparam(p):
 ##### PARAM #####
 
 def p_param(p):
-    ''' param   : ID param
+    ''' param   : ID np_append_to_paramStack param 
                 | empty '''
+
+def p_np_append_to_paramStack(p):
+    ''' np_append_to_paramStack : '''
+    stackParams.append(p[-1])
 
 ##### DECLARACIONVARIABLES #####
 
@@ -647,6 +681,10 @@ def p_np_add_gotoF(p):
     stackTypes.pop()
     quadruples.addGotoF(ad)
 
+    # If we are inside a function we add 1 to contCondiciones for return handling
+    global contCondiciones
+    contCondiciones += 1
+
 def p_rellenar_gotof(p):
     ''' rellenar_gotof : '''
     quadruples.fillGotoF()
@@ -659,11 +697,41 @@ def p_fill_goto(p):
 
 ##### LAMBDA #####
 def p_lambda(p):
-    ''' lambda : OPEN_PAREN OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN lambda_2 CLOSE_PAREN '''
+    ''' lambda : OPEN_PAREN np_add_lambda_scope LAMBDA OPEN_PAREN lambda_2 CLOSE_PAREN OPEN_PAREN param np_insert_params CLOSE_PAREN bloque CLOSE_PAREN np_finish_lambda '''
+
+def p_np_insert_params(p):
+    ''' np_insert_params : '''
+
+    lenParams = len(stackParams)
+    lenOperandos = len(stackOperandos)
+
+    if lenOperandos == lenParams :
+
+        for _ in range(0,lenParams):
+            address = stackOperandos.pop()
+            typeParam = stackTypes.pop()
+            variableName = stackParams.pop()
+            objAux = {"type": typeParam, "virtualAddress":address}
+            dirFunctions[stackScope[-1]]["vars"][variableName] = objAux
+
+    else :
+        print("Error on number of params in lambda")
+
+def p_np_add_lambda_scope(p):
+    ''' np_add_lambda_scope : '''
+    stackScope.append("lambda")
+    dirFunctions["lambda"] = {"type":"lambda" , "vars":{}}
+    #ad = getAddress("global",)
+    #dirFunctions[scopeGlobal]["vars"]["lambda"] = {"type":"null","virtualAddress"}
+
+def p_np_finish_lambda(p):
+    ''' np_finish_lambda : '''
+    stackScope.pop()
+    del dirFunctions["lambda"]
 
 def p_lambda_2(p):
-    ''' lambda_2    : expresion
-                    | empty '''
+    ''' lambda_2    : expresion lambda_2
+                    | empty ''' #falta lisfunctions
 
 ##### APPEND #####
 
@@ -843,6 +911,16 @@ while True:
 # faltan los negativos CAGAJOOOO
 
 # return de functions esto no marca error
+
+# returns de funciones, agregar logica :
+# dentro de cada funcion vamos a contabilizar cuantos condiciones existieron
+# if no void then 
+#       len(stackOperandos) == 1 + contCondiciones
+# si es diferente hay error
+# 
+# also
+# resetear temporales al llegar al termino de una funcion
+
 '''(define ( ( int f1 ) int i1 int i2)  
             ( if (< i1 1)
                 (+ i1 i2)

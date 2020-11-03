@@ -60,8 +60,12 @@ S' -> EXPRESION S' | epsilon
 
 <MAP>
 S -> ( map S'' RETURNLIST S' )
-S' -> RETURNLIST S' | epsilon
 S'' -> ( lambda (PARAM) BLOQUE )
+
+// NEW ONE
+<MAP>
+S -> ( map (lambda (RETURNLIST S') (PARAM) BLOQUE )  )
+S' -> RETURNLIST S' | epsilon
 
 <FILTER>
 S -> ( filter S' RETURNLIST )
@@ -148,5 +152,21 @@ S -> ( ( lambda (PARAM) BLOQUE ) S' )
 S' -> EXPRESION S' | LISTFUNCITONS S' | epsilon
 
 
+( ( lambda ( i1 i2 ) (+ i1 i2) ) 1 2 ) 
 
+( 1 2 ( lambda ( i1 i2) (+ i1 i2) ) )
 
+( lambda (1 2) (i1 i2) (+ i1 i2)  )
+
+-- definicion de funcion
+-- guardamos type, nombre, vars, parametros, memory, una variable que se llama como la funcion
+
+-- parametros, memory, puede ser void o regresar algo (este algo tambien puede ser varios returns igual que funcion)
+-- memory
+-- nombre nos vale un carajo (o podemos tener uno generico(para poder manejar lambda adentro de lambda))
+-- 
+-- tenemos que crear un scope (del lambda)
+-- este scope tiene los parametros
+-- cada parametro se tiene que llenar con lo que este en lambda_2
+-- no nos interesan los types, solo se va a generar algo
+-- 

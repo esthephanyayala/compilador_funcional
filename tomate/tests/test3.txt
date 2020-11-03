@@ -4,12 +4,13 @@
         (declare j 1)
     )
     (functions
-        (define ( ( int f1 ) int i1 int i2)  
-            i1
+        (define ( ( void f1 ) int i1 int i2)  
+            (print 'a' )
         )
     )
     
     (main
-        (print (f1 0 20)) 
+        (f1 4 4)
+        ( print ( lambda (1 2) (i1 i2) (+ i1 i)  )  )
     )
 )
