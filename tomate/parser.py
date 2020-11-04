@@ -17,6 +17,8 @@ stackConst = []
 stackParams = []
 scopeGlobal = ""
 contCondiciones = 0
+contParamLambda = 0
+contLambdas = 0
 
 # Virtual Address
 address = { 
@@ -77,20 +79,20 @@ def getAddress(addressType,type):
     if addressType == "temp" and not(boolScopeGlobal()) :
         currentScope = stackScope[-1]
 
-        if dirFunctions[currentScope]["type"] != "lambda":
-            localMemory = dirFunctions[currentScope]["memory"]["local"]
+        #if dirFunctions[currentScope]["type"] != "lambda":
+        localMemory = dirFunctions[currentScope]["memory"]["local"]
 
-            # add += 1 to local memory
-            if type == "int":
-                localMemory[0] += 1
-            elif type == "float":
-                localMemory[1] += 1
-            elif type == "char":
-                localMemory[2] += 1
-            else :
-                localMemory[3] += 1
-            
-            addressType = "local"
+        # add += 1 to local memory
+        if type == "int":
+            localMemory[0] += 1
+        elif type == "float":
+            localMemory[1] += 1
+        elif type == "char":
+            localMemory[2] += 1
+        else :
+            localMemory[3] += 1
+        
+        addressType = "local"
 
     ad = address[addressType][type]
     address[addressType][type] += 1
@@ -245,7 +247,8 @@ def p_exp(p):
             | OPEN_PAREN signos2 exp exp CLOSE_PAREN
             | varcte 
             | llamada 
-            | returnelement'''
+            | returnelement
+            | lambda''' 
 
     if len(p) == 6:
 
@@ -284,6 +287,7 @@ def p_signos1(p):
                 | MINUS ''' 
     stackOperadores.append( p[1] )
     #print(p[1])
+    
 
 ##### SIGNOS 2 #####
 
@@ -697,41 +701,114 @@ def p_fill_goto(p):
 
 ##### LAMBDA #####
 def p_lambda(p):
-    ''' lambda : OPEN_PAREN np_add_lambda_scope LAMBDA OPEN_PAREN lambda_2 CLOSE_PAREN OPEN_PAREN param np_insert_params CLOSE_PAREN bloque CLOSE_PAREN np_finish_lambda '''
+    ''' lambda : OPEN_PAREN  LAMBDA OPEN_PAREN lambda_2 np_add_lambda_scope CLOSE_PAREN OPEN_PAREN param np_insert_params CLOSE_PAREN bloque CLOSE_PAREN np_finish_lambda '''
 
 def p_np_insert_params(p):
     ''' np_insert_params : '''
+    global contParamLambda
 
     lenParams = len(stackParams)
     lenOperandos = len(stackOperandos)
+   
 
-    if lenOperandos == lenParams :
-
+    #if lenOperandos == lenParams :
+    if contParamLambda - 1  == lenParams:
+        
         for _ in range(0,lenParams):
+            
             address = stackOperandos.pop()
             typeParam = stackTypes.pop()
-            variableName = stackParams.pop()
+            variableName = stackParams.pop() 
             objAux = {"type": typeParam, "virtualAddress":address}
             dirFunctions[stackScope[-1]]["vars"][variableName] = objAux
-
+            #dirFunctions[stackScope[-1]]["memory"] = memoryObject
+             # add += 1 to memory
+            paramsMemory = dirFunctions[stackScope[-1]]["memory"]["params"]
+            if typeParam == "int":
+                paramsMemory[0] += 1
+            elif typeParam == "float":
+                paramsMemory[1] += 1
+            elif typeParam == "char":
+                paramsMemory[2] += 1
+            else :
+                paramsMemory[3] += 1
+        #Agregar fondo falso al entrar a lambda, para diferenciar lambdas voids y !voids
+        stackOperandos.append("*")
+        stackTypes.append("*")
+   
     else :
         print("Error on number of params in lambda")
 
+    contParamLambda = 0 
+
 def p_np_add_lambda_scope(p):
     ''' np_add_lambda_scope : '''
-    stackScope.append("lambda")
-    dirFunctions["lambda"] = {"type":"lambda" , "vars":{}}
-    #ad = getAddress("global",)
-    #dirFunctions[scopeGlobal]["vars"]["lambda"] = {"type":"null","virtualAddress"}
+    global contLambdas
+    nameLambda = "lambda" + str(contLambdas)
+    contLambdas += 1
+    memoryObject = {"params":[0,0,0,0],
+                        "local":[0,0,0,0]}
+    stackScope.append(nameLambda)
+    dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}, "memory": memoryObject}
+    
+   
 
 def p_np_finish_lambda(p):
     ''' np_finish_lambda : '''
-    stackScope.pop()
-    del dirFunctions["lambda"]
+    
+    name = stackScope.pop()
+    global address
+    #print(dirFunctions)
+    #del dirFunctions[name]
+    del dirFunctions[name]["vars"]
+    print("stacks", stackOperadores, stackTypes)
+    #Sacamos los fondos falsos
+    if stackOperandos[-1] == "*":
+        stackOperandos.pop()
+        stackTypes.pop()
+    else: 
+
+        temp = stackOperandos.pop()
+        typeTemp = stackTypes.pop()
+        '''
+        paramsLambda = dirFunctions[name]["memory"]["params"]
+        localLambda = dirFunctions[name]["memory"]["local"]
+        totalInt = paramsLambda[0] + localLambda[0]
+        totalFl = paramsLambda[1] + localLambda[1]
+        totalCh = paramsLambda[2] + localLambda[2]
+        totalBo = paramsLambda[3] + localLambda[3]
+
+        if boolScopeGlobal(): 
+            #estamos en global
+            address["temp"]["int"] -= totalInt
+            address["temp"]["float"] -= totalFl 
+            address["temp"]["char"] -= totalCh
+            address["temp"]["bool"] -= totalBo
+        else:
+            address["local"]["int"] -= totalInt
+            address["local"]["float"] -= totalFl 
+            address["local"]["char"] -= totalCh
+            address["local"]["bool"] -= totalBo
+        '''
+        addressTemp = getAddress("temp",typeTemp)
+        q = Quadruple("=",temp, "NULL",addressTemp )
+        quadruples.add(q)
+        stackOperandos.pop()
+        stackTypes.pop()
+        stackOperandos.append(addressTemp)
+        stackTypes.append(typeTemp)
+
+    
+    
+   
+
 
 def p_lambda_2(p):
     ''' lambda_2    : expresion lambda_2
                     | empty ''' #falta lisfunctions
+    #print("lambda2")
+    global contParamLambda 
+    contParamLambda += 1
 
 ##### APPEND #####
 
@@ -796,8 +873,19 @@ def p_np_enter_to_stack(p):
     if funcName in objectVars:
         type = objectVars[funcName]["type"]
         virtualAddress = objectVars[funcName]["virtualAddress"]
-        stackOperandos.append(virtualAddress)
+        #stackOperandos.append(virtualAddress)
+        #stackTypes.append(type)
+    
+        print("so", stackOperandos)
+        #valueTemp = stackOperandos.pop()
+        #typeTemp = stackTypes.pop() 
+        addressTemp = getAddress("temp",type)
+        stackOperandos.append(addressTemp)
         stackTypes.append(type)
+
+        q = Quadruple("=",virtualAddress, "NULL",addressTemp )
+        quadruples.add(q)
+
 
 def p_np_check_func_exits(p):
     ''' np_check_func_exits : '''
@@ -854,6 +942,7 @@ def p_np_check_params(p):
     
     q = Quadruple("GOSUB","NULL","NULL", funcQuad )
     quadruples.add(q)
+    
 
 def p_error(p):
     print(f"Syntax error at {p.value!r}")
@@ -871,8 +960,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -906,20 +995,22 @@ while True:
 
 # constantes no tratarlos como temp √√
 
-# goto inicial despues de vars inicial Sthephy® 
+# goto inicial despues de vars inicial √√
 
 # faltan los negativos CAGAJOOOO
 
-# return de functions esto no marca error
+# return de functions esto no marca error √√
 
-# returns de funciones, agregar logica :
+# returns de funciones, agregar logica :√√
 # dentro de cada funcion vamos a contabilizar cuantos condiciones existieron
 # if no void then 
 #       len(stackOperandos) == 1 + contCondiciones
 # si es diferente hay error
 # 
 # also
-# resetear temporales al llegar al termino de una funcion
+# resetear temporales al llegar al termino de una funcion √√
+#
+# lambda adentro de otro lambda
 
 '''(define ( ( int f1 ) int i1 int i2)  
             ( if (< i1 1)
