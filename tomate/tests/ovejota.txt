@@ -1,0 +1,14 @@
+$$
+1 13000
+2 13001
+$$
+= 13000 NULL 1000
+= 13001 NULL 1001
+print NULL NULL 1000
+print NULL NULL 1001
+$$
+@@
+name test
+vars i int 1000 j int 1001
+@@
+name imons

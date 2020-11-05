@@ -22,6 +22,7 @@ class Quadruple:
                                                         self.temp
                                                         ))                                      
 
+
 class Quadruples:
 
     def __init__(self):

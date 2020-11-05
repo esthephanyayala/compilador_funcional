@@ -1,6 +1,7 @@
 from lexer import tokens
 from Quadruples import *
 from CuboSemantico import semanticCube
+from VirtualMachine import *
 
 quadruples = Quadruples()
 
@@ -79,24 +80,24 @@ def getAddress(addressType,type):
     # When we are in a function we save types we use
     if addressType == "temp" and not(boolScopeGlobal()):# and dirFunctions[stackScope[-1]]["type"] != "lambda" :
         
-        currentScope = stackScope[-1]
-
+        #currentScope = stackScope[-1]
         
-        if dirFunctions[currentScope]["type"] != "lambda":
-            '''
-            localMemory = dirFunctions[currentScope]["memory"]["local"]
+        #print(dirFunctions[currentScope]["type"])
+        #if dirFunctions[currentScope]["type"] != "lambda":
+        addressType = "local"
+        '''
+        localMemory = dirFunctions[currentScope]["memory"]["local"]
 
-            # add += 1 to local memory
-            if type == "int":
-                localMemory[0] += 1
-            elif type == "float":
-                localMemory[1] += 1
-            elif type == "char":
-                localMemory[2] += 1
-            else :
-                localMemory[3] += 1
-            '''
-            addressType = "local"
+        # add += 1 to local memory
+        if type == "int":
+            localMemory[0] += 1
+        elif type == "float":
+            localMemory[1] += 1
+        elif type == "char":
+            localMemory[2] += 1
+        else :
+            localMemory[3] += 1
+        '''
 
     ad = address[addressType][type]
     address[addressType][type] += 1
@@ -1040,6 +1041,21 @@ print(dirFunctions)
 quadruples.print()
 globalVariables()
 print(globalMemory)
+
+## VM
+vm = VirtualMachine()
+vm.loadOvejota()
+vm.printConstTable()
+vm.printQuadruples()
+vm.printFunctions()
+
+vm.createMemory()
+vm.printConstMemory()
+#vm.addressManager(13000)
+
+vm.switch()
+vm.pointerSomething()
+
 ''' # para testear a mano
 while True:
     try:
@@ -1077,6 +1093,8 @@ while True:
 # resetear temporales al llegar al termino de una funcion √√
 #
 # lambda adentro de otro lambda
+
+
 
 '''(define ( ( int f1 ) int i1 int i2)  
             ( if (< i1 1)

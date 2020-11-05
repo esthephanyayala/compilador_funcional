@@ -7,8 +7,7 @@
     )
     (functions
         (define ( ( int f1 ) int i1 int i2)  
-            
-            (+ ( lambda (4 8 ) (x y) (+ x ( lambda (9 6 ) (a b) (- b a) )) ) ( lambda (2 3 ) (i1 i2) (+ i1 i2) ) )
+            (+ 1 2)
         )
 
         (define (( char c1)  )
@@ -18,12 +17,6 @@
     
     (main
         (print (lambda ( f) (a) (c1) ))
-       (f1 2 ( lambda (4 8 ) (x y) (+ x y) )) 
-      
-       
-
-       
-       
-       
+       (f1 2 ( lambda (4 8 ) (x y) (+ x y) ))  
     )
 )
