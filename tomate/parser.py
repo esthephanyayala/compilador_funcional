@@ -19,6 +19,7 @@ scopeGlobal = ""
 contCondiciones = 0
 contParamLambda = 0
 contLambdas = 0
+globalMemory = []
 
 # Virtual Address
 address = { 
@@ -76,23 +77,26 @@ constTable = {}
 def getAddress(addressType,type):
 
     # When we are in a function we save types we use
-    if addressType == "temp" and not(boolScopeGlobal()) :
+    if addressType == "temp" and not(boolScopeGlobal()):# and dirFunctions[stackScope[-1]]["type"] != "lambda" :
+        
         currentScope = stackScope[-1]
 
-        #if dirFunctions[currentScope]["type"] != "lambda":
-        localMemory = dirFunctions[currentScope]["memory"]["local"]
-
-        # add += 1 to local memory
-        if type == "int":
-            localMemory[0] += 1
-        elif type == "float":
-            localMemory[1] += 1
-        elif type == "char":
-            localMemory[2] += 1
-        else :
-            localMemory[3] += 1
         
-        addressType = "local"
+        if dirFunctions[currentScope]["type"] != "lambda":
+            '''
+            localMemory = dirFunctions[currentScope]["memory"]["local"]
+
+            # add += 1 to local memory
+            if type == "int":
+                localMemory[0] += 1
+            elif type == "float":
+                localMemory[1] += 1
+            elif type == "char":
+                localMemory[2] += 1
+            else :
+                localMemory[3] += 1
+            '''
+            addressType = "local"
 
     ad = address[addressType][type]
     address[addressType][type] += 1
@@ -101,6 +105,45 @@ def getAddress(addressType,type):
 def boolScopeGlobal():
     currentScope = stackScope[-1]
     return currentScope == scopeGlobal
+
+def globalVariables():
+    addressGlobal = address["global"]
+    addressTemp = address["temp"]
+    addressLocal = address["local"]
+    addressConst = address["const"]
+
+    addressGlobalB = addressBases["global"]
+    addressTempB = addressBases["temp"]
+    addressLocalB = addressBases["local"]
+    addressConstB = addressBases["const"]
+
+    globalInts = addressGlobal["int"] - addressGlobalB["int"]
+    globalFloats = addressGlobal["float"] - addressGlobalB["float"]
+    globalChars = addressGlobal["char"] - addressGlobalB["char"]
+
+    tempInts = addressTemp["int"] - addressTempB["int"]
+    tempFloats = addressTemp["float"] - addressTempB["float"]
+    tempChars = addressTemp["char"] - addressTempB["char"]
+    tempBools = addressTemp["bool"] - addressTempB["bool"]
+
+    localInts = addressLocal["int"] - addressLocalB["int"]
+    localFloats = addressLocal["float"] - addressLocalB["float"]
+    localChars = addressLocal["char"] - addressLocalB["char"]
+    localBools = addressLocal["bool"] - addressLocalB["bool"]
+
+    contsInts = addressConst["int"] - addressConstB["int"]
+    contsFloats = addressConst["float"] - addressConstB["float"]
+    contsChars = addressConst["char"] - addressConstB["char"]
+
+    global globalMemory
+
+    globalMemory = [
+                    [globalInts, globalFloats, globalChars],
+                    [tempInts, tempFloats, tempChars, tempBools],
+                    [localInts, localFloats, localChars, localBools],
+                    [contsInts, contsFloats, contsChars]
+                ]
+    
 
 ##### PROGRAMA #####
 
@@ -424,8 +467,26 @@ def p_np_finish_function(p):
     stackOperandos = []
     stackTypes = []
 
+    localAddress = address["local"]
+    localAddressBases = addressBases["local"]
+    memoryObject = dirFunctions[funcName]["memory"]
+    paramsFunction = memoryObject["params"]
+    localMemory = memoryObject["local"]
+    
+    localInts = localAddress["int"] - localAddressBases["int"] - paramsFunction[0]
+    localFloats = localAddress["float"] - localAddressBases["float"] - paramsFunction[1]
+    localChars = localAddress["char"] - localAddressBases["char"] - paramsFunction[2]
+    localBools = localAddress["bool"] - localAddressBases["bool"] - paramsFunction[3]
+
+    localMemory[0] = localInts
+    localMemory[1] = localFloats
+    localMemory[2] = localChars
+    localMemory[3] = localBools
+
+    #print("local: " , localInts, localFloats , localChars , localBools)
+
     # Reset Temporal Address used by current Function
-    address["local"] = addressBases["local"]
+    address["local"] = addressBases["local"].copy()
 
     # Erase Vars from current function on dirFunctions
     del dirFunctions[funcName]["vars"]
@@ -456,7 +517,6 @@ def p_np_create_dirFunc(p):
         # if function is not void then push to var table
         if typeFunc != 'void':
             ad = getAddress("global",typeFunc)
-            
             dirFunctions[dirFKeys[0]]['vars'][funcName] = {"type": typeFunc , "virtualAddress":ad}
     
 
@@ -482,7 +542,6 @@ def p_np_varTabFunc(p):
 
         idparam = stackOperandos.pop()
         ad = getAddress("local", typeParam)
-        
         typesParam.append(typeParam)
         paramsCar = {"type": typeParam, "virtualAddress": ad }
         dirFunctions[funcName]['vars'][idparam] = paramsCar
@@ -723,6 +782,7 @@ def p_np_insert_params(p):
             dirFunctions[stackScope[-1]]["vars"][variableName] = objAux
             #dirFunctions[stackScope[-1]]["memory"] = memoryObject
              # add += 1 to memory
+            '''
             paramsMemory = dirFunctions[stackScope[-1]]["memory"]["params"]
             if typeParam == "int":
                 paramsMemory[0] += 1
@@ -732,6 +792,7 @@ def p_np_insert_params(p):
                 paramsMemory[2] += 1
             else :
                 paramsMemory[3] += 1
+            '''
         #Agregar fondo falso al entrar a lambda, para diferenciar lambdas voids y !voids
         stackOperandos.append("*")
         stackTypes.append("*")
@@ -746,11 +807,12 @@ def p_np_add_lambda_scope(p):
     global contLambdas
     nameLambda = "lambda" + str(contLambdas)
     contLambdas += 1
-    memoryObject = {"params":[0,0,0,0],
-                        "local":[0,0,0,0]}
+    #memoryObject = {"params":[0,0,0,0],
+     #                   "local":[0,0,0,0]}
     stackScope.append(nameLambda)
-    dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}, "memory": memoryObject}
-    
+    #dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}, "memory": memoryObject}
+    dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}}
+
    
 
 def p_np_finish_lambda(p):
@@ -761,7 +823,7 @@ def p_np_finish_lambda(p):
     #print(dirFunctions)
     #del dirFunctions[name]
     del dirFunctions[name]["vars"]
-    print("stacks", stackOperadores, stackTypes)
+    #print("stacks", stackOperadores, stackTypes)
     #Sacamos los fondos falsos
     if stackOperandos[-1] == "*":
         stackOperandos.pop()
@@ -876,7 +938,7 @@ def p_np_enter_to_stack(p):
         #stackOperandos.append(virtualAddress)
         #stackTypes.append(type)
     
-        print("so", stackOperandos)
+        #print("so", stackOperandos)
         #valueTemp = stackOperandos.pop()
         #typeTemp = stackTypes.pop() 
         addressTemp = getAddress("temp",type)
@@ -960,8 +1022,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-filename = os.path.join(fileDir, 'tests/' + programa )
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -971,9 +1033,13 @@ print("stackOperandos: " + str(stackOperandos))
 print("stackTypes: " + str(stackTypes))
 print("stackScope: " + str(stackScope))
 print("Const Table: " + str(constTable))
+print("Address: " + str(address))
 print(dirFunctions)
+
 #'''
 quadruples.print()
+globalVariables()
+print(globalMemory)
 ''' # para testear a mano
 while True:
     try:

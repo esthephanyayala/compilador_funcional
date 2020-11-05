@@ -2,17 +2,24 @@
     (vars
         (declare i 1)
         (declare j 1)
+        (declare k 1.1)
+        (declare f 'a')
     )
     (functions
         (define ( ( int f1 ) int i1 int i2)  
             
-        (+ ( lambda (4 8 ) (x y) (+ x ( lambda (9 6 ) (a b) (- b a) )) ) ( lambda (2 3 ) (i1 i2) (+ i1 i2) ) )
+            (+ ( lambda (4 8 ) (x y) (+ x ( lambda (9 6 ) (a b) (- b a) )) ) ( lambda (2 3 ) (i1 i2) (+ i1 i2) ) )
+        )
+
+        (define (( char c1)  )
+            f
         )
     )
     
     (main
-      
+        (print (lambda ( f) (a) (c1) ))
        (f1 2 ( lambda (4 8 ) (x y) (+ x y) )) 
+      
        
 
        
