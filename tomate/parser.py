@@ -1048,7 +1048,7 @@ vm.loadOvejota()
 #vm.printConstTable()
 #vm.printQuadruples()
 #vm.printFunctions()
-
+vm.printConstTable()
 vm.initializeAddressManager()
 
 vm.pointerSomething()
@@ -1092,7 +1092,16 @@ while True:
 #
 # lambda adentro de otro lambda
 
-
+# tenemos generar el ovej
+# leer el ovejota
+    # add bases
+    # add sizes
+# agregar logica para cuando estemos en funcion
+# agregar los demas operadores al switch
+    # gotoF
+    # era 
+    # param
+    # gosub
 
 '''(define ( ( int f1 ) int i1 int i2)  
             ( if (< i1 1)
@@ -1100,4 +1109,16 @@ while True:
                 (print i2)    
             )
         )
+'''
+'''
+$$
+1000 2000 3000 
+4000 5000 6000 7000
+8000 9000 10000 12000
+13000 14000 15000
+$$
+2 1 1
+1 0 0 0
+0 0 0 0
+1 1 1 
 '''

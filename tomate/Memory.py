@@ -63,4 +63,10 @@ class MemoryAux:
         else :
             print("This datatype doesn't exists, vuelva pronto :D")
     
-    
+    #vm -> am -> all(memory)
+
+    #vs = 1000
+    #tS = 4000
+    #lS = 8000
+    #cS = 13000
+    #cL = 16000

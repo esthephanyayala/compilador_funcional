@@ -117,14 +117,14 @@ class AddressManager:
 
         if self.varsStart <= virtualAddress < self.tempStart:
             #print("vars")
-            varsBases = self.globalBases[0]
-            nextBaseLimit = self.globalBases[1][0]
+            varsBases = self.globalBases[0] # [1000,2000,3000]
+            nextBaseLimit = self.globalBases[1][0] # 4000
             memoryObject = "vars"
 
         elif self.tempStart <= virtualAddress < self.localStart:
             #print("temp")
-            varsBases = self.globalBases[1]
-            nextBaseLimit = self.globalBases[2][0]
+            varsBases = self.globalBases[1] # [4000,5000,6000,7000]
+            nextBaseLimit = self.globalBases[2][0] # 8000
             memoryObject = "temp"
 
         elif self.localStart <= virtualAddress < self.constStart:
@@ -148,17 +148,19 @@ class AddressManager:
  
     def chooseDataType(self, virtualAddress, currentBases, nextMemoryLimit):
 
-        intsStart = currentBases[0]
-        floatStart = currentBases[1]
-        charStart = currentBases[2]
+        intsStart = currentBases[0] #1000
+        floatStart = currentBases[1] # 2000
+        charStart = currentBases[2] # 3000
 
         indexValue = virtualAddress
         currentBase = 0
-        currentDataType = "error"
+        currentDataType = "error" 
+
+        # 1001 - 1000 = 1
 
         if len(currentBases) == 4 :
 
-            boolStart = currentBases[3]
+            boolStart = currentBases[3] # 4000
 
             if intsStart <= virtualAddress < floatStart:
                 currentBase = intsStart 

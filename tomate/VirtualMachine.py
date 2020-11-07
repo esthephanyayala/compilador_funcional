@@ -1,4 +1,3 @@
-from Quadruples import *
 import os
 from Memory import Memory
 from AddressManager import AddressManager
@@ -16,20 +15,21 @@ class VirtualMachine:
 
     def initializeAddressManager(self):
         tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[2, 1, 1], [1, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1]]
+        tgs = [[2, 1, 1], [1, 0, 0, 0], [0, 0, 0, 0], [2, 1, 1]]
         self.celia = AddressManager(tgb, tgs)
+        #self.celia.printMemory()
         #self.celia.printLimits()
         #self.celia.setValue(4000,1)
         #self.celia.getValue(4000)
         
         self.fillConstMemory()
-        self.celia.printMemory()
+        #self.celia.printMemory()
 
     def fillConstMemory(self):
-        self.const = Memory(4,1,1,0)
+        #self.const = Memory(4,1,1,0)
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
-        #self.celia.printMemory()
+        self.celia.printMemory()
 
     def loadOvejota(self):
         fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -121,16 +121,13 @@ class VirtualMachine:
             self.pointerManager = temp - 1
         
         self.pointerManager += 1
-        print("pointer:" , self.pointerManager)
+        #print("pointer:" , self.pointerManager)
 
     def pointerSomething(self):
         while self.pointerManager < self.numberOfQuads:
             self.switch()
 
-        self.celia.printMemory()
-
-        
-    
+        #self.celia.printMemory()
 
 ## refactoring que memory reciba la base y no tener que crear add y addGlobal
 ## recibir el tamano de memory para las que necesitamos, consts, globales, locakes
@@ -151,6 +148,3 @@ class VirtualMachine:
     def printQuadruples(self):
         for i in self.quadruples:
             print(i)
-
-    def printConstMemory(self):
-        self.const.print()
