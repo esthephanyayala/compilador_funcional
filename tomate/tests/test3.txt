@@ -6,17 +6,10 @@
         (declare f 'a')
     )
     (functions
-        (define ( ( int f1 ) int i1 int i2)  
-            (+ 1 2)
-        )
-
-        (define (( char c1)  )
-            f
-        )
     )
     
     (main
-        (print (lambda ( f) (a) (c1) ))
-       (f1 2 ( lambda (4 8 ) (x y) (+ x y) ))  
+        (print (+ i j))
+        (print f)
     )
 )

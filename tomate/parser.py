@@ -1045,16 +1045,14 @@ print(globalMemory)
 ## VM
 vm = VirtualMachine()
 vm.loadOvejota()
-vm.printConstTable()
-vm.printQuadruples()
-vm.printFunctions()
+#vm.printConstTable()
+#vm.printQuadruples()
+#vm.printFunctions()
 
-vm.createMemory()
-vm.printConstMemory()
-#vm.addressManager(13000)
+vm.initializeAddressManager()
 
-vm.switch()
 vm.pointerSomething()
+
 
 ''' # para testear a mano
 while True:

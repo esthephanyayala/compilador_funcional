@@ -1,14 +1,19 @@
 $$
 1 13000
-2 13001
+1.1 14000
+'a' 15000
 $$
 = 13000 NULL 1000
-= 13001 NULL 1001
-print NULL NULL 1000
-print NULL NULL 1001
+= 13000 NULL 1001
+= 14000 NULL 2000
+= 15000 NULL 3000
+GOTO NULL NULL 5
++ 1000 1001 4000
+print NULL NULL 4000
+print NULL NULL 3000
 $$
 @@
 name test
-vars i int 1000 j int 1001
+vars i int 1000 j int 1001 k float 2000 f char 3000
 @@
 name imons

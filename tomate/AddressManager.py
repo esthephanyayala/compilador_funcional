@@ -1,0 +1,195 @@
+from Memory import MemoryAux
+
+class AddressManager:
+    def __init__(self, globalBases, globalSizes) :
+        ## Global Memories
+        self.globalVars = []
+        self.globalConst = []
+        self.globalTemp = []
+        self.globalLocals = []
+
+        self.globalBases = globalBases
+
+        self.varsStart = 0
+        self.tempStart = 0
+        self.localStart = 0
+        self.constStart = 0
+        self.constLimit = 0
+
+        self.initializeGlobalMemories(globalSizes)
+        self.initializeMemoryLimits()
+
+    def initializeMemoryLimits(self):
+        self.varsStart = self.globalBases[0][0]
+        self.tempStart = self.globalBases[1][0]
+        self.localStart = self.globalBases[2][0]
+        self.constStart = self.globalBases[3][0]
+        self.constLimit = self.globalBases[3][-1] + 1000
+
+    def initializeGlobalMemories(self, globalSizes):
+        
+        variableSizes = globalSizes[0]
+        tempSizes = globalSizes[1]
+        localSizes = globalSizes[2]
+        constSizes = globalSizes[3]
+
+        self.globalVars = MemoryAux(   variableSizes[0],
+                                            variableSizes[1],
+                                            variableSizes[2],
+                                            0
+                                            )
+
+        self.globalTemp = MemoryAux(        tempSizes[0],
+                                            tempSizes[1],
+                                            tempSizes[2],
+                                            tempSizes[3]
+                                            )
+
+        self.globalLocals = MemoryAux (     localSizes[0],
+                                            localSizes[1],
+                                            localSizes[2],
+                                            localSizes[3] 
+                                            )
+
+        self.globalConst = MemoryAux(       constSizes[0],
+                                            constSizes[1],
+                                            constSizes[2],
+                                            0
+                                            )
+
+    def printMemory(self):
+        print("GlobalVars --------")
+        self.globalVars.print()
+        print("TemporalVars --------")
+        self.globalTemp.print()
+        print("LocalVars --------")
+        self.globalLocals.print()
+        print("ConstVars --------")
+        self.globalConst.print()
+        print("-------- --------")
+    
+    def printLimits(self):
+        print("Vars Start: ", self.varsStart)
+        print("Temp Start: ", self.tempStart)
+        print("Local Start: ", self.localStart)
+        print("Const Start: ", self.constStart)
+        print("Const Limit: ", self.constLimit)
+
+    def getValue(self,virtualAddress):
+        index, dataType, memoryObject = self.chooseMemory(virtualAddress)
+        #print(index, dataType, memoryObject)
+
+        value = 0
+        
+        if memoryObject == "vars":
+            value = self.globalVars.getValue(index, dataType)
+        elif memoryObject == "temp":
+            value = self.globalTemp.getValue(index, dataType)
+        elif memoryObject == "local":
+            value = self.globalLocals.getValue(index, dataType)
+        elif memoryObject == "const":
+            value = self.globalConst.getValue(index, dataType)
+        else: 
+            print("error")
+
+        return value
+
+    def setValue(self,virtualAddress,value):
+
+        index, dataType, memoryObject = self.chooseMemory(virtualAddress)
+
+        if memoryObject == "vars":
+            self.globalVars.setValue(index, dataType, value )
+        elif memoryObject == "temp":
+            self.globalTemp.setValue(index, dataType, value )
+        elif memoryObject == "local":
+            self.globalLocals.setValue(index, dataType, value )
+        elif memoryObject == "const":
+            self.globalConst.setValue(index, dataType, value)
+        else: 
+            print("error")
+        
+    def chooseMemory(self,virtualAddress):
+
+        varsBases = 0
+        nextBaseLimit = 0
+        memoryObject = ""
+
+        if self.varsStart <= virtualAddress < self.tempStart:
+            #print("vars")
+            varsBases = self.globalBases[0]
+            nextBaseLimit = self.globalBases[1][0]
+            memoryObject = "vars"
+
+        elif self.tempStart <= virtualAddress < self.localStart:
+            #print("temp")
+            varsBases = self.globalBases[1]
+            nextBaseLimit = self.globalBases[2][0]
+            memoryObject = "temp"
+
+        elif self.localStart <= virtualAddress < self.constStart:
+            #print("local")
+            varsBases = self.globalBases[2]
+            nextBaseLimit = self.globalBases[3][0]
+            memoryObject = "local"
+
+        elif self.constStart <= virtualAddress < self.constLimit:
+            #print("const")
+            varsBases = self.globalBases[3]
+            nextBaseLimit = self.globalBases[3][-1] + 1000
+            memoryObject = "const"
+
+        else :
+            print("tu address esta mal vuelva pronto :D")
+
+        index, dataType = self.chooseDataType(virtualAddress, varsBases, nextBaseLimit)
+
+        return index, dataType, memoryObject
+ 
+    def chooseDataType(self, virtualAddress, currentBases, nextMemoryLimit):
+
+        intsStart = currentBases[0]
+        floatStart = currentBases[1]
+        charStart = currentBases[2]
+
+        indexValue = virtualAddress
+        currentBase = 0
+        currentDataType = "error"
+
+        if len(currentBases) == 4 :
+
+            boolStart = currentBases[3]
+
+            if intsStart <= virtualAddress < floatStart:
+                currentBase = intsStart 
+                currentDataType = "int"
+            elif floatStart <= virtualAddress < charStart:
+                currentBase = floatStart
+                currentDataType = "float"
+            elif charStart <= virtualAddress < boolStart:
+                currentBase = charStart
+                currentDataType = "char"
+            elif boolStart <= virtualAddress < nextMemoryLimit:
+                currentBase = boolStart
+                currentDataType = "bool"
+            else :
+                print("tu address no existe, vuelva pronto :D")
+
+        else :
+
+            if intsStart <= virtualAddress < floatStart:
+                currentBase = intsStart 
+                currentDataType = "int"
+            elif floatStart <= virtualAddress < charStart:
+                currentBase = floatStart
+                currentDataType = "float"
+            elif charStart <= virtualAddress < nextMemoryLimit:
+                currentBase = charStart
+                currentDataType = "char"
+            else :
+                print("tu address no existe, vuelva pronto :D")
+        
+        indexValue -= currentBase
+
+        return indexValue, currentDataType
+ 

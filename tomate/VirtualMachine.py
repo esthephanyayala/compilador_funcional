@@ -1,27 +1,35 @@
 from Quadruples import *
 import os
 from Memory import Memory
+from AddressManager import AddressManager
 
 class VirtualMachine:
     def __init__(self):
-        self.quadruples = Quadruples()
         self.constTable = {}
         self.dirFunction = {}
-        self.const = Memory(0) 
         self.pointerManager = 0
-        self.quadruplesAux = []
+        self.quadruples = []
         self.numberOfQuads = 0
-        self.globalVars = Memory(2)
 
-    def printConstTable(self):
-        print(self.constTable)
-    
-    def printFunctions(self):
-        print(self.dirFunction)
+        self.celia = []
+        #self.initializeAddressManager()
 
-    def printQuadruples(self):
-        for i in self.quadruplesAux:
-            print(i)
+    def initializeAddressManager(self):
+        tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
+        tgs = [[2, 1, 1], [1, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1]]
+        self.celia = AddressManager(tgb, tgs)
+        #self.celia.printLimits()
+        #self.celia.setValue(4000,1)
+        #self.celia.getValue(4000)
+        
+        self.fillConstMemory()
+        self.celia.printMemory()
+
+    def fillConstMemory(self):
+        self.const = Memory(4,1,1,0)
+        for i in self.constTable:
+            self.celia.setValue(int(i) , self.constTable[i] )
+        #self.celia.printMemory()
 
     def loadOvejota(self):
         fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -55,7 +63,7 @@ class VirtualMachine:
                 temp = arrLine[3]
                 #print(operator, left, right, temp)
 
-                self.quadruplesAux.append([operator, left, right, temp])
+                self.quadruples.append([operator, left, right, temp])
                 self.numberOfQuads += 1
 
             elif i != "$$\n" and status == 3: # We are reading Quads
@@ -85,46 +93,41 @@ class VirtualMachine:
                 elif i != "@@\n" and contFunction > 1:
                     print("no main")
 
-            
-    def createMemory(self):
-        self.const = Memory(2)
-        for i in self.constTable:
-            self.const.add( int(i) , self.constTable[i] )
-
-    def changeValueMemory(self,address,value):
-        #print(address, value)
-        self.globalVars.addGlobal(int(address),value)
-
-    def printConstMemory(self):
-        self.const.print()
-
-    def addressManager(self,address):
-        addressInt = int(address) 
-        if addressInt >= 13000 and addressInt < 16000:
-            return self.const.getValue(addressInt)
-        if addressInt >= 1000 and addressInt < 2000:
-            return self.globalVars.getValueGlobal(addressInt)
-
     def switch(self):
-        currentQuad = self.quadruplesAux[self.pointerManager]
+        currentQuad = self.quadruples[self.pointerManager]
         operator = currentQuad[0]
         left = currentQuad[1]
         right = currentQuad[2]
-        temp = currentQuad[3]
+        temp = int( currentQuad[3] )
         
         if operator == "print" :
-            print(self.addressManager(temp))
-        elif operator == "=" :
-            value = self.addressManager(left)
-            #print(temp)
-            self.changeValueMemory(temp,value)
-            #print(self.addressManager(temp))
+            print(self.celia.getValue(temp))
 
+        elif operator == "=" :
+            value = self.celia.getValue(int(left))
+
+            self.celia.setValue(temp,value)
+            
+        elif operator == "+":
+
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+
+            value = valueLeft + valueRight
+
+            self.celia.setValue(temp,value)
+
+        elif operator == "GOTO":
+            self.pointerManager = temp - 1
+        
         self.pointerManager += 1
+        print("pointer:" , self.pointerManager)
 
     def pointerSomething(self):
         while self.pointerManager < self.numberOfQuads:
             self.switch()
+
+        self.celia.printMemory()
 
         
     
@@ -137,3 +140,17 @@ class VirtualMachine:
 # next step suma
     # crear memoria temporal global
 #lalo-cal
+
+
+    def printConstTable(self):
+        print(self.constTable)
+    
+    def printFunctions(self):
+        print(self.dirFunction)
+
+    def printQuadruples(self):
+        for i in self.quadruples:
+            print(i)
+
+    def printConstMemory(self):
+        self.const.print()
