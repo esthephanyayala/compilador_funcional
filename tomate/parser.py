@@ -1029,8 +1029,8 @@ def createOvejota():
     
         
         fileDir = os.path.dirname(os.path.realpath('__file__'))
-        f= open("tomate/tests/ovj1.txt","w+")
-        #f= open("tests/ovj1.txt","w+")
+        #f= open("tomate/tests/ovj1.txt","w+")
+        f= open("tests/ovj1.txt","w+")
         
         ## escribir const Table
         f.write("$$\n")
@@ -1057,8 +1057,6 @@ def createOvejota():
         funGlobal = dirFunctions[dirFKeys[0]]["vars"]
         funGlobalVars = list(funGlobal)  
         
-    
-        print("$%$%·")
         f.write("vars ")
         for k, v in funGlobal.items():
             values = v.values()
@@ -1096,8 +1094,27 @@ def createOvejota():
                     f.write("{} {}\n".format(k,j))
             f.write("@@\n")
        
-       
-   
+        #Para global sizes
+
+        f.write("$$\n")
+        for i in globalMemory:
+            for j in i:
+                f.write("{} ".format(j))
+            f.write("\n")
+        f.write("$$\n")
+
+        #Para global bases 
+        addrBKeys= list(addressBases)
+
+        for i in addrBKeys:
+            addrScope = addressBases[i]
+            addrScopeK = list(addrScope)
+            for j in addrScopeK:
+                f.write("{} ".format(addrScope[j]))
+            f.write("\n")
+
+
+
 
         #f.close() 
 
@@ -1110,8 +1127,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
