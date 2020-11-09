@@ -8,6 +8,7 @@ class VirtualMachine:
         self.pointerManager = 0
         self.quadruples = []
         self.numberOfQuads = 0
+        #self.quadAux = []
 
         self.celia = []
 
@@ -23,6 +24,9 @@ class VirtualMachine:
         self.celia = AddressManager(tgb, tgs)
         self.fillConstMemory()
 
+    
+        
+
     def fillConstMemory(self):
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
@@ -30,8 +34,9 @@ class VirtualMachine:
     def loadOvejota(self):
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
-        programa = 'ovejota.txt'
-        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        programa = 'ovj1.txt'
+        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -51,6 +56,7 @@ class VirtualMachine:
                 address = arrLine[1]
 
                 self.constTable[address] = const
+                
 
             elif i != "$$\n" and status == 2: # We are reading Quads
                 arrLine = i.split()
@@ -139,6 +145,15 @@ class VirtualMachine:
             if self.currentFunction != "" :
                 self.lastValue.append(value)
 
+        elif operator == "-":
+
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+           
+            value = valueLeft - valueRight
+
+            self.celia.setValue(temp,value)
+
         elif operator == "GOTO":
             # pointer manager is equal to temp - 1 (at the end of the switch there is a + 1 thats the reason)
             self.pointerManager = int(temp) - 1
@@ -195,6 +210,57 @@ class VirtualMachine:
             # Pop the lastValue array
             self.lastValue.pop()
 
+        elif operator == "GOTOF":
+            
+            lastQuad = self.quadruples[self.pointerManager - 1]
+           
+            opLQ = lastQuad[0]
+            leftLQ = lastQuad[1]
+            rightLQ = lastQuad[2]
+            
+            valueLeftLQ = self.celia.getValue(int(leftLQ))
+            valueRightLQ = self.celia.getValue(int(rightLQ))
+
+            valueTrue = 1
+            valueFalse = 0
+            
+            if opLQ == ">":
+                if valueLeftLQ > valueRightLQ :
+                   
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ  == "<":
+                if valueLeftLQ < valueRightLQ :
+                
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                  
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ  == "!=":
+                if valueLeftLQ != valueRightLQ :
+                  
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ == "=":
+                if valueLeftLQ == valueRightLQ :
+                   
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            else:
+                print("Operador no existe")
+            resultValue = self.celia.getValue(int(left))
+            
+            if resultValue == 0:
+                self.pointerManager = temp - 1
+            
+                  
+        
         self.pointerManager += 1
 
     def pointerSomething(self):

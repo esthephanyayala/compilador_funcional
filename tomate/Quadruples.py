@@ -20,8 +20,10 @@ class Quadruple:
                                                         self.left,
                                                         self.right,
                                                         self.temp
-                                                        ))                                      
+                                                        ))         
 
+    def reQuad(self):
+        return self.operator, self.left, self.right, self.temp
 
 class Quadruples:
 
@@ -29,10 +31,12 @@ class Quadruples:
         self.quadruples = []
         self.cont = 0
         self.stackJumps = []
+       
 
     def add(self, quadruple):
-        self.quadruples.append(quadruple)
+        self.quadruples.append(quadruple)    
         self.cont += 1
+        
 
     def print(self):
         print("Number of quads: " + str(self.cont))
@@ -69,3 +73,6 @@ class Quadruples:
     
     def getCurrentQuad(self):
         return self.cont
+
+    def getQuad(self,index):
+        return self.quadruples[index].reQuad()

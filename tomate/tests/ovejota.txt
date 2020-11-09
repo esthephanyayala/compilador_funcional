@@ -37,3 +37,4 @@ name test
 vars i int 1000 j int 1001 k float 2000 f2 int 1002 f1 int 1003
 @@
 name imons
+
