@@ -77,8 +77,8 @@ class AddressManager:
 
     def getValue(self,virtualAddress):
         index, dataType, memoryObject = self.chooseMemory(virtualAddress)
-        #print(index, dataType, memoryObject)
-
+        #print("gv", index, dataType, memoryObject)
+        
         value = 0
         
         if memoryObject == "vars":

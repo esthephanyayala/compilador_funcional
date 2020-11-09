@@ -1014,6 +1014,80 @@ def p_empty(p):
      'empty :'
      pass
 
+def createOvejota():
+        
+        fileDir = os.path.dirname(os.path.realpath('__file__'))
+        f= open("tests/ovj1.txt","w+")
+        
+        ## escribir const Table
+        f.write("$$\n")
+        for i in constTable:
+            
+            f.write("{} {}\n".format(i,constTable[i]))
+        f.write("$$\n")
+
+        ## escribir quads
+    
+        for i in range(0,quadruples.cont):
+            opvm, leftvm, rightvm, tempvm = quadruples.getQuad(i)
+            f.write("{} {} {} {}\n". format(opvm,
+                                            leftvm,
+                                            rightvm,
+                                            tempvm))
+        f.write("$$\n")
+       
+       
+        ## escribir dir table
+        dirFKeys = list(dirFunctions)
+        f.write("@@\n")
+        f.write("name {}\n".format(dirFKeys[0]))
+        funGlobal = dirFunctions[dirFKeys[0]]["vars"]
+        funGlobalVars = list(funGlobal)  
+        
+    
+        print("$%$%·")
+        f.write("vars ")
+        for k, v in funGlobal.items():
+            values = v.values()
+            value_iterator = iter(values)
+            first_value = next(value_iterator)
+            second_value = next(value_iterator)
+            f.write("{} {} {} ".format(k,first_value,second_value))
+        f.write("\n")
+        f.write("@@\n")
+        
+        
+        for i in range(1,len(dirFKeys)):
+            fun = dirFunctions[dirFKeys[i]]
+            f.write("name {}\n".format(dirFKeys[i]))
+            for k,j in fun.items():
+                
+                if k == "memory":
+                    f.write("{} ". format(k))
+                    values = j.values()
+                    value_iterator = iter(values)
+                    first_value = next(value_iterator)
+                    second_value = next(value_iterator)
+                    for y in range (0,len(first_value)):
+                        f.write("{} ".format(first_value[y]))
+                    for z in range (0,len(second_value)):
+                        f.write("{} ".format(second_value[z]))
+                    #print(first_value,second_value)
+                    f.write("\n")
+                elif k == "typeParams":
+                    f.write("{} ". format(k))
+                    for x in range (0,len(j)):
+                        f.write("{} ".format(j[x]))
+                    f.write("\n")
+                else:
+                    f.write("{} {}\n".format(k,j))
+            f.write("@@\n")
+       
+       
+   
+
+        #f.close() 
+
 import ply.yacc as yacc
 yacc.yacc()
     
@@ -1023,8 +1097,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -1035,24 +1109,34 @@ print("stackTypes: " + str(stackTypes))
 print("stackScope: " + str(stackScope))
 print("Const Table: " + str(constTable))
 print("Address: " + str(address))
-print(dirFunctions)
+print("DirFunctions: "+ str(dirFunctions))
 
 #'''
 quadruples.print()
 globalVariables()
 print(globalMemory)
+createOvejota()
 
 ## VM
 vm = VirtualMachine()
 vm.loadOvejota()
-#vm.printConstTable()
+
 #vm.printQuadruples()
 #vm.printFunctions()
-vm.printConstTable()
+#vm.printConstTable()
 vm.initializeAddressManager()
+
 
 vm.pointerSomething()
 
+
+print("*****")
+
+
+
+
+
+#vm.createOvejota()
 
 ''' # para testear a mano
 while True:

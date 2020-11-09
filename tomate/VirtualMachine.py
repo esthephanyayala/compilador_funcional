@@ -9,13 +9,14 @@ class VirtualMachine:
         self.pointerManager = 0
         self.quadruples = []
         self.numberOfQuads = 0
+        #self.quadAux = []
 
         self.celia = []
         #self.initializeAddressManager()
 
     def initializeAddressManager(self):
         tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[2, 1, 1], [1, 0, 0, 0], [0, 0, 0, 0], [2, 1, 1]]
+        tgs = [[2, 1, 1], [3, 0, 0, 1], [0, 0, 0, 0], [2, 1, 1]]
         self.celia = AddressManager(tgb, tgs)
         #self.celia.printMemory()
         #self.celia.printLimits()
@@ -25,16 +26,21 @@ class VirtualMachine:
         self.fillConstMemory()
         #self.celia.printMemory()
 
+    
+        
+
     def fillConstMemory(self):
         #self.const = Memory(4,1,1,0)
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
+            
         self.celia.printMemory()
 
     def loadOvejota(self):
         fileDir = os.path.dirname(os.path.realpath('__file__'))
-        programa = 'ovejota.txt'
-        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        programa = 'ovj1.txt'
+        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -54,6 +60,7 @@ class VirtualMachine:
                 address = arrLine[1]
 
                 self.constTable[address] = const
+                
 
             elif i != "$$\n" and status == 2: # We are reading Quads
                 arrLine = i.split()
@@ -93,6 +100,8 @@ class VirtualMachine:
                 elif i != "@@\n" and contFunction > 1:
                     print("no main")
 
+
+
     def switch(self):
         currentQuad = self.quadruples[self.pointerManager]
         operator = currentQuad[0]
@@ -102,6 +111,7 @@ class VirtualMachine:
         
         if operator == "print" :
             print(self.celia.getValue(temp))
+            
 
         elif operator == "=" :
             value = self.celia.getValue(int(left))
@@ -112,13 +122,73 @@ class VirtualMachine:
 
             valueLeft = self.celia.getValue(int(left))
             valueRight = self.celia.getValue(int(right))
-
+           
             value = valueLeft + valueRight
+
+            self.celia.setValue(temp,value)
+
+        elif operator == "-":
+
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+           
+            value = valueLeft - valueRight
 
             self.celia.setValue(temp,value)
 
         elif operator == "GOTO":
             self.pointerManager = temp - 1
+        
+        elif operator == "GOTOF":
+            
+            lastQuad = self.quadruples[self.pointerManager - 1]
+           
+            opLQ = lastQuad[0]
+            leftLQ = lastQuad[1]
+            rightLQ = lastQuad[2]
+            
+            valueLeftLQ = self.celia.getValue(int(leftLQ))
+            valueRightLQ = self.celia.getValue(int(rightLQ))
+
+            valueTrue = 1
+            valueFalse = 0
+            
+            if opLQ == ">":
+                if valueLeftLQ > valueRightLQ :
+                   
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ  == "<":
+                if valueLeftLQ < valueRightLQ :
+                
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                  
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ  == "!=":
+                if valueLeftLQ != valueRightLQ :
+                  
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            elif opLQ == "=":
+                if valueLeftLQ == valueRightLQ :
+                   
+                    self.celia.setValue(int(left),valueTrue)
+                else:
+                    
+                    self.celia.setValue(int(left),valueFalse)
+            else:
+                print("Operador no existe")
+            resultValue = self.celia.getValue(int(left))
+            
+            if resultValue == 0:
+                self.pointerManager = temp - 1
+            
+                  
         
         self.pointerManager += 1
         #print("pointer:" , self.pointerManager)
