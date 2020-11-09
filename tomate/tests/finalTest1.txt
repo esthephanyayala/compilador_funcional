@@ -43,6 +43,12 @@
         (define ( (int lambdaShido) int x  int y )
             (lambda ( x y) ( a b) (+ (+ a b ) 10 )) 
         )
+        (define ( ( int f2 ) int i1 int i2)  
+            (+ i1 i2)
+        )
+        (define ( ( int f3 ) int i1 int i2)  
+            (+ i1 i2)
+        )
     )
 
     

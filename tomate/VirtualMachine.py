@@ -35,8 +35,8 @@ class VirtualMachine:
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovj1.txt'
-        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-        filename = os.path.join(fileDir, 'tests/' + programa )
+        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        #filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
