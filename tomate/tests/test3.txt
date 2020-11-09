@@ -2,25 +2,15 @@
     (vars
         (declare i 1)
         (declare j 2)
-        (declare k 1.1)
-        (declare f 'a')
     )
     (functions
-        (define ( ( void f1 ) int i1 int i2)  
-            (print 'a' )
-        )
-        (define ( ( void f2 ) int i1 int i2)  
-            (print 'a' )
+        (define ( ( int f1 ) int i1 int i2)  
+            (+ i1 i2)
         )
     )
-    
-        
-    
     
     (main
         (print (+ i j))
-        (print f)
-        (if (> j i) (print(- j i)) (print(+ j i)))
-        (f1 1 2)
+        (print (f1 i j) )
     )
 )

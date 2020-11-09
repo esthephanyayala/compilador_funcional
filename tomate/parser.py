@@ -1015,9 +1015,11 @@ def p_empty(p):
      pass
 
 def createOvejota():
+    
         
         fileDir = os.path.dirname(os.path.realpath('__file__'))
-        f= open("tests/ovj1.txt","w+")
+        f= open("tomate/tests/ovj1.txt","w+")
+        #f= open("tests/ovj1.txt","w+")
         
         ## escribir const Table
         f.write("$$\n")
@@ -1097,8 +1099,8 @@ yacc.yacc()
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
 programa = 'test3.txt'
-#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-filename = os.path.join(fileDir, 'tests/' + programa )
+filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+#filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)

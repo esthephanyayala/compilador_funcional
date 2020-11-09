@@ -20,12 +20,10 @@ class VirtualMachine:
 
     def initializeAddressManager(self):
         tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[4, 0, 0], [3, 0, 0, 0], [1, 0, 0, 0], [3, 0, 0]]
+        tgs = [[3, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0], [2, 0, 0]]
         self.celia = AddressManager(tgb, tgs)
         self.fillConstMemory()
 
-    
-        
 
     def fillConstMemory(self):
         for i in self.constTable:
@@ -35,8 +33,8 @@ class VirtualMachine:
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovj1.txt'
-        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-        filename = os.path.join(fileDir, 'tests/' + programa )
+        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        #filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -96,9 +94,11 @@ class VirtualMachine:
                 elif i != "@@\n" and contFunction > 1:
                     print("no main")
 
+
         # esto es para probar, pero no deberia de estar :D
-        self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
-        self.dirFunction['f2'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+        #self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+        #self.dirFunction['f2'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+        self.dirFunction['f1'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [1, 0, 0, 0]}, 'typeParams': ['int', 'int']}
 
     def switch(self):
 
@@ -188,7 +188,7 @@ class VirtualMachine:
 
 
             #print(self.lastValue)
-            objectVars = self.dirFunction["test"]["vars"]
+            objectVars = self.dirFunction["factorial"]["vars"]
 
             if self.currentFunction[-1] in objectVars:
 
