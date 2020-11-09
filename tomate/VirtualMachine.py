@@ -20,7 +20,7 @@ class VirtualMachine:
 
     def initializeAddressManager(self):
         tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[3, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0], [2, 0, 0]]
+        tgs = [[20, 20, 20], [20, 20, 20, 20], [20, 20, 20, 20], [20, 20, 20]]
         self.celia = AddressManager(tgb, tgs)
         self.fillConstMemory()
 
@@ -98,7 +98,11 @@ class VirtualMachine:
         # esto es para probar, pero no deberia de estar :D
         #self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
         #self.dirFunction['f2'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
-        self.dirFunction['f1'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [1, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+        self.dirFunction['f1'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [4, 0, 0, 1]}, 'typeParams': ['int', 'int']}
+        self.dirFunction['factoria'] = {'type': 'int', 'quad': 11, 'memory': {'params': [1, 0, 0, 0], 'local': [4, 0, 0, 1]}, 'typeParams': ['int']}
+        self.dirFunction['equal'] = {'type': 'void', 'quad': 22, 'memory': {'params': [2, 0, 0, 0], 'local': [0, 0, 0, 1]}, 'typeParams': ['int', 'int']}
+        self.dirFunction['greater'] = {'type': 'void', 'quad': 28, 'memory': {'params': [3, 0, 0, 0], 'local': [0, 0, 0, 5]}, 'typeParams': ['int', 'int', 'int']}
+        self.dirFunction['lambdaShido'] =  {'type': 'int', 'quad': 50, 'memory': {'params': [2, 0, 0, 0], 'local': [3, 0, 0, 0]}, 'typeParams': ['int', 'int']}
 
     def switch(self):
 
@@ -152,7 +156,37 @@ class VirtualMachine:
            
             value = valueLeft - valueRight
 
-            self.celia.setValue(temp,value)
+            self.celia.setValue(int(temp),value)
+
+            # if we are in a function we add the value to this stack in case it is the return
+            if self.currentFunction != "" :
+                self.lastValue.append(value)
+
+        elif operator == "*":
+
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+           
+            value = valueLeft * valueRight
+
+            self.celia.setValue(int(temp),value)
+
+            # if we are in a function we add the value to this stack in case it is the return
+            if self.currentFunction != "" :
+                self.lastValue.append(value)
+
+        elif operator == "/":
+
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+           
+            value = valueLeft / valueRight
+
+            self.celia.setValue(int(temp),value)
+
+            # if we are in a function we add the value to this stack in case it is the return
+            if self.currentFunction != "" :
+                self.lastValue.append(value)
 
         elif operator == "GOTO":
             # pointer manager is equal to temp - 1 (at the end of the switch there is a + 1 thats the reason)
@@ -210,6 +244,70 @@ class VirtualMachine:
             # Pop the lastValue array
             self.lastValue.pop()
 
+        elif operator == ">":
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+
+            boolResult = int(valueLeft > valueRight)
+
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "<":
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+
+            boolResult = int(valueLeft < valueRight)
+
+            self.celia.setValue(int(temp),boolResult)
+        
+        elif operator == "!=":
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+
+            boolResult = int(valueLeft != valueRight)
+
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "==":
+            valueLeft = self.celia.getValue(int(left))
+            valueRight = self.celia.getValue(int(right))
+
+            boolResult = int(valueLeft == valueRight)
+
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "GOTOF":
+            valueLeft = self.celia.getValue(int(left))
+
+            if not(valueLeft) :
+                self.pointerManager = int(temp) - 1
+        
+        elif operator == "evenp":
+            value = self.celia.getValue(int(left))
+
+            boolResult = int(value % 2 == 0)
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "intp":
+            value = self.celia.getValue(int(left))
+
+            boolResult = int(isinstance(value , int))
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "floatp":
+            value = self.celia.getValue(int(left))
+
+            boolResult = int(isinstance(value , float))
+            self.celia.setValue(int(temp),boolResult)
+
+        elif operator == "TRUE":
+            self.celia.setValue(int(temp),1)
+
+        elif operator == "FALSE":
+            self.celia.setValue(int(temp),0)
+
+
+        '''
         elif operator == "GOTOF":
             
             lastQuad = self.quadruples[self.pointerManager - 1]
@@ -245,7 +343,7 @@ class VirtualMachine:
                 else:
                     
                     self.celia.setValue(int(left),valueFalse)
-            elif opLQ == "=":
+            elif opLQ == "==":
                 if valueLeftLQ == valueRightLQ :
                    
                     self.celia.setValue(int(left),valueTrue)
@@ -258,8 +356,8 @@ class VirtualMachine:
             
             if resultValue == 0:
                 self.pointerManager = temp - 1
-            
-                  
+        '''
+
         
         self.pointerManager += 1
 

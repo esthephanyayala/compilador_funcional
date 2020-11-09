@@ -268,7 +268,14 @@ def p_expresionesunarias(p):
         quadruples.add(q)
     
     else: ## para 2do y 3er caso
+        
         ad = getAddress("temp","bool")
+
+        if p[1] == 'tt':
+            q = Quadruple("TRUE","NULL","NULL",ad)
+        else :
+            q = Quadruple("FALSE","NULL","NULL",ad)
+        quadruples.add(q)
 
         stackOperandos.append(ad)
         stackTypes.append("bool")
@@ -823,7 +830,7 @@ def p_np_finish_lambda(p):
     global address
     #print(dirFunctions)
     #del dirFunctions[name]
-    del dirFunctions[name]["vars"]
+    del dirFunctions[name]
     #print("stacks", stackOperadores, stackTypes)
     #Sacamos los fondos falsos
     if stackOperandos[-1] == "*":
@@ -860,6 +867,10 @@ def p_np_finish_lambda(p):
         stackTypes.pop()
         stackOperandos.append(addressTemp)
         stackTypes.append(typeTemp)
+        
+        while stackOperandos[-1] == '*':
+            stackOperandos.pop()
+            stackTypes.pop()
 
     
     
@@ -1131,14 +1142,6 @@ vm.initializeAddressManager()
 
 vm.pointerSomething()
 #vm.celia.printMemory()
-
-
-
-print("*****")
-
-
-
-
 
 #vm.createOvejota()
 

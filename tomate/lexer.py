@@ -55,7 +55,7 @@ t_DIVIDE  = r'/'
 t_LT = r'<'
 t_GT = r'>'
 t_NE = r'!='
-t_EQUAL = r'='
+t_EQUAL = r'=='
 t_QUOTE = r'\''
 
 def t_ID(t):

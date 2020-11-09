@@ -10,7 +10,7 @@ semanticCube = {
             "<" : "bool",
             ">" : "bool",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
 
         "float" : {
@@ -21,7 +21,7 @@ semanticCube = {
             "<" : "bool",
             ">" : "bool",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
 
         "bool" : {
@@ -32,7 +32,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "char" : {
@@ -43,7 +43,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
         
         "list" : {
@@ -54,7 +54,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         }
     },
     "float" : {
@@ -66,7 +66,7 @@ semanticCube = {
             "<" : "bool",
             ">" : "bool",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
 
         "float" : {
@@ -77,7 +77,7 @@ semanticCube = {
             "<" : "bool",
             ">" : "bool",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
 
         "bool" : {
@@ -88,7 +88,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "char" : {
@@ -99,7 +99,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
         
         "list" : {
@@ -110,7 +110,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         }
     },
     "bool" : {
@@ -122,7 +122,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "float" : {
@@ -133,7 +133,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "bool" : {
@@ -144,7 +144,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
 
         "char" : {
@@ -155,7 +155,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
         
         "list" : {
@@ -166,7 +166,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         }
     },
     "char" : {
@@ -178,7 +178,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "float" : {
@@ -189,7 +189,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "bool" : {
@@ -200,7 +200,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "char" : {
@@ -211,7 +211,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "bool",
-            "=" : "bool"
+            "==" : "bool"
         },
         
         "list" : {
@@ -222,7 +222,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         }
     },
     "list" : {
@@ -234,7 +234,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "float" : {
@@ -245,7 +245,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "bool" : {
@@ -256,7 +256,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "char" : {
@@ -267,7 +267,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         },
 
         "list" : {
@@ -278,7 +278,7 @@ semanticCube = {
             "<" : "ERROR",
             ">" : "ERROR",
             "!=" : "ERROR",
-            "=" : "ERROR"
+            "==" : "ERROR"
         }
     }
 }
