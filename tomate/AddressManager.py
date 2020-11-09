@@ -16,6 +16,8 @@ class AddressManager:
         self.constStart = 0
         self.constLimit = 0
 
+        self.stackLocals = []
+
         self.initializeGlobalMemories(globalSizes)
         self.initializeMemoryLimits()
 
@@ -57,13 +59,35 @@ class AddressManager:
                                             0
                                             )
 
+        self.stackLocals.append(self.globalLocals)
+
+    def addLocalMemory(self,sizes):
+        auxLocalMemory = MemoryAux( 
+                                    sizes[0],
+                                    sizes[1],
+                                    sizes[2],
+                                    sizes[3] 
+                                    )
+
+        self.stackLocals.append(auxLocalMemory)
+
+    def popLocalMemory(self):
+        self.stackLocals.pop()
+
     def printMemory(self):
         print("GlobalVars --------")
         self.globalVars.print()
         print("TemporalVars --------")
         self.globalTemp.print()
         print("LocalVars --------")
-        self.globalLocals.print()
+
+        for i in range(0, len(self.stackLocals)):
+            print(i * -1)
+            self.stackLocals[ i * -1 ].print()
+
+        #self.stackLocals[-1].print()
+        #self.globalLocals.print()
+
         print("ConstVars --------")
         self.globalConst.print()
         print("-------- --------")
@@ -86,7 +110,8 @@ class AddressManager:
         elif memoryObject == "temp":
             value = self.globalTemp.getValue(index, dataType)
         elif memoryObject == "local":
-            value = self.globalLocals.getValue(index, dataType)
+            value = self.stackLocals[-1].getValue(index, dataType)
+            #value = self.globalLocals.getValue(index, dataType)
         elif memoryObject == "const":
             value = self.globalConst.getValue(index, dataType)
         else: 
@@ -103,7 +128,8 @@ class AddressManager:
         elif memoryObject == "temp":
             self.globalTemp.setValue(index, dataType, value )
         elif memoryObject == "local":
-            self.globalLocals.setValue(index, dataType, value )
+            #self.globalLocals.setValue(index, dataType, value )
+            self.stackLocals[-1].setValue(index, dataType, value)
         elif memoryObject == "const":
             self.globalConst.setValue(index, dataType, value)
         else: 

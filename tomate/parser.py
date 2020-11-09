@@ -1048,10 +1048,12 @@ vm.loadOvejota()
 #vm.printConstTable()
 #vm.printQuadruples()
 #vm.printFunctions()
-vm.printConstTable()
+#vm.printConstTable()
 vm.initializeAddressManager()
 
 vm.pointerSomething()
+#vm.celia.printMemory()
+
 
 
 ''' # para testear a mano

@@ -1,5 +1,4 @@
 import os
-from Memory import Memory
 from AddressManager import AddressManager
 
 class VirtualMachine:
@@ -11,27 +10,25 @@ class VirtualMachine:
         self.numberOfQuads = 0
 
         self.celia = []
-        #self.initializeAddressManager()
+
+        #function variables
+        self.currentParams = []
+        self.currentFunction = []
+        self.migajitaDePan = []
+        self.lastValue = []
 
     def initializeAddressManager(self):
         tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[2, 1, 1], [1, 0, 0, 0], [0, 0, 0, 0], [2, 1, 1]]
+        tgs = [[4, 0, 0], [3, 0, 0, 0], [1, 0, 0, 0], [3, 0, 0]]
         self.celia = AddressManager(tgb, tgs)
-        #self.celia.printMemory()
-        #self.celia.printLimits()
-        #self.celia.setValue(4000,1)
-        #self.celia.getValue(4000)
-        
         self.fillConstMemory()
-        #self.celia.printMemory()
 
     def fillConstMemory(self):
-        #self.const = Memory(4,1,1,0)
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
-        self.celia.printMemory()
 
     def loadOvejota(self):
+
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovejota.txt'
         filename = os.path.join(fileDir, 'tomate/tests/' + programa )
@@ -93,51 +90,160 @@ class VirtualMachine:
                 elif i != "@@\n" and contFunction > 1:
                     print("no main")
 
+        # esto es para probar, pero no deberia de estar :D
+        self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+        self.dirFunction['f2'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
+
     def switch(self):
+
+        # Get next Quad to be evaluated
         currentQuad = self.quadruples[self.pointerManager]
+
+        # Get quad index
         operator = currentQuad[0]
         left = currentQuad[1]
         right = currentQuad[2]
-        temp = int( currentQuad[3] )
+        temp = currentQuad[3]
+
+        #print(self.pointerManager, currentQuad)
         
         if operator == "print" :
-            print(self.celia.getValue(temp))
+            print(self.celia.getValue(int(temp)))
 
         elif operator == "=" :
+            # Get the value of the address
             value = self.celia.getValue(int(left))
+            
+            # Set the value to temp address
+            self.celia.setValue(int(temp),value)
 
-            self.celia.setValue(temp,value)
+            # if we are in a function we add the value to this stack in case it is the return
+            if self.currentFunction != "" : 
+                self.lastValue.append(value)
             
         elif operator == "+":
 
+            # Get the value of the left address
             valueLeft = self.celia.getValue(int(left))
+
+            # Get the value of the right address
             valueRight = self.celia.getValue(int(right))
 
+            # Sum the values
             value = valueLeft + valueRight
 
-            self.celia.setValue(temp,value)
+            # Set the value to temp address
+            self.celia.setValue(int(temp),value)
+
+            # if we are in a function we add the value to this stack in case it is the return
+            if self.currentFunction != "" :
+                self.lastValue.append(value)
 
         elif operator == "GOTO":
-            self.pointerManager = temp - 1
+            # pointer manager is equal to temp - 1 (at the end of the switch there is a + 1 thats the reason)
+            self.pointerManager = int(temp) - 1
+
+        elif operator == "ERA":
+            # We enter a new scope so we added to a new currentFunction
+            # and a new params array
+            self.currentFunction.append(temp)
+            self.currentParams.append([])
+
+        elif operator == "param":
+
+            # Get the value of the left address
+            value = self.celia.getValue(int(left))
+ 
+            # Append the value to the array in the last position of currentParams
+            self.currentParams[-1].append( value ) 
+
+        elif operator == "GOSUB":
+            # GOSUB means going to the quads of a function
+            # we change the pointer manager
+            # initialize a new memory on the stack of local memories inside Celia
+            # and save the migajita of pan 
+
+            self.fillParamsFunction()
+            self.migajitaDePan.append(self.pointerManager)
+            self.pointerManager = int(temp) - 1
         
+        elif operator == "ENDFUNC":
+            # At the ENDFUNC if the function is not void then we set the value of the address of the function
+            # to the last value inside lastValue stack
+
+
+            #print(self.lastValue)
+            objectVars = self.dirFunction["test"]["vars"]
+
+            if self.currentFunction[-1] in objectVars:
+
+                address = objectVars[self.currentFunction[-1]]["virtualAddress"]
+                self.celia.setValue( int(address) , self.lastValue.pop() )
+
+            # Pop the local memory of the function
+            self.celia.popLocalMemory()
+
+            # Pop the current function to the function stacks
+            self.currentFunction.pop()
+
+            # Pop the currentParams 
+            self.currentParams.pop()
+
+            # Switch the pointer manager to the last migajita of pan
+            self.pointerManager = self.migajitaDePan.pop()
+
+            # Pop the lastValue array
+            self.lastValue.pop()
+
         self.pointerManager += 1
-        #print("pointer:" , self.pointerManager)
 
     def pointerSomething(self):
         while self.pointerManager < self.numberOfQuads:
             self.switch()
 
-        #self.celia.printMemory()
+    def getMemorySizeFunction(self,funcName):
+        memoryObj = self.dirFunction[funcName]['memory']
+        paramsMemory = memoryObj['params']
+        localMemory = memoryObj['local']
 
-## refactoring que memory reciba la base y no tener que crear add y addGlobal
-## recibir el tamano de memory para las que necesitamos, consts, globales, locakes
-## memory recibar tambien floats, chars, bools
-    # obviamente tambien hacer el handling de sus mamadas
-# ir pensando en el stack de variables Locales aka stack de segmentos
-# next step suma
-    # crear memoria temporal global
-#lalo-cal
+        sizeFunction = [
+                            paramsMemory[0] + localMemory[0],
+                            paramsMemory[1] + localMemory[1],
+                            paramsMemory[2] + localMemory[2],
+                            paramsMemory[3] + localMemory[3]
+                        ]
+        self.celia.addLocalMemory(sizeFunction)
 
+    def fillParamsFunction(self):
+        # This function is used after we gather the params of one function 
+        # to give the address to the new function
+
+        #print(self.currentParams)
+
+        basesLocals = [8000, 9000, 10000, 12000]
+
+        paramsCurrentFunction = self.dirFunction[self.currentFunction[-1]]['typeParams'].copy()
+
+        self.getMemorySizeFunction(self.currentFunction[-1])
+        paramsAux = self.currentParams[-1]
+
+        #print(paramsCurrentFunction)
+        
+        for i in range(0, len(paramsCurrentFunction)):
+            if paramsCurrentFunction[i] == "int":
+                addressTemp = basesLocals[0]
+                basesLocals[0] += 1
+            elif paramsCurrentFunction[i] == "float":
+                addressTemp = basesLocals[1]
+                basesLocals[1] += 1
+            elif paramsCurrentFunction[i] == "char":
+                addressTemp = basesLocals[2]
+                basesLocals[2] += 1
+            elif paramsCurrentFunction[i] == "bool":
+                addressTemp = basesLocals[3]
+                basesLocals[3] += 1
+            
+            self.celia.setValue( addressTemp , paramsAux.pop() )
 
     def printConstTable(self):
         print(self.constTable)
