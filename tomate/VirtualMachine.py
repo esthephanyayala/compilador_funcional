@@ -8,7 +8,9 @@ class VirtualMachine:
         self.pointerManager = 0
         self.quadruples = []
         self.numberOfQuads = 0
-        #self.quadAux = []
+        self.tgb = []
+        self.tgs = []
+       
 
         self.celia = []
 
@@ -19,12 +21,12 @@ class VirtualMachine:
         self.lastValue = []
 
     def initializeAddressManager(self):
-        tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        tgs = [[3, 0, 0], [2, 0, 0, 0], [0, 0, 0, 0], [2, 0, 0]]
-        self.celia = AddressManager(tgb, tgs)
+        #tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
+        #tgs = [[20, 20, 20], [20, 20, 20, 20], [20, 20, 20, 20], [20, 20, 20]]
+        
+        self.celia = AddressManager(self.tgb, self.tgs)
         self.fillConstMemory()
-
-
+        
     def fillConstMemory(self):
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
@@ -33,8 +35,8 @@ class VirtualMachine:
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovj1.txt'
-        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-        #filename = os.path.join(fileDir, 'tests/' + programa )
+        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -67,7 +69,7 @@ class VirtualMachine:
                 self.quadruples.append([operator, left, right, temp])
                 self.numberOfQuads += 1
 
-            elif i != "$$\n" and status == 3: # We are reading Quads
+            elif i != "$$\n" and status == 3: # We are reading Dir Function
                 if i == "@@\n":
                     contFunction += 1
                 
@@ -92,14 +94,75 @@ class VirtualMachine:
                             self.dirFunction[currentFunction]["vars"][variable] = {"type" : type , "virtualAddress" : address }
 
                 elif i != "@@\n" and contFunction > 1:
-                    print("no main")
+                    #print("no main")
+                    arrLine = i.split()
+                    first = arrLine[0]
+                    #MEMORY AND TYPEPARAMS TIENEN VARIOS 
+                    print("currentfunction", currentFunction)
+                    if first == "name":
+                        currentFunction = arrLine[1]
+                        self.dirFunction[currentFunction] = {}
+                    elif first  == "memory":
+                        rangeMem = int ( ( len(arrLine) - 1 ) / 2 )
+                        
+                        memoryp = []
+                        params = []
+                        local = []
+                        
+                        for i in range(1, len(arrLine)): 
+                            memoryp.append(int(arrLine[i]))
+                        
+                        for i in range(0 ,rangeMem):
+                            params.append(memoryp[i])
+                        
+                        for i in range(rangeMem ,rangeMem*2):
+                            local.append(memoryp[i])
+                        
+                        self.dirFunction[currentFunction][first] ={"params": params, "local": local}
+                        #print(self.dirFunction)
+                    
+                    elif first == "typeParams":
+                        #'typeParams': ['int', 'int']
+                        typeParams = []
+                        for i in range(1, len(arrLine)): 
+                            typeParams.append(arrLine[i])
+            
+                        self.dirFunction[currentFunction][first] =typeParams
+                        #print(self.dirFunction)
 
+
+                    else:# first != "memory" and first != "typeParams" and first != "name":
+                        self.dirFunction[currentFunction][first] = arrLine[1]
+                        #print(self.dirFunction)
+
+                    #print(self.dirFunction)    
+
+                        
+
+
+            elif i != "$$\n" and status == 4: # We are reading Temporal Global Sizes
+                    arrLine = i.split()
+                    
+                    for i in range(0, len(arrLine)): 
+                         arrLine[i] = int(arrLine[i])
+                    
+                    self.tgs.append(arrLine)
+
+            elif i != "$$\n" and status == 5: # We are reading temporal Global Bases
+                    arrLine = i.split()
+                     
+                    for i in range(0, len(arrLine)): 
+                        arrLine[i] = int(arrLine[i])
+                    
+                    self.tgb.append(arrLine)
+
+
+                    
 
         # esto es para probar, pero no deberia de estar :D
         #self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
         #self.dirFunction['f2'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
-        self.dirFunction['f1'] = {'type': 'int', 'quad': 3, 'memory': {'params': [2, 0, 0, 0], 'local': [1, 0, 0, 0]}, 'typeParams': ['int', 'int']}
-
+        print(self.dirFunction)
     def switch(self):
 
         # Get next Quad to be evaluated

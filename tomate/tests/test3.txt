@@ -7,6 +7,12 @@
         (define ( ( int f1 ) int i1 int i2)  
             (+ i1 i2)
         )
+        (define ( ( int f2 ) int i1 int i2)  
+            (+ i1 i2)
+        )
+        (define ( ( int f3 ) int i1 int i2)  
+            (+ i1 i2)
+        )
     )
     
     (main

@@ -4,7 +4,11 @@ $$
 $$
 = 13000 NULL 1000
 = 13001 NULL 1001
-GOTO NULL NULL 5
+GOTO NULL NULL 9
++ 8001 8000 8002
+ENDFUNC NULL NULL NULL
++ 8001 8000 8002
+ENDFUNC NULL NULL NULL
 + 8001 8000 8002
 ENDFUNC NULL NULL NULL
 + 1000 1001 4000
@@ -18,7 +22,7 @@ print NULL NULL 4001
 $$
 @@
 name factorial
-vars i int 1000 j int 1001 f1 int 1002 
+vars i int 1000 j int 1001 f1 int 1002 f2 int 1003 f3 int 1004 
 @@
 name f1
 type int
@@ -26,3 +30,25 @@ quad 3
 memory 2 0 0 0 1 0 0 0 
 typeParams int int 
 @@
+name f2
+type int
+quad 5
+memory 2 0 0 0 1 0 0 0 
+typeParams int int 
+@@
+name f3
+type int
+quad 7
+memory 2 0 0 0 1 0 0 0 
+typeParams int int 
+@@
+$$
+5 0 0 
+2 0 0 0 
+0 0 0 0 
+2 0 0 
+$$
+1000 2000 3000 
+4000 5000 6000 7000 
+8000 9000 10000 12000 
+13000 14000 15000 
