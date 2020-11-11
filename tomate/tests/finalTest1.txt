@@ -69,5 +69,6 @@
         (print (lambda ( 2 3) ( a b) ( * a b ) ))
         ( lambda ( i j) ( a b ) (lambda ( a b) ( x y) (if (> x y) (print x) (print y)) ) ) 
         (print (lambdaShido 1 2) )
+        (print (lambda ( 2) (a) (evenp a) ))
     )
 )

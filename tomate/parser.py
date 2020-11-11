@@ -22,6 +22,10 @@ contParamLambda = 0
 contLambdas = 0
 globalMemory = []
 
+stackLists = []
+
+listSize = 0
+
 # Virtual Address
 address = { 
             "global" :  {
@@ -194,6 +198,41 @@ def p_imprimir_2(p):
                     | listfunctions
     ''' 
     # e que pedo hay que agregar condicion aqui alv
+
+def p_imprimirlista(p):
+    ''' imprimirlista : OPEN_PAREN PRINTLISTA returnlist CLOSE_PAREN '''
+    print("printlist")
+
+    objList = stackLists.pop()
+    type = objList[0]
+    base = objList[1]
+    size = objList[2]
+
+    q = Quadruple("printlist",size,"NULL", base)
+    quadruples.add(q)
+
+    print(type,base,size)
+
+    
+    print(stackLists)
+    '''
+    objList = dirFunctions[scopeGlobal]["vars"]['l']
+
+    if "list" in objList :
+        #print("kha")
+        base = objList['virtualAddress']
+        size = objList['list']
+        
+        q = Quadruple("printlist",size,"NULL", base)
+        quadruples.add(q)
+
+    else :
+        print("Id provided is not a function")
+    
+        #print(objList)
+    #print(p[3])
+    '''
+
 
 ##### EXPRESION #####
 
@@ -604,26 +643,71 @@ def p_np_create_varTable(p):
     varId = p[-2] # o mejor poner vars
     dirFKeys = list(dirFunctions)
 
+    global ultTipo
+
     if varId in dirFunctions[dirFKeys[0]]['vars']:
         print("variable {} already declare".format(varId))
     else:
         type = ultTipo[-1]
+        #print(listSize)
+        #print(ultTipo)
+        #print(stackConst)
 
-        addressDirFunction = getAddress("global",type)
+        if ultTipo[-1] == 'lista':
+            #print("hay lista")
+            ultTipo.pop()
 
-        # if const ya existe
-        value = stackConst.pop()
-        
-        if value in constTable:
-            addressConst = constTable[value]
-        else:
-            addressConst = getAddress("const",type)
-            constTable[value] = addressConst
+            lenList = len(ultTipo)
+            typeList = ultTipo.pop(0)
+             
+            for i in range(0, lenList - 1 ):
+                if typeList != ultTipo[i]:
+                    print("Type mismatch inside list declare")
+                #else :
+                    
+            ultTipo = []
 
-        q = Quadruple("=",addressConst,"NULL", addressDirFunction ) 
-        quadruples.add(q)
-        
-        dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": ultTipo[-1] , "virtualAddress":addressDirFunction}
+            #print("here:",ultTipo)
+            #print(stackConst)
+            #print("len: ", lenList)
+
+            for i in range(0, lenList ):
+                #print(i)
+                #print(stackConst)
+                addressDirFunction = getAddress("global",typeList)
+
+                # if const ya existe
+                value = stackConst.pop(0)
+                
+                if value in constTable:
+                    addressConst = constTable[value]
+                else:
+                    addressConst = getAddress("const",typeList)
+                    constTable[value] = addressConst
+
+                q = Quadruple("=",addressConst,"NULL", addressDirFunction ) 
+                quadruples.add(q)
+
+                if i == 0:
+                    dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": typeList , "virtualAddress":addressDirFunction, "list":lenList}
+
+        else :
+
+            addressDirFunction = getAddress("global",type)
+
+            # if const ya existe
+            value = stackConst.pop()
+            
+            if value in constTable:
+                addressConst = constTable[value]
+            else:
+                addressConst = getAddress("const",type)
+                constTable[value] = addressConst
+
+            q = Quadruple("=",addressConst,"NULL", addressDirFunction ) 
+            quadruples.add(q)
+            
+            dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": ultTipo.pop() , "virtualAddress":addressDirFunction}
 
 def p_declare_2(p):
     ''' declare_2   : definircte
@@ -640,7 +724,6 @@ def p_definircte(p):
 def p_np_definicioni(p):
     ''' np_definicioni : '''
     ultTipo.append("int")
-
 
 def p_np_definicionf(p):
     ''' np_definicionf : '''
@@ -659,20 +742,69 @@ def p_definirlista(p):
 def p_definirlista_2(p):
     ''' definirlista_2  : definircte definirlista_2
                         | empty'''
+    global listSize
+    listSize += 1
 
 ##### LISTA #####
 def p_lista(p):
-    ''' lista : ID
+    ''' lista : ID np_push_data_to_stack
               | QUOTE OPEN_PAREN lista_2 CLOSE_PAREN
     '''
+    
+    if len(p) > 3:
+        global ultTipo
+        stackConst.pop(0)
+
+
+        lenList = len(ultTipo)
+        typeList = ultTipo.pop(0)
+            
+        for i in range(0, lenList - 1 ):
+            if typeList != ultTipo[i]:
+                print("Type mismatch inside list declare")
+            #else :
+                
+        ultTipo = []
+
+        for i in range(0, lenList ):
+            addressDirFunction = getAddress("temp",typeList)
+
+            # if const ya existe
+            value = stackConst.pop()
+            
+            if value in constTable:
+                addressConst = constTable[value]
+            else:
+                addressConst = getAddress("const",typeList)
+                constTable[value] = addressConst
+
+            q = Quadruple("=",addressConst,"NULL", addressDirFunction ) 
+            quadruples.add(q)
+
+            if i == 0:
+                stackLists.append([typeList, addressDirFunction, lenList ])
+
+    
+
+def p_np_push_data_to_stack(p):
+    ''' np_push_data_to_stack : '''
+
+    objList = dirFunctions[scopeGlobal]["vars"][p[-1]]
+
+    if "list" in objList :
+        base = objList['virtualAddress']
+        size = objList['list']
+        type = objList['type']
+
+        stackLists.append([type,base,size])
 
 def p_lista_2(p):
-    ''' lista_2 : CTEI lista_2
-                | CTEF lista_2
-                | CTEC lista_2
+    ''' lista_2 : CTEI np_definicioni lista_2
+                | CTEF np_definicionf lista_2
+                | CTEC np_definicionc lista_2
                 | empty
     '''
-
+    stackConst.append(p[1])
 
 ##### LISTFUNCTIONS #####
 def p_listfunctions(p):
@@ -682,7 +814,7 @@ def p_listfunctions(p):
 
 ##### RETURNLIST #####
 def p_returnlist(p):
-    ''' returnlist : OPEN_PAREN returnlist_2 lista CLOSE_PAREN 
+    ''' returnlist : OPEN_PAREN CDR returnlist CLOSE_PAREN 
                     | append
                     | lista
                     | createlist
@@ -691,8 +823,29 @@ def p_returnlist(p):
                     | filter
     '''
 
-def p_returnlist_2(p):
-    ''' returnlist_2 : CDR '''
+    if len(p) > 2 :
+        #print("cdr")
+        #print(stackLists)
+
+        
+        objList = stackLists.pop()
+        base = objList[1]
+
+        if base == 0:
+            print("Error cdr cannot work on null list")
+        else :
+
+            type = objList[0]
+            size = objList[2] - 1
+            
+            if size == 0:
+                base = 0
+            else :
+                base = base + 1
+
+            stackLists.append( [ type, base , size ]  )
+
+        #print("after:", stackLists)
 
 ##### RETURNELEMENT #####
 def p_returnelement(p):
@@ -700,23 +853,81 @@ def p_returnelement(p):
                      | TRUE
                      | FALSE 
     '''
+    print("re")
+    
+    if p[2] == 'car':
+        objList = stackLists.pop()
+        type = objList[0]
+        base = objList[1]
+
+        stackOperandos.append(base)
+        stackTypes.append(type)
+
+    elif p[2] == 'length':
+        print("len")
+
+        objList = stackLists.pop()
+
+        value = objList[2]
+        type = 'int'
+                
+        if value in constTable:
+            addressConst = constTable[value]
+        else:
+            addressConst = getAddress("const",type)
+            constTable[value] = addressConst
+
+        stackOperandos.append(addressConst)
+        stackTypes.append(type)
+        
+
 
 def p_returnelement_2(p):
-    ''' returnelement_2 : CAR
+    ''' returnelement_2 : CAR 
                         | LENGTH
                         | NULL_PREDICATE
                         | LIST_PREDICATE
                         | EMPTY_PREDICATE 
     '''
+    p[0] = p[1]
+    
+
+    
+
 
 ##### CREATELIST #####
 def p_createlist(p):
     ''' createlist : OPEN_PAREN LIST createlist_2 CLOSE_PAREN '''
+    
+    typeList = stackTypes[0]
+    lenList = len(stackOperandos)
+    baseList = 0
+
+    for i in range(0, lenList ):
+        addressOpe = stackOperandos[i]
+        currentType = stackTypes[i]
+
+        if typeList != currentType :
+            print("Error types are not the same for the given list")
+        
+        addressList = getAddress("temp",typeList)
+
+        if i == 0:
+            baseList = addressList
+
+        q = Quadruple('=',addressOpe, 'NULL', addressList )
+        quadruples.add(q)
+
+    
+    stackLists.append([typeList, baseList, lenList ])
+    
+
 
 def p_createlist_2(p):
     ''' createlist_2 : expresion createlist_2 
                      | empty
     '''
+
 
 
 ##### BLOQUE #####
@@ -728,6 +939,7 @@ def p_bloque(p):
                 | lambda
                 | listfunctions 
                 | llamada 
+                | imprimirlista
     '''
     
 
@@ -888,6 +1100,37 @@ def p_lambda_2(p):
 
 def p_append(p):
     ''' append : OPEN_PAREN APPEND returnlist returnlist append_2 CLOSE_PAREN '''
+    global stackLists
+
+    print("append", stackLists)
+    lenStack = len(stackLists)
+    typeList = stackLists[0][0]
+    sizeList = 0
+    baseList = 0
+
+    for i in range(0,lenStack):
+        currentList = stackLists[i]
+
+        if typeList != currentList[0]:
+            print("List on append doesn't have the same type")
+
+        baseCurrentList = currentList[1]
+        sizeList += currentList[2]
+
+        for j in range(0, len(currentList)):
+
+            address = getAddress("temp",typeList)
+
+            if i == 0 and j == 0 :
+                baseList = address
+
+            q = Quadruple('=',baseCurrentList + j, 'NULL',address)
+            quadruples.add(q)
+
+    stackLists = []
+
+    stackLists.append([typeList, baseList, sizeList])
+
 
 def p_append_2(p):
     ''' append_2 : returnlist append_2
@@ -1026,8 +1269,6 @@ def p_empty(p):
      pass
 
 def createOvejota():
-    
-        
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         f= open("tomate/tests/ovj1.txt","w+")
         #f= open("tests/ovj1.txt","w+")
@@ -1230,3 +1471,5 @@ $$
 0 0 0 0
 1 1 1 
 '''
+
+## Cuando tengamos un error para todo alv

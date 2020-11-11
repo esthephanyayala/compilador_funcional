@@ -46,6 +46,10 @@ S -> RETURNELEMENT | RETURNLIST
 S -> ( S' LISTA ) | APPEND | LISTA | CREATELIST | MAP | LLAMADA | FILTER
 S' -> cdr
 
+
+<RETURNLIST>
+S -> ( cdr LISTA ) | APPEND | LISTA | CREATELIST | MAP | LLAMADA | FILTER
+
 <RETURNELEMENT>
 S -> ( S' RETURNLIST ) | #t | #f
 S' -> car | length | null? | list? | empty?
@@ -70,6 +74,13 @@ S' -> RETURNLIST S' | epsilon
 <FILTER>
 S -> ( filter S' RETURNLIST )
 S' -> ( lambda (PARAM) BLOQUE ) | even? | int? | float?
+
+( filter even? '(1 2) ) =  2
+// size puede ser entre len de lista y 0
+// typo igual que el de la lista
+// base = la siguiente address que se pueda
+
+
 
 ------------------------------------------------------------
 Son equivalentes
@@ -117,7 +128,7 @@ S' -> even? | int? | float? | list? | null? | empty?
 S -> ( if EXPRESION BLOQUE BLOQUE )
 
 <BLOQUE> 
-S -> CONDICION | IMPRIMIR | EXPRESION | LLAMADA | LAMBDA | LISTFUNCITONS
+S -> CONDICION | IMPRIMIR | EXPRESION | LLAMADA | LAMBDA | LISTFUNCITONS | IMPRIMIRLISTA
 
 <TIPO> 
 S -> int 

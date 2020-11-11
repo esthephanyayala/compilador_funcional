@@ -184,6 +184,19 @@ class VirtualMachine:
         if operator == "print" :
             print(self.celia.getValue(int(temp)))
 
+        elif operator == "printlist" :
+            base = int(temp)
+            size = int(left)
+            
+            print('\'( ', end='')
+            for i in range(0, size ):
+                
+                value = self.celia.getValue(base + i)
+
+                print( value , end=' ')
+            print(')')
+
+
         elif operator == "=" :
             # Get the value of the address
             value = self.celia.getValue(int(left))
