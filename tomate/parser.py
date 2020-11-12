@@ -1395,7 +1395,6 @@ vm.loadOvejota()
 #vm.printQuadruples()
 #vm.printFunctions()
 #vm.printConstTable()
-vm.initializeAddressManager()
 
 
 vm.pointerSomething()
@@ -1471,5 +1470,71 @@ $$
 0 0 0 0
 1 1 1 
 '''
+from DynamicMemoryManager import *
+
+mike = DynamicMemoryManager(['l1','l2','l3','l4','l5','l6','l7'])
+
+mike.setValue('l1',4)
+mike.setValue('l1',2)
+mike.setValue('l1',5)
+mike.setValue('l1',10)
+mike.setValue('l2',50)
+mike.setValue('l2',4)
+mike.print('l1')
+print(mike.car('l1'))
+mike.cdr('l3','l1')
+print(mike.car('l3'))
+mike.cdr('l4','l3')
+print(mike.car('l4'))
+mike.cdr('l5','l4')
+print(mike.length('l1'))
+print(mike.length('l2'))
+print(mike.length('l3'))
+print(mike.length('l4'))
+print(mike.length('l5'))
+mike.append('l1','l6')
+#mike.append('l2','l6')
+#mike.append('l3','l6')
+mike.dm.printMemory()
+mike.print('l6')
+print(mike.length('l6'))
+mike.filter('even','l1','l7')
+
+mike.dm.printMemory()
 
 ## Cuando tengamos un error para todo alv
+
+# head 
+# tail
+
+'''
+NDM 13000 NULL ListaAux1
+13000 = 10
+NDM 13001 NULL ListaAux1
+2 
+NDM 13002 NULL ListaAux1
+30
+NDM 13003 NULL ListaAux2
+3
+NDM 13004 NULL ListaAux2
+4
+NDM 13005 NULL ListaAux2
+
+filter even ListaAux1 ListaAux3
+cdr ListaAux1 ListaAux4
+
+l1, l2, l3
+
+stackLists
+ListaAux1 , 0
+ListaAux2 , 3
+ListaAux3 , NULL
+
+[[10,1],[2,2],[30,0],[3,4],[4,0],[0,0],[0,0],[0,0],[0,0]]
+
+(append l1 l2 l3)
+
+append l1 x l4
+append l2 x l4
+append l3 x l4
+'''

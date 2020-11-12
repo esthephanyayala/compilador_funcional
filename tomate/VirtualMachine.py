@@ -20,10 +20,7 @@ class VirtualMachine:
         self.migajitaDePan = []
         self.lastValue = []
 
-    def initializeAddressManager(self):
-        #tgb = [[1000, 2000, 3000], [4000, 5000, 6000, 7000], [8000, 9000, 10000, 12000], [13000, 14000, 15000]]
-        #tgs = [[20, 20, 20], [20, 20, 20, 20], [20, 20, 20, 20], [20, 20, 20]]
-        
+    def initializeAddressManager(self): 
         self.celia = AddressManager(self.tgb, self.tgs)
         self.fillConstMemory()
         
@@ -157,7 +154,7 @@ class VirtualMachine:
                     self.tgb.append(arrLine)
 
 
-                    
+        self.initializeAddressManager()
 
         # esto es para probar, pero no deberia de estar :D
         #self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}

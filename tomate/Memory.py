@@ -63,6 +63,51 @@ class MemoryAux:
         else :
             print("This datatype doesn't exists, vuelva pronto :D")
     
+
+class DynamicMemory:
+    def __init__(self, length):
+        self.listM = []
+        for _ in range(0,length):
+            self.listM.append(Node(0,-1))
+
+    def setValue(self, index, value):
+        self.listM[index].setValue(value)
+
+    def setPointer(self, index, pointer):
+        self.listM[index].setPointer(pointer)
+
+    def getValue(self, index):
+        return self.listM[index].getValue()
+
+    def getPointer(self,index):
+        return self.listM[index].getPointer()
+
+    def printMemory(self):
+        for i in self.listM:
+            i.print()
+
+
+class Node:
+    def __init__(self, value, pointer):
+        self.pointer = pointer
+        self.value = value
+
+    def setValue(self, value):
+        self.value = value
+    
+    def setPointer(self, pointer ):
+        self.pointer = pointer
+
+    def getValue(self):
+        return self.value
+
+    def getPointer(self):
+        return self.pointer
+    
+    def print(self):
+        print([self.value, self.pointer])
+    
+    
     #vm -> am -> all(memory)
 
     #vs = 1000

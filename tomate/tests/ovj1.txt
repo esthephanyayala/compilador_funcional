@@ -59,8 +59,6 @@ GOSUB NULL NULL 12
 = 4019 NULL 4022
 = 4020 NULL 4023
 printlist 3 NULL 4021
-evenp 13001 NULL 7000
-print NULL NULL 7000
 $$
 @@
 name factorial
@@ -74,7 +72,7 @@ typeParams int int
 @@
 $$
 10 2 0 
-24 0 0 1 
+24 0 0 0 
 0 0 0 0 
 10 2 0 
 $$

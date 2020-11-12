@@ -73,12 +73,18 @@ S' -> RETURNLIST S' | epsilon
 
 <FILTER>
 S -> ( filter S' RETURNLIST )
-S' -> ( lambda (PARAM) BLOQUE ) | even? | int? | float?
+S' -> ( lambda (PARAM) S'' ) | even? | int? | float?
+S'' -> ( if EXPRESION tt ff )
+
+(filter (lambda  (x) (> x 1) ) l1 )
+(> x 1)
 
 ( filter even? '(1 2) ) =  2
 // size puede ser entre len de lista y 0
 // typo igual que el de la lista
 // base = la siguiente address que se pueda
+
+// simular un proceso de memoria dinamica
 
 
 
