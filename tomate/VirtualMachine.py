@@ -1,5 +1,6 @@
 import os
 from AddressManager import AddressManager
+from DynamicMemoryManager import DynamicMemoryManager
 
 class VirtualMachine:
     def __init__(self):
@@ -13,6 +14,7 @@ class VirtualMachine:
        
 
         self.celia = []
+        self.mike = []
 
         #function variables
         self.currentParams = []
@@ -20,10 +22,17 @@ class VirtualMachine:
         self.migajitaDePan = []
         self.lastValue = []
 
+        #list variables
+        self.maxDMSize = 0
+        self.ListNames = []
+
     def initializeAddressManager(self): 
         self.celia = AddressManager(self.tgb, self.tgs)
         self.fillConstMemory()
         
+    def initializeDynamicMemoryManager(self):
+        self.mike = DynamicMemoryManager(self.ListNames, self.maxDMSize)
+
     def fillConstMemory(self):
         for i in self.constTable:
             self.celia.setValue(int(i) , self.constTable[i] )
@@ -95,7 +104,7 @@ class VirtualMachine:
                     arrLine = i.split()
                     first = arrLine[0]
                     #MEMORY AND TYPEPARAMS TIENEN VARIOS 
-                    print("currentfunction", currentFunction)
+                    #print("currentfunction", currentFunction)
                     if first == "name":
                         currentFunction = arrLine[1]
                         self.dirFunction[currentFunction] = {}
@@ -133,10 +142,7 @@ class VirtualMachine:
                         #print(self.dirFunction)
 
                     #print(self.dirFunction)    
-
-                        
-
-
+ 
             elif i != "$$\n" and status == 4: # We are reading Temporal Global Sizes
                     arrLine = i.split()
                     
@@ -153,8 +159,14 @@ class VirtualMachine:
                     
                     self.tgb.append(arrLine)
 
+            elif i != "$$\n" and status == 6: # We are reading list variables
+                arrLine = i.split()
+                self.maxDMSize = int(arrLine.pop(0))
+                self.ListNames = arrLine.copy()
+
 
         self.initializeAddressManager()
+        self.initializeDynamicMemoryManager()
 
         # esto es para probar, pero no deberia de estar :D
         #self.dirFunction['f1'] = {'type': 'int', 'quad': 5, 'memory': {'params': [2, 0, 0, 0], 'local': [2, 0, 0, 0]}, 'typeParams': ['int', 'int']}
@@ -182,17 +194,7 @@ class VirtualMachine:
             print(self.celia.getValue(int(temp)))
 
         elif operator == "printlist" :
-            base = int(temp)
-            size = int(left)
-            
-            print('\'( ', end='')
-            for i in range(0, size ):
-                
-                value = self.celia.getValue(base + i)
-
-                print( value , end=' ')
-            print(')')
-
+            self.mike.print(temp)
 
         elif operator == "=" :
             # Get the value of the address
@@ -379,6 +381,36 @@ class VirtualMachine:
 
         elif operator == "FALSE":
             self.celia.setValue(int(temp),0)
+
+        elif operator == "NDM":
+            # Get the value of the address
+            value = self.celia.getValue(int(left))
+
+            self.mike.setValue(temp, value)
+
+        elif operator == "APPEND":
+            self.mike.append(right,temp)
+
+        elif operator == "CDR" :
+            self.mike.cdr(temp,left)
+
+        elif operator == "CAR" :
+            value = self.mike.car(left)
+
+            # Set the value to temp address
+            self.celia.setValue(int(temp),value)
+
+        elif operator == "TAIL" :
+            value = self.mike.tail(left)
+
+            # Set the value to temp address
+            self.celia.setValue(int(temp),value)
+
+        elif operator == "LENGTH" :
+            value = self.mike.length(left)
+
+            # Set the value to temp address
+            self.celia.setValue(int(temp),value)
 
 
         '''

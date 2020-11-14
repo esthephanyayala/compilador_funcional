@@ -2,6 +2,7 @@ reserved = {
     'print' : 'PRINT',
     'printlista' : 'PRINTLISTA',
     'declare' : 'DECLARE',
+    'tail' : 'TAIL',
     #'id' : 'ID', -- lo tenemos como palabra reservada pero no creo que sea el caso
     'if' : 'IF',
     'define' : 'DEFINE',

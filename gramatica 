@@ -52,7 +52,7 @@ S -> ( cdr LISTA ) | APPEND | LISTA | CREATELIST | MAP | LLAMADA | FILTER
 
 <RETURNELEMENT>
 S -> ( S' RETURNLIST ) | #t | #f
-S' -> car | length | null? | list? | empty?
+S' -> car | length | null? | list? | empty? | tail <--- agregue este ultimo por que dijo elda en la llamada que esperaba como list functions
 
 <APPEND>
 S -> ( append RETURNLIST RETURNLIST S' )
@@ -74,6 +74,19 @@ S' -> RETURNLIST S' | epsilon
 <FILTER>
 S -> ( filter S' RETURNLIST )
 S' -> ( lambda (PARAM) S'' ) | even? | int? | float?
+S'' -> EXPRESION
+
+(filter (lambda ( l ) (x) (> l 5) )  )
+
+filter null l1 l5
+getnext l1 null null
+> l1 5 temp
+NDM temp l5 l1
+finishfilter null null null 
+
+
+
+
 S'' -> ( if EXPRESION tt ff )
 
 (filter (lambda  (x) (> x 1) ) l1 )

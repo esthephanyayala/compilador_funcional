@@ -1,20 +1,26 @@
 (program factorial
     (vars
-        (declare i 1)
-        (declare j 2)
-        (declare a 2.2)
-        (declare b 'c')
+        (declare l '(10 2 30))
+        (declare l1 '(3 4 5))
+        (declare l2 '(6 7 8))
+        (declare l3 '(1.2 1.3))
     )
-    (functions)
-    (main 
-        
-        (if (> i 1)
-                (if (> i j) (print (+ 1 2)) (+ i j))
-                (print 'e' )
-            )
-        
+    (functions
+        (define ( ( int f1 ) int i1 int i2)  
+            (+ (+ 1 2) 10 )
+        )
+    )
+    (main
+        (printlista (append l l1 l2 ))
+        (print (car l) )
+        (print (car (cdr (append l l1 l2 ))))
 
+        (printlista (list (f1 1 1) (+ 3 2) (+ 3 4) ))
+        (lambda (1) (x) ( + (+ x 1) 1 ) )
+        (print (> 1 5))
     )
 )
+
+
 
 

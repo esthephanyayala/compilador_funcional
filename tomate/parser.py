@@ -20,9 +20,13 @@ scopeGlobal = ""
 contCondiciones = 0
 contParamLambda = 0
 contLambdas = 0
+contLists = 0
 globalMemory = []
 
 stackLists = []
+
+stackListsAux = []
+stackListsAuxComplete = []
 
 listSize = 0
 
@@ -201,6 +205,14 @@ def p_imprimir_2(p):
 
 def p_imprimirlista(p):
     ''' imprimirlista : OPEN_PAREN PRINTLISTA returnlist CLOSE_PAREN '''
+    objList = stackListsAux.pop()
+    name = objList[0]
+
+    q = Quadruple("printlist","NULL","NULL", name)
+    quadruples.add(q)
+
+
+    '''
     print("printlist")
 
     objList = stackLists.pop()
@@ -208,14 +220,14 @@ def p_imprimirlista(p):
     base = objList[1]
     size = objList[2]
 
-    q = Quadruple("printlist",size,"NULL", base)
+    q = Quadruple("printlist","NULL","NULL", objList)
     quadruples.add(q)
 
     print(type,base,size)
 
     
     print(stackLists)
-    '''
+    
     objList = dirFunctions[scopeGlobal]["vars"]['l']
 
     if "list" in objList :
@@ -421,11 +433,14 @@ def p_np_stackCTEID(p):
     if not(varibleFound) :
         print("Variable {} not found".format(value))
     else :
-        address = valueObject['virtualAddress']
-        type = valueObject['type']
+        if 'list' in valueObject :
+            stackListsAux.append([value,valueObject["type"],valueObject["size"]])
+        else :
+            address = valueObject['virtualAddress']
+            type = valueObject['type']
 
-        stackOperandos.append(address)
-        stackTypes.append(type)
+            stackOperandos.append(address)
+            stackTypes.append(type)
   
 def p_np_stackCTEI(p):
     '''np_stackCTEI : '''
@@ -649,20 +664,34 @@ def p_np_create_varTable(p):
         print("variable {} already declare".format(varId))
     else:
         type = ultTipo[-1]
-        #print(listSize)
-        #print(ultTipo)
-        #print(stackConst)
 
         if ultTipo[-1] == 'lista':
             #print("hay lista")
             ultTipo.pop()
 
             lenList = len(ultTipo)
-            typeList = ultTipo.pop(0)
+            typeList = ultTipo[0]
+
+            dirFunctions[dirFKeys[0]]['vars'][varId] = {"list":"1","type": typeList, "size":lenList}
+
+            #stackListsAux.append([varId,typeList])
+            stackListsAuxComplete.append([varId,lenList,typeList])
              
-            for i in range(0, lenList - 1 ):
+            for i in range(0, lenList ):
                 if typeList != ultTipo[i]:
                     print("Type mismatch inside list declare")
+                
+                value = stackConst.pop(0)
+
+                if value in constTable:
+                    addressConst = constTable[value]
+                else:
+                    addressConst = getAddress("const",typeList)
+                    constTable[value] = addressConst
+
+                q = Quadruple("NDM",addressConst,"NULL", varId ) 
+                quadruples.add(q)
+
                 #else :
                     
             ultTipo = []
@@ -670,7 +699,7 @@ def p_np_create_varTable(p):
             #print("here:",ultTipo)
             #print(stackConst)
             #print("len: ", lenList)
-
+            '''
             for i in range(0, lenList ):
                 #print(i)
                 #print(stackConst)
@@ -689,7 +718,8 @@ def p_np_create_varTable(p):
                 quadruples.add(q)
 
                 if i == 0:
-                    dirFunctions[dirFKeys[0]]['vars'][varId] = {"type": typeList , "virtualAddress":addressDirFunction, "list":lenList}
+            '''
+            
 
         else :
 
@@ -746,9 +776,50 @@ def p_definirlista_2(p):
     listSize += 1
 
 ##### LISTA #####
+def p_np_fondo_falso_lista(p):
+    ''' np_fondo_falso_lista : '''
+    ultTipo.append("*")
+
 def p_lista(p):
     ''' lista : ID np_push_data_to_stack
-              | QUOTE OPEN_PAREN lista_2 CLOSE_PAREN
+              | QUOTE OPEN_PAREN np_fondo_falso_lista lista_2 CLOSE_PAREN
+    '''
+    if p[1] == '\'':
+        global contLists
+        newList = 'listAux' + str(contLists)
+        contLists += 1
+        listSize = 0
+
+        stackTypesAux = []
+
+        currentType = ultTipo.pop()
+        listType = currentType
+
+        while currentType != "*":
+            if currentType != listType:
+                print("Type mistmatch list definition")
+            else:
+                stackTypesAux.append(currentType)
+                currentType = ultTipo.pop()
+
+        listSize = len(stackTypesAux)
+
+        for _ in range(0, listSize ):
+            value = stackConst.pop()
+
+            if value in constTable:
+                addressConst = constTable[value]
+            else:
+                addressConst = getAddress("const",listType)
+                constTable[value] = addressConst
+
+            q = Quadruple("NDM", addressConst ,"NULL", newList)
+            quadruples.add(q)
+
+        stackListsAux.append([newList, listType, listSize])
+        stackListsAuxComplete.append([newList, listSize])
+
+
     '''
     
     if len(p) > 3:
@@ -783,8 +854,7 @@ def p_lista(p):
 
             if i == 0:
                 stackLists.append([typeList, addressDirFunction, lenList ])
-
-    
+    '''
 
 def p_np_push_data_to_stack(p):
     ''' np_push_data_to_stack : '''
@@ -792,11 +862,20 @@ def p_np_push_data_to_stack(p):
     objList = dirFunctions[scopeGlobal]["vars"][p[-1]]
 
     if "list" in objList :
+        type = objList['type']
+        size = objList['size']
+
+
+        stackListsAux.append([p[-1],type,size])
+
+    '''
+    if "list" in objList :
         base = objList['virtualAddress']
         size = objList['list']
         type = objList['type']
 
         stackLists.append([type,base,size])
+    '''
 
 def p_lista_2(p):
     ''' lista_2 : CTEI np_definicioni lista_2
@@ -824,28 +903,20 @@ def p_returnlist(p):
     '''
 
     if len(p) > 2 :
-        #print("cdr")
-        #print(stackLists)
+        global contLists
+        newList = "listAux" + str(contLists)
+        contLists += 1
 
-        
-        objList = stackLists.pop()
-        base = objList[1]
+        objList = stackListsAux.pop()
+        name = objList[0]
+        type = objList[1]
+        size = objList[2]
 
-        if base == 0:
-            print("Error cdr cannot work on null list")
-        else :
+        stackListsAux.append([newList,type,size])
+        stackListsAuxComplete.append([newList,size])
 
-            type = objList[0]
-            size = objList[2] - 1
-            
-            if size == 0:
-                base = 0
-            else :
-                base = base + 1
-
-            stackLists.append( [ type, base , size ]  )
-
-        #print("after:", stackLists)
+        q = Quadruple("CDR", name, "NULL", newList  )
+        quadruples.add(q)
 
 ##### RETURNELEMENT #####
 def p_returnelement(p):
@@ -853,34 +924,43 @@ def p_returnelement(p):
                      | TRUE
                      | FALSE 
     '''
-    print("re")
     
     if p[2] == 'car':
-        objList = stackLists.pop()
-        type = objList[0]
-        base = objList[1]
+        currentList = stackListsAux.pop()
+        name = currentList[0]
+        type = currentList[1]
+        address = getAddress("temp",type)
 
-        stackOperandos.append(base)
+        stackOperandos.append(address)
         stackTypes.append(type)
+
+        q = Quadruple("CAR",name,"NULL",address)
+        quadruples.add(q)
 
     elif p[2] == 'length':
-        print("len")
+        currentList = stackListsAux.pop()
+        name = currentList[0]
 
-        objList = stackLists.pop()
-
-        value = objList[2]
         type = 'int'
-                
-        if value in constTable:
-            addressConst = constTable[value]
-        else:
-            addressConst = getAddress("const",type)
-            constTable[value] = addressConst
+        address = getAddress("temp",type)
 
-        stackOperandos.append(addressConst)
+        stackOperandos.append(address)
         stackTypes.append(type)
-        
 
+        q = Quadruple("LENGTH",name,"NULL",address)
+        quadruples.add(q)
+
+    elif p[2] == 'tail':
+        currentList = stackListsAux.pop()
+        name = currentList[0]
+        type = currentList[1]
+        address = getAddress("temp",type)
+
+        stackOperandos.append(address)
+        stackTypes.append(type)
+
+        q = Quadruple("TAIL",name,"NULL",address)
+        quadruples.add(q)
 
 def p_returnelement_2(p):
     ''' returnelement_2 : CAR 
@@ -888,17 +968,45 @@ def p_returnelement_2(p):
                         | NULL_PREDICATE
                         | LIST_PREDICATE
                         | EMPTY_PREDICATE 
+                        | TAIL
     '''
     p[0] = p[1]
     
 
-    
-
-
 ##### CREATELIST #####
 def p_createlist(p):
-    ''' createlist : OPEN_PAREN LIST createlist_2 CLOSE_PAREN '''
+    ''' createlist : OPEN_PAREN LIST np_fondo_falso_createlist createlist_2 CLOSE_PAREN '''
     
+    global contLists
+    newList = "listAux" + str(contLists)
+    contLists += 1
+
+    typeList = stackTypes[-1]
+    listLen = 0
+
+    currentListType = stackTypes.pop()
+
+    stackOperandosAux = []
+
+    while currentListType != "*":
+        stackOperandosAux.append(stackOperandos.pop())
+        
+        listLen += 1
+
+        if currentListType != typeList :
+            print("Type mismatch in list definition")
+
+        currentListType = stackTypes.pop()
+
+    for _ in range(0, listLen):
+        q = Quadruple("NDM",stackOperandosAux.pop(), "NULL", newList )
+        quadruples.add(q)
+
+    stackListsAux.append([newList,typeList, listLen])
+    stackListsAuxComplete.append([newList, listLen])
+        
+
+    '''
     typeList = stackTypes[0]
     lenList = len(stackOperandos)
     baseList = 0
@@ -920,8 +1028,11 @@ def p_createlist(p):
 
     
     stackLists.append([typeList, baseList, lenList ])
-    
+    '''
 
+def p_np_fondo_falso_createlist(p):
+    ''' np_fondo_falso_createlist : '''
+    stackTypes.append("*")
 
 def p_createlist_2(p):
     ''' createlist_2 : expresion createlist_2 
@@ -1002,17 +1113,6 @@ def p_np_insert_params(p):
             dirFunctions[stackScope[-1]]["vars"][variableName] = objAux
             #dirFunctions[stackScope[-1]]["memory"] = memoryObject
              # add += 1 to memory
-            '''
-            paramsMemory = dirFunctions[stackScope[-1]]["memory"]["params"]
-            if typeParam == "int":
-                paramsMemory[0] += 1
-            elif typeParam == "float":
-                paramsMemory[1] += 1
-            elif typeParam == "char":
-                paramsMemory[2] += 1
-            else :
-                paramsMemory[3] += 1
-            '''
         #Agregar fondo falso al entrar a lambda, para diferenciar lambdas voids y !voids
         stackOperandos.append("*")
         stackTypes.append("*")
@@ -1052,26 +1152,6 @@ def p_np_finish_lambda(p):
 
         temp = stackOperandos.pop()
         typeTemp = stackTypes.pop()
-        '''
-        paramsLambda = dirFunctions[name]["memory"]["params"]
-        localLambda = dirFunctions[name]["memory"]["local"]
-        totalInt = paramsLambda[0] + localLambda[0]
-        totalFl = paramsLambda[1] + localLambda[1]
-        totalCh = paramsLambda[2] + localLambda[2]
-        totalBo = paramsLambda[3] + localLambda[3]
-
-        if boolScopeGlobal(): 
-            #estamos en global
-            address["temp"]["int"] -= totalInt
-            address["temp"]["float"] -= totalFl 
-            address["temp"]["char"] -= totalCh
-            address["temp"]["bool"] -= totalBo
-        else:
-            address["local"]["int"] -= totalInt
-            address["local"]["float"] -= totalFl 
-            address["local"]["char"] -= totalCh
-            address["local"]["bool"] -= totalBo
-        '''
         addressTemp = getAddress("temp",typeTemp)
         q = Quadruple("=",temp, "NULL",addressTemp )
         quadruples.add(q)
@@ -1084,58 +1164,55 @@ def p_np_finish_lambda(p):
             stackOperandos.pop()
             stackTypes.pop()
 
-    
-    
-   
-
-
 def p_lambda_2(p):
     ''' lambda_2    : expresion lambda_2
                     | empty ''' #falta lisfunctions
-    #print("lambda2")
     global contParamLambda 
     contParamLambda += 1
 
 ##### APPEND #####
 
 def p_append(p):
-    ''' append : OPEN_PAREN APPEND returnlist returnlist append_2 CLOSE_PAREN '''
-    global stackLists
+    ''' append : OPEN_PAREN APPEND np_fondo_falso returnlist returnlist append_2 CLOSE_PAREN '''
+    global contLists
+    newList = "listAux" + str(contLists)
+    contLists += 1
+    listType = ""
+    approxSize = 0
 
-    print("append", stackLists)
-    lenStack = len(stackLists)
-    typeList = stackLists[0][0]
-    sizeList = 0
-    baseList = 0
+    stackAppend = []
 
-    for i in range(0,lenStack):
-        currentList = stackLists[i]
+    currentList = stackListsAux.pop()
+    listType = currentList[1]
 
-        if typeList != currentList[0]:
-            print("List on append doesn't have the same type")
+    while currentList != "*":
+        stackAppend.append(currentList)
+        currentList = stackListsAux.pop()
 
-        baseCurrentList = currentList[1]
-        sizeList += currentList[2]
+    for _ in range(0,len(stackAppend)) :
+        currentList = stackAppend.pop()
+        currentListType = currentList[1]
+        if listType != currentListType :
+            print("Type mismatch between append list's")
 
-        for j in range(0, len(currentList)):
-
-            address = getAddress("temp",typeList)
-
-            if i == 0 and j == 0 :
-                baseList = address
-
-            q = Quadruple('=',baseCurrentList + j, 'NULL',address)
+        else:
+            listName = currentList[0]
+            approxSize += currentList[2]
+            q = Quadruple('APPEND', 'NULL', listName,newList)
             quadruples.add(q)
-
-    stackLists = []
-
-    stackLists.append([typeList, baseList, sizeList])
+        
+    stackListsAux.append([newList, listType, approxSize])
+    stackListsAuxComplete.append([newList,approxSize])
 
 
 def p_append_2(p):
     ''' append_2 : returnlist append_2
                 | empty 
     '''
+
+def p_np_fondo_falso(p):
+    ''' np_fondo_falso : '''
+    stackListsAux.append('*')
 
 ##### MAP #####
 def p_map(p):
@@ -1190,12 +1267,7 @@ def p_np_enter_to_stack(p):
     if funcName in objectVars:
         type = objectVars[funcName]["type"]
         virtualAddress = objectVars[funcName]["virtualAddress"]
-        #stackOperandos.append(virtualAddress)
-        #stackTypes.append(type)
-    
-        #print("so", stackOperandos)
-        #valueTemp = stackOperandos.pop()
-        #typeTemp = stackTypes.pop() 
+
         addressTemp = getAddress("temp",type)
         stackOperandos.append(addressTemp)
         stackTypes.append(type)
@@ -1301,10 +1373,13 @@ def createOvejota():
         f.write("vars ")
         for k, v in funGlobal.items():
             values = v.values()
-            value_iterator = iter(values)
-            first_value = next(value_iterator)
-            second_value = next(value_iterator)
-            f.write("{} {} {} ".format(k,first_value,second_value))
+            
+            if next(iter(v.keys())) != "list":
+
+                value_iterator = iter(values)
+                first_value = next(value_iterator)
+                second_value = next(value_iterator)
+                f.write("{} {} {} ".format(k,first_value,second_value))
         f.write("\n")
         f.write("@@\n")
         
@@ -1353,7 +1428,20 @@ def createOvejota():
             for j in addrScopeK:
                 f.write("{} ".format(addrScope[j]))
             f.write("\n")
+        f.write("$$\n")
 
+        # Save stack list
+        stringLists = ''
+        maxLengthDM = 0
+        for i in stackListsAuxComplete:
+            #print(i[0])
+            maxLengthDM += i[1]
+            stringLists += i[0]
+            stringLists += ' '
+
+        f.write(str(maxLengthDM) + " ")
+        f.write(stringLists)
+        f.write("\n")
 
 
 
@@ -1375,6 +1463,8 @@ input = f.read()
 yacc.parse(input)
 
 #print(stackOperadores)
+print("stackListComplete: " + str(stackListsAuxComplete))
+print("stackListAux: " + str(stackListsAux))
 print("stackOperandos: " + str(stackOperandos))
 print("stackTypes: " + str(stackTypes))
 print("stackScope: " + str(stackScope))
@@ -1470,9 +1560,10 @@ $$
 0 0 0 0
 1 1 1 
 '''
+'''
 from DynamicMemoryManager import *
 
-mike = DynamicMemoryManager(['l1','l2','l3','l4','l5','l6','l7'])
+mike = DynamicMemoryManager(['l1','l2','l3','l4','l5','l6','l7','l8','l9'],20)
 
 mike.setValue('l1',4)
 mike.setValue('l1',2)
@@ -1495,13 +1586,18 @@ print(mike.length('l5'))
 mike.append('l1','l6')
 #mike.append('l2','l6')
 #mike.append('l3','l6')
-mike.dm.printMemory()
+#mike.dm.printMemory()
 mike.print('l6')
 print(mike.length('l6'))
 mike.filter('even','l1','l7')
-
+mike.setValue('l8',1.2)
+mike.setValue('l8',2.3)
+mike.setValue('l9','a')
+mike.setValue('l9','b')
+mike.print('l9')
+print(mike.tail('l2'))
 mike.dm.printMemory()
-
+'''
 ## Cuando tengamos un error para todo alv
 
 # head 

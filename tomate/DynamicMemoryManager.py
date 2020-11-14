@@ -1,12 +1,12 @@
 from Memory import DynamicMemory
 
 class DynamicMemoryManager:
-    def __init__(self, stackList):
+    def __init__(self, stackList, maxLength):
         
         self.stackDictionary = {}
         self.nextDynamicMemory = 0
 
-        self.dm = DynamicMemory(20) 
+        self.dm = DynamicMemory(maxLength) 
 
         for i in stackList:
             self.stackDictionary[i] = -1
@@ -36,8 +36,8 @@ class DynamicMemoryManager:
 
         self.nextDynamicMemory += 1
 
-        self.dm.printMemory()
-        print(self.stackDictionary)
+        #self.dm.printMemory()
+        #print(self.stackDictionary)
 
         #print(pointerBase)
 
@@ -77,7 +77,7 @@ class DynamicMemoryManager:
             else :
                 self.stackDictionary[listNameNew] = nextPointer
 
-        print(self.stackDictionary)
+        #print(self.stackDictionary)
 
     def length(self,listName):
         pointerBase = self.stackDictionary[listName]
@@ -97,6 +97,16 @@ class DynamicMemoryManager:
                 lenAux += 1
             
         return lenAux
+
+    def tail(self, listName):
+        nextPointer = self.stackDictionary[listName]
+        lastPointer = nextPointer
+
+        while nextPointer != -1 :
+            lastPointer = nextPointer
+            nextPointer = self.dm.getPointer(nextPointer)
+        
+        return self.dm.getValue(lastPointer)
 
     def append(self,listToCopy, listToAppend):
         
@@ -126,8 +136,8 @@ class DynamicMemoryManager:
 
         self.dm.setPointer(self.nextDynamicMemory -1 ,-1)
 
-        self.dm.printMemory()
-        print(self.stackDictionary)
+        #self.dm.printMemory()
+        #print(self.stackDictionary)
 
     def filter(self, predicate, listToFilter, ListResult):
         pointerBaseToFilter = self.stackDictionary[listToFilter]
