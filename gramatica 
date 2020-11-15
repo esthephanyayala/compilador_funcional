@@ -76,15 +76,35 @@ S -> ( filter S' RETURNLIST )
 S' -> ( lambda (PARAM) S'' ) | even? | int? | float?
 S'' -> EXPRESION
 
-(filter (lambda ( l ) (x) (> l 5) )  )
+S -> (filter S' )
+S' -> even? RETURNLIST | int? RETURNLIST | float? RETURNLIST
+S' -> (filter (lambda (RETURNLIST) (PARAM) EXPRESION  ) )
+
+
 
 filter null l1 l5
-getnext l1 null null
+getnext l1 null temp 
+... cagadero de expresion > tenemos que checar que el resultado sea booleano
 > l1 5 temp
-NDM temp l5 l1
+NDMV bool temp(82) l5 
+GOTO NULL NULL inicio filter 
 finishfilter null null null 
 
+(filter (lambda ( l ) (x) (> l 5) )  )
 
+[ LENGTH , l , NULL , 4009 ]
+61 : [ = , 4011 , NULL , 13007 ]
+62 : [ < , 4011 , 4009 , 7000 ]
+63 : [ GOTOF , 7000 , NULL , 70 ]
+64 : [ INDEX , l , 4011 , 4010 ]
+65 : [ > , addressx , address5 , addressbool ]
+
+66 : [ NDMV , 7000 , 4010 , listAux14 ]
+67 : [ + , 4011 , 13008 , 4012 ]
+68 : [ = , 4012 , NULL , 4011 ]
+69 : [ GOTO , NULL , NULL , 62 ]
+
+-- que necesito funcion en dmm de index
 
 
 S'' -> ( if EXPRESION tt ff )

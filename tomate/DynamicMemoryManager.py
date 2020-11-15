@@ -164,3 +164,21 @@ class DynamicMemoryManager:
                     self.nextDynamicMemory += 1
 
         print(self.stackDictionary)
+
+    def indexList(self, indexToReturn, listName):
+
+        if indexToReturn >= self.length(listName):
+            print("Index ({}) out of range for list {}".format(indexToReturn,listName))
+            return -1
+        else :
+            currentIndex = 0
+
+            nextPointer = self.stackDictionary[listName]
+
+            while currentIndex <= indexToReturn:
+                value = self.dm.getValue(nextPointer)
+                nextPointer = self.dm.getPointer(nextPointer)
+                currentIndex += 1
+
+        return value
+            

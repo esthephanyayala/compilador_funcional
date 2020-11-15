@@ -388,6 +388,15 @@ class VirtualMachine:
 
             self.mike.setValue(temp, value)
 
+        elif operator == "NDMV":
+            valueLeft = self.celia.getValue(int(left))
+
+            if valueLeft :
+                # Get the value of the address
+                value = self.celia.getValue(int(right))
+
+                self.mike.setValue(temp, value)
+
         elif operator == "APPEND":
             self.mike.append(right,temp)
 
@@ -410,6 +419,12 @@ class VirtualMachine:
             value = self.mike.length(left)
 
             # Set the value to temp address
+            self.celia.setValue(int(temp),value)
+
+        elif operator == "INDEX":
+            index = self.celia.getValue(int(right))
+
+            value = self.mike.indexList(index,left)
             self.celia.setValue(int(temp),value)
 
 

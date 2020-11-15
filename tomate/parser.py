@@ -30,6 +30,8 @@ stackListsAuxComplete = []
 
 listSize = 0
 
+stackFilter = []
+
 # Virtual Address
 address = { 
             "global" :  {
@@ -1004,31 +1006,6 @@ def p_createlist(p):
 
     stackListsAux.append([newList,typeList, listLen])
     stackListsAuxComplete.append([newList, listLen])
-        
-
-    '''
-    typeList = stackTypes[0]
-    lenList = len(stackOperandos)
-    baseList = 0
-
-    for i in range(0, lenList ):
-        addressOpe = stackOperandos[i]
-        currentType = stackTypes[i]
-
-        if typeList != currentType :
-            print("Error types are not the same for the given list")
-        
-        addressList = getAddress("temp",typeList)
-
-        if i == 0:
-            baseList = addressList
-
-        q = Quadruple('=',addressOpe, 'NULL', addressList )
-        quadruples.add(q)
-
-    
-    stackLists.append([typeList, baseList, lenList ])
-    '''
 
 def p_np_fondo_falso_createlist(p):
     ''' np_fondo_falso_createlist : '''
@@ -1038,8 +1015,6 @@ def p_createlist_2(p):
     ''' createlist_2 : expresion createlist_2 
                      | empty
     '''
-
-
 
 ##### BLOQUE #####
 
@@ -1091,7 +1066,7 @@ def p_fill_goto(p):
 
 ##### LAMBDA #####
 def p_lambda(p):
-    ''' lambda : OPEN_PAREN  LAMBDA OPEN_PAREN lambda_2 np_add_lambda_scope CLOSE_PAREN OPEN_PAREN param np_insert_params CLOSE_PAREN bloque CLOSE_PAREN np_finish_lambda '''
+    ''' lambda : OPEN_PAREN LAMBDA OPEN_PAREN lambda_2 np_add_lambda_scope CLOSE_PAREN OPEN_PAREN param np_insert_params CLOSE_PAREN bloque CLOSE_PAREN np_finish_lambda '''
 
 def p_np_insert_params(p):
     ''' np_insert_params : '''
@@ -1099,7 +1074,6 @@ def p_np_insert_params(p):
 
     lenParams = len(stackParams)
     lenOperandos = len(stackOperandos)
-   
 
     #if lenOperandos == lenParams :
     if contParamLambda - 1  == lenParams:
@@ -1132,8 +1106,6 @@ def p_np_add_lambda_scope(p):
     stackScope.append(nameLambda)
     #dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}, "memory": memoryObject}
     dirFunctions[nameLambda] = {"type":"lambda" , "vars":{}}
-
-   
 
 def p_np_finish_lambda(p):
     ''' np_finish_lambda : '''
@@ -1228,13 +1200,202 @@ def p_map_3(p):
 
 ##### FILTER #####
 def p_filter(p):
-    ''' filter : OPEN_PAREN FILTER filter_2 returnlist CLOSE_PAREN '''
+    ''' filter : OPEN_PAREN FILTER filter_2  CLOSE_PAREN '''
 
 def p_filter_2(p):
-    ''' filter_2 : OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN
-                 | EVEN_PREDICATE
-                 | INT_PREDICATE
-                 | FLOAT_PREDICATE '''
+    ''' filter_2 : lambda_filter
+                 | EVEN_PREDICATE returnlist
+                 | INT_PREDICATE returnlist
+                 | FLOAT_PREDICATE returnlist '''
+
+    #print(p[1])
+    if p[1] == 'evenp':
+        global contLists
+        newList = "listAux" + str(contLists)
+        contLists += 1
+
+        #stackFilter.append("filter")
+
+        currentList = stackListsAux.pop()
+        currentListName = currentList[0]
+        currentListType = currentList[1]
+        currentListSize = currentList[2]
+
+        #addres length
+        addressLength = getAddress("temp","int")
+
+        #address for every element
+        address = getAddress("temp",currentListType)
+
+        #address cont Filter
+        addressCont = getAddress("temp","int")
+
+        q = Quadruple('LENGTH',currentListName, 'NULL', addressLength)
+        quadruples.add(q)
+
+        valueCero = 0
+
+        if valueCero in constTable:
+            addressCero = constTable[valueCero]
+        else:
+            addressCero = getAddress("const","int")
+            constTable[valueCero] = addressCero
+
+        q = Quadruple('=',addressCont, 'NULL', addressCero)
+        quadruples.add(q)
+
+        addressBool = getAddress("temp","bool")
+
+        quadJump = quadruples.getCont()
+
+        q = Quadruple('<',addressCont, addressLength, addressBool)
+        quadruples.add(q)
+
+        quadruples.addGotoF(addressBool)
+
+        q = Quadruple('INDEX',currentListName, addressCont, address)
+        quadruples.add(q)
+
+        addressBool2 = getAddress("temp","bool")
+
+        q = Quadruple('evenp',address, 'NULL', addressBool2)
+        quadruples.add(q)
+
+        q = Quadruple('NDMV',addressBool2, address, newList)
+        quadruples.add(q)
+
+        valueOne = 1
+
+        if valueOne in constTable:
+            addressOne = constTable[valueOne]
+        else:
+            addressOne = getAddress("const","int")
+            constTable[valueOne] = addressOne
+        
+        addressContAux = getAddress("temp","int")
+
+        q = Quadruple('+',addressCont, addressOne, addressContAux)
+        quadruples.add(q)
+
+        q = Quadruple('=', addressContAux, 'NULL', addressCont)
+        quadruples.add(q)
+        
+        quadruples.fillGotoF()
+
+        q = Quadruple('GOTO', 'NULL', 'NULL', quadJump)
+        quadruples.add(q)
+
+        stackListsAux.append([newList,currentListType,currentListSize])
+        stackListsAuxComplete.append([newList, currentListSize])
+
+def p_lambda_filter(p):
+    ''' lambda_filter : OPEN_PAREN LAMBDA OPEN_PAREN returnlist np_add_lambda_scope CLOSE_PAREN OPEN_PAREN params_lambda_filter  CLOSE_PAREN expresion CLOSE_PAREN '''
+    global contLists
+    newList = "listAux" + str(contLists)
+    contLists += 1
+
+    currentList = stackListsAux.pop()
+    currentListName = currentList[0]
+    currentListType = currentList[1]
+    currentListSize = currentList[2]
+    
+    addressFinalLambda = stackOperandos.pop()
+    typeFinalLambda = stackTypes.pop()
+
+    if typeFinalLambda != 'bool':
+        print("Error not a boolean being return on lambda inside filter")
+    else :
+        nameLambda = stackScope.pop()
+
+        del dirFunctions[nameLambda]
+        
+        address = p[8][0]
+        addressCont = p[8][1]
+        quadJump = p[8][2]
+        addressBool = addressFinalLambda
+
+        q = Quadruple('NDMV',addressBool, address, newList)
+        quadruples.add(q)
+
+        valueOne = 1
+
+        if valueOne in constTable:
+            addressOne = constTable[valueOne]
+        else:
+            addressOne = getAddress("const","int")
+            constTable[valueOne] = addressOne
+        
+        addressContAux = getAddress("temp","int")
+
+        q = Quadruple('+',addressCont, addressOne, addressContAux)
+        quadruples.add(q)
+
+        q = Quadruple('=', addressContAux, 'NULL', addressCont)
+        quadruples.add(q)
+        
+        quadruples.fillGotoF()
+
+        q = Quadruple('GOTO', 'NULL', 'NULL', quadJump)
+        quadruples.add(q)
+
+        stackListsAux.append([newList,currentListType,currentListSize])
+        stackListsAuxComplete.append([newList, currentListSize])
+
+        while typeFinalLambda != '*':
+            typeFinalLambda = stackTypes.pop()
+            stackOperandos.pop()
+
+def p_params_lambda_filter(p):
+    ''' params_lambda_filter : ID '''
+
+    currentList = stackListsAux[-1]
+    currentListName = currentList[0]
+    currentListType = currentList[1]
+    currentListSize = currentList[2]
+
+    #addres length
+    addressLength = getAddress("temp","int")
+
+    #address for every element
+    addressParam = getAddress("temp",currentListType)
+
+    #address cont Filter
+    addressCont = getAddress("temp","int")
+
+    q = Quadruple('LENGTH',currentListName, 'NULL', addressLength)
+    quadruples.add(q)
+
+    valueCero = 0
+
+    if valueCero in constTable:
+        addressCero = constTable[valueCero]
+    else:
+        addressCero = getAddress("const","int")
+        constTable[valueCero] = addressCero
+
+    q = Quadruple('=',addressCont, 'NULL', addressCero)
+    quadruples.add(q)
+
+    addressBool = getAddress("temp","bool")
+
+    quadJump = quadruples.getCont()
+
+    q = Quadruple('<',addressCont, addressLength, addressBool)
+    quadruples.add(q)
+
+    quadruples.addGotoF(addressBool)
+
+    q = Quadruple('INDEX',currentListName, addressCont, addressParam)
+    quadruples.add(q)
+
+
+    objAux = {"type": currentListType, "virtualAddress":addressParam}
+    dirFunctions[stackScope[-1]]["vars"][p[1]] = objAux
+
+    stackOperandos.append("*")
+    stackTypes.append("*")
+
+    p[0] = [addressParam, addressCont, quadJump]
 
 ###### TIPO #####
 def p_tipo(p):
@@ -1443,8 +1604,6 @@ def createOvejota():
         f.write(stringLists)
         f.write("\n")
 
-
-
         #f.close() 
 
 import ply.yacc as yacc
@@ -1563,11 +1722,11 @@ $$
 '''
 from DynamicMemoryManager import *
 
-mike = DynamicMemoryManager(['l1','l2','l3','l4','l5','l6','l7','l8','l9'],20)
+mike = DynamicMemoryManager(['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10'],20)
 
-mike.setValue('l1',4)
-mike.setValue('l1',2)
-mike.setValue('l1',5)
+mike.setValue('l1',4) #0
+mike.setValue('l1',2) #0
+mike.setValue('l1',5) #0
 mike.setValue('l1',10)
 mike.setValue('l2',50)
 mike.setValue('l2',4)
@@ -1593,10 +1752,11 @@ mike.filter('even','l1','l7')
 mike.setValue('l8',1.2)
 mike.setValue('l8',2.3)
 mike.setValue('l9','a')
-mike.setValue('l9','b')
 mike.print('l9')
+mike.cdr('l10','l9')
 print(mike.tail('l2'))
-mike.dm.printMemory()
+print(mike.indexList(0,'l10'))
+#mike.dm.printMemory()
 '''
 ## Cuando tengamos un error para todo alv
 

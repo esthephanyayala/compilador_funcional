@@ -64,7 +64,7 @@ class Quadruples:
     def fillGoto(self):
         jump = self.stackJumps.pop()
         self.quadruples[jump].assignTemp(self.cont)
-
+     
     #def fillGotoAux(self):
         # saca del jump el cont del cuadroplo a llenar y le pone a que cont va ahora
 
@@ -76,3 +76,6 @@ class Quadruples:
 
     def getQuad(self,index):
         return self.quadruples[index].reQuad()
+
+    def getCont(self):
+        return self.cont

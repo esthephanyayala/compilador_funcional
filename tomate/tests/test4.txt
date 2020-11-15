@@ -21,6 +21,38 @@
     )
 )
 
+(program factorial
+    (vars
+        (declare l '(10 21 30))
+        (declare l2 '(10 2 34))
+        (declare l3 '(10 2 3))
+        (declare x 1)
+    )
+    (functions
+        (define ( ( int f1 ) int i1 int i2)  
+            (+ (+ 1 2) 10 )
+        )
+    )
+    (main
+        (printlista (append l l2 l3))
+        (printlista (append l2 l3))
+        (printlista (append (append l '( 1 2 )) '(1) ) )
+        (printlista (append (cdr l) (cdr l2) '(1 3) ))
+        (print (car l ))
+        (print (length l ))
+        (print (+ (car l) (length l) ))
+        (print (length (append (list (+ 1 2) (+ 2 3) ) l  '(1 2)) ))
+        (print (tail (append l l2 )))
+        (printlista (filter evenp l ) )
+        (print (evenp 1) )
+        (printlista (filter (lambda (l) (x) (> x 1) ) ))
+        
+    )
+)
+
+
+
+
 
 
 
