@@ -65,7 +65,7 @@ class DynamicMemoryManager:
         pointerBase = self.stackDictionary[listNameCopy]
 
         if pointerBase == -1:
-            print("no tiene cdr(esta vacio)")
+            print("No tiene cdr(esta vacio)")
         else :
 
             nextPointer = self.dm.getPointer(pointerBase)
@@ -182,3 +182,4 @@ class DynamicMemoryManager:
 
         return value
             
+

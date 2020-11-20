@@ -68,8 +68,42 @@ S'' -> ( lambda (PARAM) BLOQUE )
 
 // NEW ONE
 <MAP>
-S -> ( map (lambda (RETURNLIST S') (PARAM) BLOQUE )  )
+S -> ( map (lambda (RETURNLIST S') (PARAM) EXP )  )
 S' -> RETURNLIST S' | epsilon
+
+<MAP> 
+S -> (map (lambda (RETURNLIST S') (PARAMMAP) EXPRESION ) )
+S' -> RETURNLIST | epsilon
+
+<PARAMMAP>
+S -> ID S'
+S' -> ID | epsilon
+
+
+<MAP> 
+S -> (map (lambda (RETURNLIST) (PARAMMAP) EXPRESION ) )
+
+S' -> RETURNLIST | epsilon
+S'' -> PARAMMAP | epsilon
+
+l -> '(1 2 3)
+'(2 3 4)
+(map (lambda (l) (x) (+ x 1) ))
+
+l -> (2 3)
+l1 -> ( 3 2)
+(map (lambda (l l1) (x y) (> x y) ))
+(map (lambda (l) (x) (> x 1) ))
+-> '(0 1)
+
+-- las dos listas deben de tener el mismo len
+-- lo de EXP tiene que quedar un int o float
+-- map acepta una o dos listas
+
+
+l2 -> '(1 2 3)
+(map (lambda (l l2) ( x y) ( + x y)  ))
+-> '(2 4 6)
 
 <FILTER>
 S -> ( filter S' RETURNLIST )
@@ -78,7 +112,7 @@ S'' -> EXPRESION
 
 S -> (filter S' )
 S' -> even? RETURNLIST | int? RETURNLIST | float? RETURNLIST
-S' -> (filter (lambda (RETURNLIST) (PARAM) EXPRESION  ) )
+S' -> (lambda (RETURNLIST) (PARAM) EXPRESION  ) 
 
 
 

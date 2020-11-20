@@ -22,7 +22,7 @@ contParamLambda = 0
 contLambdas = 0
 contLists = 0
 globalMemory = []
-
+sizeMap = 0
 stackLists = []
 
 stackListsAux = []
@@ -95,19 +95,6 @@ def getAddress(addressType,type):
         #print(dirFunctions[currentScope]["type"])
         #if dirFunctions[currentScope]["type"] != "lambda":
         addressType = "local"
-        '''
-        localMemory = dirFunctions[currentScope]["memory"]["local"]
-
-        # add += 1 to local memory
-        if type == "int":
-            localMemory[0] += 1
-        elif type == "float":
-            localMemory[1] += 1
-        elif type == "char":
-            localMemory[2] += 1
-        else :
-            localMemory[3] += 1
-        '''
 
     ad = address[addressType][type]
     address[addressType][type] += 1
@@ -860,15 +847,18 @@ def p_lista(p):
 
 def p_np_push_data_to_stack(p):
     ''' np_push_data_to_stack : '''
-
+    ##cambiar a checar si existe la variable primero
     objList = dirFunctions[scopeGlobal]["vars"][p[-1]]
 
     if "list" in objList :
         type = objList['type']
         size = objList['size']
 
-
         stackListsAux.append([p[-1],type,size])
+
+    else:
+        print("The Id provided is not a list")
+
 
     '''
     if "list" in objList :
@@ -914,8 +904,8 @@ def p_returnlist(p):
         type = objList[1]
         size = objList[2]
 
-        stackListsAux.append([newList,type,size])
-        stackListsAuxComplete.append([newList,size])
+        stackListsAux.append([newList,type,size - 1])
+        stackListsAuxComplete.append([newList,size - 1])
 
         q = Quadruple("CDR", name, "NULL", newList  )
         quadruples.add(q)
@@ -1162,8 +1152,10 @@ def p_append(p):
         currentList = stackListsAux.pop()
 
     for _ in range(0,len(stackAppend)) :
+
         currentList = stackAppend.pop()
         currentListType = currentList[1]
+
         if listType != currentListType :
             print("Type mismatch between append list's")
 
@@ -1176,7 +1168,6 @@ def p_append(p):
     stackListsAux.append([newList, listType, approxSize])
     stackListsAuxComplete.append([newList,approxSize])
 
-
 def p_append_2(p):
     ''' append_2 : returnlist append_2
                 | empty 
@@ -1188,15 +1179,167 @@ def p_np_fondo_falso(p):
 
 ##### MAP #####
 def p_map(p):
-    ''' map : OPEN_PAREN MAP map_3 returnlist map_2 CLOSE_PAREN '''
+    ''' map : OPEN_PAREN MAP OPEN_PAREN LAMBDA OPEN_PAREN returnlist map_2 np_add_lambda_scope CLOSE_PAREN OPEN_PAREN parammap CLOSE_PAREN expresion CLOSE_PAREN CLOSE_PAREN '''
+    print("map")
+    global contLists
+    newList = "listAux" + str(contLists)
+    contLists += 1
+
+    currentList = stackListsAux.pop()
+    currentListName = currentList[0]
+    currentListType = currentList[1]
+    currentListSize = currentList[2]
+    
+    addressFinalLambda = stackOperandos.pop()
+    typeFinalLambda = stackTypes.pop()
+
+    if typeFinalLambda == 'bool':
+        typeFinalLambda = 'int'
+
+    if typeFinalLambda == 'char':
+        print("Error not a char being return on lambda inside map")
+    else :
+        nameLambda = stackScope.pop()
+
+        del dirFunctions[nameLambda]
+        
+        address = p[11][0]
+        addressSecondParam = p[11][1]
+        addressCont = p[11][2]
+        quadJump = p[11][3]
+        addressElement = addressFinalLambda
+
+        q = Quadruple('NDM',addressElement, "NULL", newList)
+        quadruples.add(q)
+
+        valueOne = 1
+
+        if valueOne in constTable:
+            addressOne = constTable[valueOne]
+        else:
+            addressOne = getAddress("const","int")
+            constTable[valueOne] = addressOne
+        
+        addressContAux = getAddress("temp","int")
+
+        q = Quadruple('+',addressCont, addressOne, addressContAux)
+        quadruples.add(q)
+
+        q = Quadruple('=', addressContAux, 'NULL', addressCont)
+        quadruples.add(q)
+        
+        quadruples.fillGotoF()
+
+        q = Quadruple('GOTO', 'NULL', 'NULL', quadJump)
+        quadruples.add(q)
+
+        stackListsAux.append([newList,currentListType,currentListSize])
+        stackListsAuxComplete.append([newList, currentListSize])
+
+        while typeFinalLambda != '*':
+            typeFinalLambda = stackTypes.pop()
+            stackOperandos.pop()
+
+def p_parammap(p):
+    ''' parammap : ID map_3'''
+
+    currentList = stackListsAux[-1]
+    currentListName = currentList[0]
+    currentListType = currentList[1]
+    currentListSize = currentList[2]
+
+    secondListName = 0
+    secondListType = 0
+    secondListSize = 0
+
+    print(sizeMap)
+
+    if sizeMap == 2:
+        secondListName = currentListName
+        secondListSize = currentListSize
+        secondListType = currentListType
+
+        currentList = stackListsAux[-2]
+        currentListName = currentList[0]
+        currentListType = currentList[1]
+        currentListSize = currentList[2]
+
+    #addres length
+    addressLength = getAddress("temp","int")
+
+    #address for every element
+    addressParam = getAddress("temp",currentListType)
+    addressParamSecondList = 0
+
+    #address cont Filter
+    addressCont = getAddress("temp","int")
+
+    q = Quadruple('LENGTH',currentListName, 'NULL', addressLength)
+    quadruples.add(q)
+
+    if sizeMap == 2:
+        #addres length
+        addressLengthSecondList = getAddress("temp","int")
+        q = Quadruple('LENGTH',secondListName, 'NULL', addressLengthSecondList)
+        quadruples.add(q)
+
+        q = Quadruple('CHECKLEN',addressLength, addressLengthSecondList, 'NULL')
+        quadruples.add(q)
+
+    valueCero = 0
+
+    if valueCero in constTable:
+        addressCero = constTable[valueCero]
+    else:
+        addressCero = getAddress("const","int")
+        constTable[valueCero] = addressCero
+
+    q = Quadruple('=',addressCont, 'NULL', addressCero)
+    quadruples.add(q)
+
+    addressBool = getAddress("temp","bool")
+
+    quadJump = quadruples.getCont()
+
+    q = Quadruple('<',addressCont, addressLength, addressBool)
+    quadruples.add(q)
+
+    quadruples.addGotoF(addressBool)
+
+    q = Quadruple('INDEX',currentListName, addressCont, addressParam)
+    quadruples.add(q)
+
+    if sizeMap == 2:
+        addressParamSecondList = getAddress("temp",secondListType)
+        q = Quadruple('INDEX',secondListName, addressCont, addressParamSecondList)
+        quadruples.add(q)
+
+        objAux = {"type": secondListType, "virtualAddress":addressParamSecondList}
+        dirFunctions[stackScope[-1]]["vars"][p[2]] = objAux
+
+    objAux = {"type": currentListType, "virtualAddress":addressParam}
+    dirFunctions[stackScope[-1]]["vars"][p[1]] = objAux
+
+    stackOperandos.append("*")
+    stackTypes.append("*")
+
+    p[0] = [addressParam, addressParamSecondList, addressCont, quadJump]
 
 def p_map_2(p):
-    ''' map_2 : returnlist map_2
-              | empty 
-    '''
-def p_map_3(p):
-    ''' map_3 : OPEN_PAREN LAMBDA OPEN_PAREN param CLOSE_PAREN bloque CLOSE_PAREN '''
+    ''' map_2 : returnlist 
+                | empty '''
 
+    global sizeMap
+
+    if p[1] == 'empty':
+        sizeMap = 1
+    else :
+        sizeMap = 2
+
+def p_map_3(p):
+    ''' map_3 : ID 
+                | empty '''
+    p[0] = p[1]
 
 ##### FILTER #####
 def p_filter(p):
@@ -1208,7 +1351,6 @@ def p_filter_2(p):
                  | INT_PREDICATE returnlist
                  | FLOAT_PREDICATE returnlist '''
 
-    #print(p[1])
     if p[1] == 'evenp':
         global contLists
         newList = "listAux" + str(contLists)
@@ -1289,7 +1431,7 @@ def p_filter_2(p):
         stackListsAuxComplete.append([newList, currentListSize])
 
 def p_lambda_filter(p):
-    ''' lambda_filter : OPEN_PAREN LAMBDA OPEN_PAREN returnlist np_add_lambda_scope CLOSE_PAREN OPEN_PAREN params_lambda_filter  CLOSE_PAREN expresion CLOSE_PAREN '''
+    ''' lambda_filter : OPEN_PAREN LAMBDA OPEN_PAREN returnlist np_add_lambda_scope CLOSE_PAREN OPEN_PAREN params_lambda_filter CLOSE_PAREN expresion CLOSE_PAREN '''
     global contLists
     newList = "listAux" + str(contLists)
     contLists += 1
@@ -1498,8 +1640,9 @@ def p_error(p):
     print(f"Syntax error at {p.value!r}")
 
 def p_empty(p):
-     'empty :'
-     pass
+    'empty :'
+    pass
+    p[0] = 'empty'
 
 def createOvejota():
         fileDir = os.path.dirname(os.path.realpath('__file__'))
@@ -1562,8 +1705,9 @@ def createOvejota():
                         f.write("{} ".format(second_value[z]))
                     #print(first_value,second_value)
                     f.write("\n")
+
                 elif k == "typeParams":
-                    f.write("{} ". format(k))
+                    f.write("{} ".format(k))
                     for x in range (0,len(j)):
                         f.write("{} ".format(j[x]))
                     f.write("\n")

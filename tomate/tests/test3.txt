@@ -1,9 +1,9 @@
 (program factorial
     (vars
-        (declare l '( 4 10 21 30))
-        (declare l2 '(10 2 34))
-        (declare l3 '(10 2 3))
+        (declare l '( 1 2 3 4))
+        (declare l1 '(1 2 3 4) )
         (declare x 1)
+        (declare a 'e')
     )
     (functions
         (define ( ( int f1 ) int i1 int i2)  
@@ -11,16 +11,8 @@
         )
     )
     (main
-        (printlista (filter evenp l) )
-        (print (lambda (x) (a) (+ a 1) ))
-        (printlista (filter (lambda (l) (x) (< x 15 ) )))
-        (printlista (filter (lambda (l) (x) (> x 5 ) )))
-        (printlista (filter (lambda ((filter (lambda (l) (x) (> x 5 ) ) )) (x) (< x 15 ) ) ))
-        (print (length (filter (lambda (l) (x) (< x 15 ) ))))
-
+        (printlista (filter  ( lambda (l ) (x) ( > x (+ 5 5)) ) ) )
+        (printlista (map (lambda (l '(1 2 3 4)) ( x y) (+ x y )) ) ) 
+        (printlista (map (lambda (l) ( x) (+ x 1) )) )
     )
 )
-
-
-
-

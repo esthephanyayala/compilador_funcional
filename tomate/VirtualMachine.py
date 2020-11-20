@@ -427,6 +427,12 @@ class VirtualMachine:
             value = self.mike.indexList(index,left)
             self.celia.setValue(int(temp),value)
 
+        elif operator == "CHECKLEN":
+            lenLeft = self.celia.getValue(int(left))
+            lenRight = self.celia.getValue(int(right))
+
+            if lenLeft != lenRight :
+                print("Error on the len of the two list inside map")
 
         '''
         elif operator == "GOTOF":
