@@ -23,14 +23,10 @@ contLambdas = 0
 contLists = 0
 globalMemory = []
 sizeMap = 0
-stackLists = []
+#stackLists = []
 
 stackListsAux = []
 stackListsAuxComplete = []
-
-listSize = 0
-
-stackFilter = []
 
 # Virtual Address
 address = { 
@@ -761,8 +757,7 @@ def p_definirlista(p):
 def p_definirlista_2(p):
     ''' definirlista_2  : definircte definirlista_2
                         | empty'''
-    global listSize
-    listSize += 1
+
 
 ##### LISTA #####
 def p_np_fondo_falso_lista(p):
@@ -1355,8 +1350,6 @@ def p_filter_2(p):
         global contLists
         newList = "listAux" + str(contLists)
         contLists += 1
-
-        #stackFilter.append("filter")
 
         currentList = stackListsAux.pop()
         currentListName = currentList[0]

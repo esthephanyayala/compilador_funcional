@@ -298,7 +298,7 @@ class VirtualMachine:
 
 
             #print(self.lastValue)
-            objectVars = self.dirFunction["factorial"]["vars"]
+            objectVars = self.dirFunction[0]["vars"]
 
             if self.currentFunction[-1] in objectVars:
 

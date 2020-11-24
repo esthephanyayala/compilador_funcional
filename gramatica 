@@ -62,15 +62,6 @@ S' -> RETURNLIST S' | epsilon
 S -> ( list s' )
 S' -> EXPRESION S' | epsilon
 
-<MAP>
-S -> ( map S'' RETURNLIST S' )
-S'' -> ( lambda (PARAM) BLOQUE )
-
-// NEW ONE
-<MAP>
-S -> ( map (lambda (RETURNLIST S') (PARAM) EXP )  )
-S' -> RETURNLIST S' | epsilon
-
 <MAP> 
 S -> (map (lambda (RETURNLIST S') (PARAMMAP) EXPRESION ) )
 S' -> RETURNLIST | epsilon
@@ -78,32 +69,6 @@ S' -> RETURNLIST | epsilon
 <PARAMMAP>
 S -> ID S'
 S' -> ID | epsilon
-
-
-<MAP> 
-S -> (map (lambda (RETURNLIST) (PARAMMAP) EXPRESION ) )
-
-S' -> RETURNLIST | epsilon
-S'' -> PARAMMAP | epsilon
-
-l -> '(1 2 3)
-'(2 3 4)
-(map (lambda (l) (x) (+ x 1) ))
-
-l -> (2 3)
-l1 -> ( 3 2)
-(map (lambda (l l1) (x y) (> x y) ))
-(map (lambda (l) (x) (> x 1) ))
--> '(0 1)
-
--- las dos listas deben de tener el mismo len
--- lo de EXP tiene que quedar un int o float
--- map acepta una o dos listas
-
-
-l2 -> '(1 2 3)
-(map (lambda (l l2) ( x y) ( + x y)  ))
--> '(2 4 6)
 
 <FILTER>
 S -> ( filter S' RETURNLIST )
@@ -113,46 +78,6 @@ S'' -> EXPRESION
 S -> (filter S' )
 S' -> even? RETURNLIST | int? RETURNLIST | float? RETURNLIST
 S' -> (lambda (RETURNLIST) (PARAM) EXPRESION  ) 
-
-
-
-filter null l1 l5
-getnext l1 null temp 
-... cagadero de expresion > tenemos que checar que el resultado sea booleano
-> l1 5 temp
-NDMV bool temp(82) l5 
-GOTO NULL NULL inicio filter 
-finishfilter null null null 
-
-(filter (lambda ( l ) (x) (> l 5) )  )
-
-[ LENGTH , l , NULL , 4009 ]
-61 : [ = , 4011 , NULL , 13007 ]
-62 : [ < , 4011 , 4009 , 7000 ]
-63 : [ GOTOF , 7000 , NULL , 70 ]
-64 : [ INDEX , l , 4011 , 4010 ]
-65 : [ > , addressx , address5 , addressbool ]
-
-66 : [ NDMV , 7000 , 4010 , listAux14 ]
-67 : [ + , 4011 , 13008 , 4012 ]
-68 : [ = , 4012 , NULL , 4011 ]
-69 : [ GOTO , NULL , NULL , 62 ]
-
--- que necesito funcion en dmm de index
-
-
-S'' -> ( if EXPRESION tt ff )
-
-(filter (lambda  (x) (> x 1) ) l1 )
-(> x 1)
-
-( filter even? '(1 2) ) =  2
-// size puede ser entre len de lista y 0
-// typo igual que el de la lista
-// base = la siguiente address que se pueda
-
-// simular un proceso de memoria dinamica
-
 
 
 ------------------------------------------------------------
