@@ -1,6 +1,7 @@
 (program factorial
     (vars
         (declare x 1)
+        (declare l '(1 2))
     )
     (functions
         (define ( ( int f1 ) int i1 int i2)  

@@ -3,7 +3,9 @@ $$
 2 13001
 $$
 = 13000 NULL 1000
-GOTO NULL NULL 4
+NDM 13000 NULL l
+NDM 13001 NULL l
+GOTO NULL NULL 6
 + 13000 13001 8002
 ENDFUNC NULL NULL NULL
 + 1000 1000 4000
@@ -15,7 +17,7 @@ vars x int 1000 f1 int 1001
 @@
 name f1
 type int
-quad 2
+quad 4
 memory 2 0 0 0 1 0 0 0 
 typeParams int int 
 @@
@@ -30,4 +32,4 @@ $$
 8000 9000 10000 12000 
 13000 14000 15000 
 $$
-0 
+2 l 
