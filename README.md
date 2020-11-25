@@ -13,3 +13,7 @@ Esthephany Ayala
 3. En la terminal, posicionarse en el path donde se clonó el repositorio
 4. Ejecutar comando python3 parser.py
 5. Enjoy the ride :)
+
+## Video DEMO
+https://www.youtube.com/watch?v=DOXrkDoqLCQ&feature=youtu.be
+
