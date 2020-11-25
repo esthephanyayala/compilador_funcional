@@ -1559,6 +1559,7 @@ def p_llamada(p):
 def p_np_enter_to_stack(p):
     ''' np_enter_to_stack : '''
     funcName = p[-5]
+    print("NP_STACK", funcName)
     objectVars = dirFunctions[scopeGlobal]["vars"]
     if funcName in objectVars:
         type = objectVars[funcName]["type"]
@@ -1630,7 +1631,8 @@ def p_np_check_params(p):
     
 
 def p_error(p):
-    print(f"Syntax error at {p.value!r}")
+    #print(f"Syntax error at {p.value!r}")
+    raise Exception(f"Syntax error at {p.value!r}")
 
 def p_empty(p):
     'empty :'
@@ -1639,8 +1641,8 @@ def p_empty(p):
 
 def createOvejota():
         fileDir = os.path.dirname(os.path.realpath('__file__'))
-        f= open("tomate/tests/ovj1.txt","w+")
-        #f= open("tests/ovj1.txt","w+")
+        #f= open("tomate/tests/ovj1.txt","w+")
+        f= open("tests/ovj1.txt","w+")
         
         ## escribir const Table
         f.write("$$\n")
@@ -1751,9 +1753,9 @@ yacc.yacc()
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-#filename = os.path.join(fileDir, 'tests/' + programa )
+programa = 'testEstructura.txt'
+#filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
 yacc.parse(input)
@@ -1771,7 +1773,7 @@ print("DirFunctions: "+ str(dirFunctions))
 #'''
 quadruples.print()
 globalVariables()
-print(globalMemory)
+#print(globalMemory)
 createOvejota()
 
 ## VM
