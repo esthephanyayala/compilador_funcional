@@ -49,6 +49,15 @@
         (define ( ( int f3 ) int i1 int i2)  
             (+ i1 i2)
         )
+        (define (( int fibo ) int x)
+            (if (== x 0 )
+                0
+                (if (== x 1)
+                    1
+                    ( + ( fibo (- x 1) ) ( fibo ( - x 2) ) )
+                )
+            )
+        )
     )
 
     

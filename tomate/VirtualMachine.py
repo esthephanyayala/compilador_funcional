@@ -3,6 +3,7 @@ from AddressManager import AddressManager
 from DynamicMemoryManager import DynamicMemoryManager
 
 class VirtualMachine:
+    """ This class is the one responsible for the  """
     def __init__(self):
         self.constTable = {}
         self.dirFunction = {}
@@ -12,7 +13,6 @@ class VirtualMachine:
         self.tgb = []
         self.tgs = []
        
-
         self.celia = []
         self.mike = []
 
@@ -39,11 +39,12 @@ class VirtualMachine:
             self.celia.setValue(int(i) , self.constTable[i] )
 
     def loadOvejota(self):
+        """ Function that reads the content of the file ovejota and store the data we need """
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovj1.txt'
-        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-        filename = os.path.join(fileDir, 'tests/' + programa )
+        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        #filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -181,6 +182,7 @@ class VirtualMachine:
         #self.dirFunction['lambdaShido'] =  {'type': 'int', 'quad': 50, 'memory': {'params': [2, 0, 0, 0], 'local': [3, 0, 0, 0]}, 'typeParams': ['int', 'int']}
 
     def switch(self):
+        """ This is the function that checks the current quadruple and execute it """
 
         # Get next Quad to be evaluated
         currentQuad = self.quadruples[self.pointerManager]
@@ -437,66 +439,17 @@ class VirtualMachine:
             if lenLeft != lenRight :
                # print("Error on the len of the two list inside map")
                raise ValueError("Error on the len of the two list inside map")
-
-        '''
-        elif operator == "GOTOF":
-            
-            lastQuad = self.quadruples[self.pointerManager - 1]
-           
-            opLQ = lastQuad[0]
-            leftLQ = lastQuad[1]
-            rightLQ = lastQuad[2]
-            
-            valueLeftLQ = self.celia.getValue(int(leftLQ))
-            valueRightLQ = self.celia.getValue(int(rightLQ))
-
-            valueTrue = 1
-            valueFalse = 0
-            
-            if opLQ == ">":
-                if valueLeftLQ > valueRightLQ :
-                   
-                    self.celia.setValue(int(left),valueTrue)
-                else:
-                    
-                    self.celia.setValue(int(left),valueFalse)
-            elif opLQ  == "<":
-                if valueLeftLQ < valueRightLQ :
-                
-                    self.celia.setValue(int(left),valueTrue)
-                else:
-                  
-                    self.celia.setValue(int(left),valueFalse)
-            elif opLQ  == "!=":
-                if valueLeftLQ != valueRightLQ :
-                  
-                    self.celia.setValue(int(left),valueTrue)
-                else:
-                    
-                    self.celia.setValue(int(left),valueFalse)
-            elif opLQ == "==":
-                if valueLeftLQ == valueRightLQ :
-                   
-                    self.celia.setValue(int(left),valueTrue)
-                else:
-                    
-                    self.celia.setValue(int(left),valueFalse)
-            else:
-                print("Operador no existe")
-            resultValue = self.celia.getValue(int(left))
-            
-            if resultValue == 0:
-                self.pointerManager = temp - 1
-        '''
-
         
         self.pointerManager += 1
 
     def pointerSomething(self):
+        """ This function is the one that iterate trought the cuadruples until we reach the end """
         while self.pointerManager < self.numberOfQuads:
             self.switch()
 
     def getMemorySizeFunction(self,funcName):
+        """ This function add a mew local memory to the AddressManager """
+
         memoryObj = self.dirFunction[funcName]['memory']
         paramsMemory = memoryObj['params']
         localMemory = memoryObj['local']
@@ -510,8 +463,9 @@ class VirtualMachine:
         self.celia.addLocalMemory(sizeFunction)
 
     def fillParamsFunction(self):
-        # This function is used after we gather the params of one function 
-        # to give the address to the new function
+        """ This function is used after we gather the params of one function 
+         to give the address to the new function
+        """
 
         #print(self.currentParams)
 

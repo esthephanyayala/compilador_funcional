@@ -1,31 +1,87 @@
 $$
 1 13000
 2 13001
+'a' 15000
+0 13002
+20 13003
 $$
 = 13000 NULL 1000
 NDM 13000 NULL l
 NDM 13001 NULL l
-GOTO NULL NULL 6
+= 15000 NULL 3000
+GOTO NULL NULL 38
 + 13000 13001 8002
 ENDFUNC NULL NULL NULL
-+ 1000 1000 4000
+print NULL NULL 8000
+ENDFUNC NULL NULL NULL
+== 8000 13000 12000
+GOTOF 12000 NULL 13
++ 8000 13002 8001
+GOTO NULL NULL 19
+ERA NULL NULL factoria
+- 8000 13000 8002
+param 8002 NULL param1
+GOSUB NULL NULL 9
+= 1002 NULL 8003
+* 8000 8003 8004
+ENDFUNC NULL NULL NULL
+== 8000 13002 12000
+GOTOF 12000 NULL 23
+GOTO NULL NULL 37
+== 8000 13000 12001
+GOTOF 12001 NULL 26
+GOTO NULL NULL 37
+ERA NULL NULL fibo
+- 8000 13000 8001
+param 8001 NULL param1
+GOSUB NULL NULL 20
+= 1003 NULL 8002
+ERA NULL NULL fibo
+- 8000 13001 8003
+param 8003 NULL param1
+GOSUB NULL NULL 20
+= 1003 NULL 8004
++ 8002 8004 8005
+ENDFUNC NULL NULL NULL
+ERA NULL NULL fibo
+param 13003 NULL param1
+GOSUB NULL NULL 20
+= 1003 NULL 4000
 print NULL NULL 4000
 $$
 @@
 name factorial
-vars x int 1000 f1 int 1001 
+vars x int 1000 a char 3000 f1 int 1001 factoria int 1002 fibo int 1003 
 @@
 name f1
 type int
-quad 4
+quad 5
 memory 2 0 0 0 1 0 0 0 
 typeParams int int 
 @@
+name f2
+type void
+quad 7
+memory 1 0 0 0 0 0 0 0 
+typeParams int 
+@@
+name factoria
+type int
+quad 9
+memory 1 0 0 0 4 0 0 1 
+typeParams int 
+@@
+name fibo
+type int
+quad 20
+memory 1 0 0 0 5 0 0 2 
+typeParams int 
+@@
 $$
-2 0 0 
+4 0 1 
 1 0 0 0 
 0 0 0 0 
-2 0 0 
+4 0 1 
 $$
 1000 2000 3000 
 4000 5000 6000 7000 

@@ -2,13 +2,32 @@
     (vars
         (declare x 1)
         (declare l '(1 2))
+        (declare a 'a')
     )
     (functions
         (define ( ( int f1 ) int i1 int i2)  
             (+ 1 2)
         )
+        (define (( void f2 ) int i2 )
+            (print i2 )
+        )
+        (define ( (int factoria ) int n)
+            (if (== n 1 )
+                (+ n 0)
+                ( * n (factoria (- n 1) ) )
+             )
+        )
+        (define (( int fibo ) int x)
+            (if (== x 0 )
+                0
+                (if (== x 1)
+                    1
+                    ( + ( fibo (- x 1) ) ( fibo ( - x 2) ) )
+                )
+            )
+        )
     )
     (main
-        (print (+ x x))
+        (print (fibo 20))
     )
 )

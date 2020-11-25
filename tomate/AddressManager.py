@@ -1,6 +1,7 @@
 from Memory import MemoryAux
 
 class AddressManager:
+    """ This class is the one responsible for handling all of the differente statics memories we use on the program """
     def __init__(self, globalBases, globalSizes) :
         ## Global Memories
         self.globalVars = []
@@ -29,6 +30,7 @@ class AddressManager:
         self.constLimit = self.globalBases[3][-1] + 1000
 
     def initializeGlobalMemories(self, globalSizes):
+        """ After initialize memory limits this function initialize the memories objects """
         
         variableSizes = globalSizes[0]
         tempSizes = globalSizes[1]
@@ -62,6 +64,7 @@ class AddressManager:
         self.stackLocals.append(self.globalLocals)
 
     def addLocalMemory(self,sizes):
+        """ Function to insert a new memory on the local memory stack """
         auxLocalMemory = MemoryAux( 
                                     sizes[0],
                                     sizes[1],
@@ -72,6 +75,7 @@ class AddressManager:
         self.stackLocals.append(auxLocalMemory)
 
     def popLocalMemory(self):
+        """ Function to pop a memory on the local memory stack """
         self.stackLocals.pop()
 
     def printMemory(self):
@@ -100,6 +104,7 @@ class AddressManager:
         print("Const Limit: ", self.constLimit)
 
     def getValue(self,virtualAddress):
+        """ Return the value on virtualAddress position """ 
         index, dataType, memoryObject = self.chooseMemory(virtualAddress)
         #print("gv", index, dataType, memoryObject)
         
@@ -120,6 +125,7 @@ class AddressManager:
         return value
 
     def setValue(self,virtualAddress,value):
+        """ By an address updates the value to the memory it corresponds """
 
         index, dataType, memoryObject = self.chooseMemory(virtualAddress)
 
@@ -136,6 +142,7 @@ class AddressManager:
             print("error")
         
     def chooseMemory(self,virtualAddress):
+        """ Returns which memory we are refering to """
 
         varsBases = 0
         nextBaseLimit = 0
@@ -173,6 +180,7 @@ class AddressManager:
         return index, dataType, memoryObject
  
     def chooseDataType(self, virtualAddress, currentBases, nextMemoryLimit):
+        """ return which data type the address is refering to """
 
         intsStart = currentBases[0] #1000
         floatStart = currentBases[1] # 2000

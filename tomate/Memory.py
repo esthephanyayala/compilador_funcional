@@ -27,6 +27,7 @@ class Memory:
         return self.int[index - base] 
 
 class MemoryAux:
+    """ This class is the one that create a memory object that has a list for each data type """
     def __init__(self, ints, floats, chars, bools):
         self.int = [0] * ints
         self.float = [0] * floats
@@ -64,6 +65,7 @@ class MemoryAux:
             print("This datatype doesn't exists, vuelva pronto :D")
     
 class DynamicMemory:
+    """ This is a Class that create a list of object of type class nodes """
     def __init__(self, length):
         self.listM = []
         for _ in range(0,length):
@@ -86,6 +88,7 @@ class DynamicMemory:
             i.print()
 
 class Node:
+    """ This class is for creating a node which only has a value and a pointer """
     def __init__(self, value, pointer):
         self.pointer = pointer
         self.value = value
@@ -104,12 +107,3 @@ class Node:
     
     def print(self):
         print([self.value, self.pointer])
-    
-    
-    #vm -> am -> all(memory)
-
-    #vs = 1000
-    #tS = 4000
-    #lS = 8000
-    #cS = 13000
-    #cL = 16000

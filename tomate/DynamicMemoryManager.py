@@ -1,6 +1,8 @@
 from Memory import DynamicMemory
 
 class DynamicMemoryManager:
+    """ This class have all of the lists functions and manage the dynamic memory """
+
     def __init__(self, stackList, maxLength):
         
         self.stackDictionary = {}
@@ -42,6 +44,7 @@ class DynamicMemoryManager:
         #print(pointerBase)
 
     def print(self, listName):
+        """ This function print a list """
         nextPointer = self.stackDictionary[listName]
 
         print('\'( ', end='')
@@ -52,6 +55,7 @@ class DynamicMemoryManager:
         print(')')
 
     def car(self, listName):
+        """ This function returns the first element of a list """
         pointerBase = self.stackDictionary[listName]
 
         if pointerBase != -1:
@@ -61,6 +65,7 @@ class DynamicMemoryManager:
             return -1
 
     def cdr(self, listNameNew, listNameCopy):
+        """ This function create a new list based on the second value of listNameCopy """
 
         pointerBase = self.stackDictionary[listNameCopy]
 
@@ -80,6 +85,7 @@ class DynamicMemoryManager:
         #print(self.stackDictionary)
 
     def length(self,listName):
+        """ This function return the length of one function """
         pointerBase = self.stackDictionary[listName]
 
         lenAux = 1
@@ -99,6 +105,7 @@ class DynamicMemoryManager:
         return lenAux
 
     def tail(self, listName):
+        """ This function returns the last value on a list """
         nextPointer = self.stackDictionary[listName]
         lastPointer = nextPointer
 
@@ -109,7 +116,7 @@ class DynamicMemoryManager:
         return self.dm.getValue(lastPointer)
 
     def append(self,listToCopy, listToAppend):
-        
+        """ This function append the values to the end of the listToAppend """
         pointerBaseToAppend = self.stackDictionary[listToAppend]
         nextPointerToCopy = self.stackDictionary[listToCopy]
 
@@ -166,6 +173,7 @@ class DynamicMemoryManager:
         print(self.stackDictionary)
 
     def indexList(self, indexToReturn, listName):
+        """ Return the index of the list we are calling """
 
         if indexToReturn >= self.length(listName):
             print("Index ({}) out of range for list {}".format(indexToReturn,listName))
