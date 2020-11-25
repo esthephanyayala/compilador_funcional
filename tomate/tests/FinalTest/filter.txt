@@ -1,0 +1,11 @@
+(program filterr
+    (vars
+        (declare l1 '(10 21 31 40))
+    )
+    (functions
+    )
+    (main
+        (printlista (filter ( lambda (l1) ( x ) ( evenp x ) ) ) )
+        (printlista (filter evenp l1 ))
+    )
+)

@@ -1,0 +1,12 @@
+(program mapp
+    (vars
+        (declare l1 '(10 20))
+        (declare l2 '(10 20))
+    )
+    (functions
+    )
+    (main
+        (printlista (map ( lambda (l1 l2) ( x y ) ( + x y ) ) ) )
+        (printlista (map ( lambda (l1 '(10 20)) ( x y ) ( + x y ) ) ) )
+    )
+)

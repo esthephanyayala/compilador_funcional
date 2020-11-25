@@ -1,0 +1,19 @@
+(program fibonacci
+    (vars
+        (declare x 20)
+    )
+    (functions
+        (define (( int fibo ) int x)
+            (if (== x 0 )
+                0
+                (if (== x 1)
+                    1
+                    ( + ( fibo (- x 1) ) ( fibo ( - x 2) ) )
+                )
+            )
+        )
+    )
+    (main
+        (print (fibo 20))
+    )
+)

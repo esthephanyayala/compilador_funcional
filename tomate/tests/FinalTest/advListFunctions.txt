@@ -1,0 +1,24 @@
+(program advListF
+    (vars
+        (declare l1 '(1 2))
+        (declare l2 '(4 5 6))
+        (declare l3 '(1 2 3 4 5 6 7 8 9))
+    )
+    (functions
+    )
+    (main
+        (printlista (filter ( lambda (l3) ( x ) ( evenp x ) ) ) )
+        (printlista (filter ( lambda (l3) ( x ) ( < x 5 ) ) ) )
+        (printlista (filter ( lambda ( (filter ( lambda (l3) ( x ) ( < x 5 ) ) ) ) ( x ) ( evenp x ) ) ) )
+
+        (printlista 
+                (map 
+                    (lambda 
+                        ( l1 (filter ( lambda ( (filter ( lambda (l3) ( x ) ( < x 5 ) ) ) ) ( x ) ( evenp x ) ) ) )
+                        (x y)
+                        (+ x y)    
+                    )
+                ) 
+        )
+    )
+)

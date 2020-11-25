@@ -1596,8 +1596,8 @@ yacc.yacc()
 # para testear con un file
 import os
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-programa = 'test3.txt'
-filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+programa = 'advListFunctions.txt'
+filename = os.path.join(fileDir, 'tomate/tests/FinalTest/' + programa )
 #filename = os.path.join(fileDir, 'tests/' + programa )
 f = open(filename, "r")
 input = f.read()
@@ -1614,7 +1614,8 @@ print("DirFunctions: "+ str(dirFunctions))
 
 quadruples.print()
 globalVariables()
-print(globalMemory)
+#print(globalMemory)
+print("======= Output =======")
 createOvejota()
 
 ## VM

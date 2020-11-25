@@ -1,0 +1,23 @@
+(program listF
+    (vars
+        (declare l1 '(1 2 3))
+        (declare l2 '(4 5 6))
+    )
+    (functions
+    )
+    (main
+        (printlista (cdr l1) )
+        (print (car l1) )
+        (print (tail l1) )
+
+        (print ( + (car l1) (car l2 ) ) )
+        
+        (printlista (append l1 l2 ) )
+        (printlista (append l1 '(4 5 6) ) )
+
+        (printlista (append l1 (cdr '(4 5 6) ) ) )
+        (printlista (append l1 (cdr l2 ) ) )
+
+        
+    )
+)

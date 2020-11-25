@@ -1,0 +1,16 @@
+(program factorial
+    (vars
+        (declare x 10)
+    )
+    (functions
+        (define ( (int facto ) int n)
+            (if (== n 1 )
+                (+ n 0)
+                ( * n (facto (- n 1) ) )
+             )
+        )
+    )
+    (main
+        (print (facto x))
+    )
+)
