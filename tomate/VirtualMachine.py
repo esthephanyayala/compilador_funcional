@@ -21,6 +21,7 @@ class VirtualMachine:
         self.currentFunction = []
         self.migajitaDePan = []
         self.lastValue = []
+        self.nameProgram = ""
 
         #list variables
         self.maxDMSize = 0
@@ -41,8 +42,8 @@ class VirtualMachine:
 
         fileDir = os.path.dirname(os.path.realpath('__file__'))
         programa = 'ovj1.txt'
-        filename = os.path.join(fileDir, 'tomate/tests/' + programa )
-        #filename = os.path.join(fileDir, 'tests/' + programa )
+        #filename = os.path.join(fileDir, 'tomate/tests/' + programa )
+        filename = os.path.join(fileDir, 'tests/' + programa )
         f = open(filename, "r")
         lines = f.readlines()
 
@@ -86,6 +87,8 @@ class VirtualMachine:
 
                     if first == "name":
                         currentFunction = arrLine[1]
+                        
+                        self.nameProgram = currentFunction
                         self.dirFunction[currentFunction] = {"vars": {} }
                         
                     elif first == "vars":
@@ -297,8 +300,8 @@ class VirtualMachine:
             # to the last value inside lastValue stack
 
 
-            #print(self.lastValue)
-            objectVars = self.dirFunction["factorial"]["vars"]
+            #print(self.currentFunction)
+            objectVars = self.dirFunction[self.nameProgram]["vars"]
 
             if self.currentFunction[-1] in objectVars:
 
@@ -432,7 +435,8 @@ class VirtualMachine:
             lenRight = self.celia.getValue(int(right))
 
             if lenLeft != lenRight :
-                print("Error on the len of the two list inside map")
+               # print("Error on the len of the two list inside map")
+               raise ValueError("Error on the len of the two list inside map")
 
         '''
         elif operator == "GOTOF":

@@ -1,0 +1,13 @@
+( program estructura
+    (vars
+       
+    ) 
+    (functions
+        
+       
+    )
+    (main
+       
+       
+    )
+)
