@@ -63,7 +63,6 @@ class MemoryAux:
         else :
             print("This datatype doesn't exists, vuelva pronto :D")
     
-
 class DynamicMemory:
     def __init__(self, length):
         self.listM = []
@@ -85,7 +84,6 @@ class DynamicMemory:
     def printMemory(self):
         for i in self.listM:
             i.print()
-
 
 class Node:
     def __init__(self, value, pointer):
